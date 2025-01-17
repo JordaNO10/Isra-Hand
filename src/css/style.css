@@ -13,7 +13,9 @@ footer {
   text-align: center;
   padding: 10px 0;
 }
-
+.main {
+  flex-grow: 1;
+}
 .h1-homepage {
   color: blue;
 }
@@ -116,4 +118,7 @@ li > a:active {
 
 .email-button:focus {
   outline: none;
+}
+a.active {
+  color: brown;
 }

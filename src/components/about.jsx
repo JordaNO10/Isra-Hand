@@ -9,6 +9,11 @@ const About = () => {
             Yarden Halely <br />
             <img src={yarden} alt="yarden" />
           </p>
+          <article>
+            <p>
+              dsadasd
+            </p>
+          </article>
     </div>
   );
 };
