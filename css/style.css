@@ -26,34 +26,48 @@ a:hover {
   text-decoration: underline;
 }
 
-/* Navigation Menu */
-nav ul {
-  display: flex;
-  justify-content: center;
-  padding: 0;
+/* Navigation Bar */
+nav {
+  display: flex; /* Use flexbox for alignment */
+  align-items: center; /* Center items vertically */
+  justify-content: space-between; /* Space between logo and links */
+  padding: 0.5rem 1rem;
   background-color: #007bff;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Logo Styling */
+nav img {
+  height: 40px;
+  width: auto;
+  pointer-events: none; /* Prevent any interactions */
+  user-select: none; /* Prevent text selection (for some browsers) */
+}
+
+/* Navigation Links */
+nav ul {
+  display: flex; /* Horizontal alignment of links */
+  list-style: none; /* Remove bullets */
   margin: 0;
+  padding: 0;
 }
 
 nav ul li {
-  list-style-type: none;
-  margin: 0 1rem;
+  margin-left: 1rem; /* Spacing between links */
 }
 
-li > a {
+nav ul li a {
+  text-decoration: none;
   color: white;
   font-weight: bold;
-  padding: 0.625rem 1rem;
-  transition: all 0.3s ease;
+  padding: 0.5rem 1rem;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-li > a:hover {
+/* Hover Effect */
+nav ul li a:hover {
   background-color: rgba(255, 255, 255, 0.2);
-  border-radius: 0.3125rem;
-}
-
-li > a.active {
-  color: yellow;
+  color: #ffe600;
 }
 
 /* Page Layout */
