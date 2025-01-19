@@ -1,14 +1,14 @@
 import React from "react";
-import logo from "../assets/IsraHand.jpg";
 import { NavLink } from "react-router-dom";
+import logo from "../assets/IsraHand.jpg";
 const Header = () => {
   return (
     <>
-      <h1>
-        <img src={logo} alt="Logo" height="35" width="auto" />
-        IsraHand <img src={logo} alt="Logo" height="35" width="auto" />
-      </h1>
+      <h1>IsraHand</h1>
       <nav>
+        <div>
+          <img src={logo} alt="Logo" height="35" width="auto" />
+        </div>
         <ul>
           <li>
             <NavLink
