@@ -1,0 +1,60 @@
+/* Donation Add Form Styles */
+.donation-add {
+  display: flex;
+  flex-direction: column;
+  max-width: 500px; /* Set a maximum width for the form */
+  margin: 2rem auto; /* Center the form on the page */
+  padding: 2rem; /* Padding inside the form */
+  background-color: #ffffff; /* White background for the form */
+  border-radius: 0.5rem; /* Rounded corners */
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+}
+
+.donation-add label {
+  margin-bottom: 1rem; /* Space between labels */
+  font-size: 1rem; /* Font size for labels */
+  color: #333; /* Dark gray color for text */
+}
+
+.donation-add input {
+  width: 100%; /* Full width for input fields */
+  padding: 0.75rem; /* Padding inside input fields */
+  margin-top: 0.5rem; /* Space above input fields */
+  border: 1px solid #ddd; /* Light border */
+  border-radius: 4px; /* Rounded corners */
+  font-size: 1rem; /* Font size for input text */
+  box-sizing: border-box; /* Ensure padding is included in width */
+}
+
+.donation-add input:focus {
+  border-color: #007bff; /* Blue border on focus */
+  outline: none; /* Remove default outline */
+}
+
+.submit-btn {
+  margin-top: 1rem; /* Space above submit button */
+  padding: 0.75rem 1.5rem; /* Padding for button */
+  font-size: 1rem; /* Font size for button text */
+  background-color: #007bff; /* Blue background for button */
+  color: white; /* White text color */
+  border: none; /* No border */
+  border-radius: 4px; /* Rounded corners */
+  cursor: pointer; /* Pointer on hover */
+  transition: background-color 0.3s; /* Smooth transition for hover effect */
+}
+
+.submit-btn:hover {
+  background-color: #0056b3; /* Darker shade on hover */
+}
+
+/* Optional: Image upload section styling */
+.donation-add label:nth-of-type(4) {
+  margin-top: 1rem; /* Space above image upload label */
+}
+
+.donation-add .image-upload {
+  display: flex; /* Flexbox for the upload component */
+  align-items: center; /* Center items vertically */
+  justify-content: center; /* Center items horizontally */
+  margin-top: 0.5rem; /* Space above image upload */
+}

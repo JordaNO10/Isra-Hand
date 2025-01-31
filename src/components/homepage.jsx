@@ -1,5 +1,6 @@
 import React from "react";
 import "../css/style.css";
+import "../css/homepage.css";
 import mainpicture from "../assets/mainpicture.png";
 const Homepage = () => {
   return (

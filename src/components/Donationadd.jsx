@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import Uploadimage from "./imageupload";
+import "../css/donationadd.css";
 
 const Donationadd = ({ onAddDonation }) => {
   const [formData, setFormData] = useState({
