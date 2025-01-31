@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import Uploadimage from "./imageupload";
+import Map from "./map"; // Import the Map component
 import "../css/donationadd.css";
 
 const Donationadd = ({ onAddDonation }) => {
@@ -9,7 +10,6 @@ const Donationadd = ({ onAddDonation }) => {
     email: "",
   });
 
-  // To store image data from UploadImage
   const [imageData, setImageData] = useState(null);
 
   const handleChange = (e) => {
@@ -20,7 +20,6 @@ const Donationadd = ({ onAddDonation }) => {
     });
   };
 
-  // Handle image upload from the UploadImage component
   const handleImageUpload = (image) => {
     setImageData(image);
   };
@@ -28,7 +27,6 @@ const Donationadd = ({ onAddDonation }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // Validate that all fields, including the image, are filled
     if (
       !formData.name ||
       !formData.description ||
@@ -36,65 +34,65 @@ const Donationadd = ({ onAddDonation }) => {
       !imageData
     ) {
       alert("Please fill in all fields, including uploading an image.");
-      return; // Prevent form submission if fields are empty
+      return;
     }
 
-    // Create new donation object including image data if available
     const newDonation = {
       id: Date.now(),
       ...formData,
-      image: imageData, // Add image data to donation
+      image: imageData,
     };
 
-    onAddDonation(newDonation); // Call parent function to add the donation
+    onAddDonation(newDonation);
     alert("Donation added successfully!");
 
-    // Reset form and image data after submission
     setFormData({
       name: "",
       description: "",
       email: "",
     });
-    setImageData(null); // Clear the uploaded image
+    setImageData(null);
   };
 
   return (
-    <form className="donation-add" onSubmit={handleSubmit}>
-      <label>
-        Donation Name:
+    <div className="donation-container">
+      <form className="donation-add" onSubmit={handleSubmit}>
+        {imageData && <Map imageUrl={imageData} onSelectLocation={() => {}} />}
+
+        <label>Donation Name:</label>
         <input
           type="text"
           name="name"
           value={formData.name}
           onChange={handleChange}
         />
-      </label>
-      <label>
-        Donation Description:
+
+        <label>Donation Description:</label>
         <input
           type="text"
           name="description"
           value={formData.description}
           onChange={handleChange}
         />
-      </label>
-      <label>
-        Email:
+
+        <label>Email:</label>
         <input
           type="email"
           name="email"
           value={formData.email}
           onChange={handleChange}
         />
-      </label>
-      <label>
-        Donation Image Upload:
-        <Uploadimage onUploadImage={handleImageUpload} />
-      </label>
-      <button className="submit-btn" type="submit">
-        Submit
-      </button>
-    </form>
+
+        <label>Donation Image Upload:</label>
+        <div className="image-upload">
+          <Uploadimage onUploadImage={handleImageUpload} />
+        </div>
+
+      </form>
+        <button className="submit-btn" type="submit">
+          Submit
+        </button>
+    </div>
   );
 };
 

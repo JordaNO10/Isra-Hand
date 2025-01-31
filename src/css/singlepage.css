@@ -45,36 +45,32 @@
   border-radius: 4px;
   cursor: pointer;
 }
-
-.singlepage-go-btn,
-.singlepage-submit-btn {
-  padding: 0.75rem 1.5rem; /* Adjusted padding for larger buttons */
-  font-size: 1.1rem; /* Slightly larger font size */
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.2s ease; /* Added transform for button effects */
-}
-
-.singlepage-go-btn:hover,
-.singlepage-submit-btn:hover {
-  background-color: #0056b3;
-  transform: translateY(-2px); /* Lift effect on hover */
-}
-.singlepage-edit-btn {
-  padding: 0.75rem 1.5rem; /* Adjusted padding for the button */
+.singlepage-buttons,
+button,
+button:first-child,
+button:last-child {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin-right: 1%;
+  border: solid;
+  padding: 1rem 1rem; /* Adjusted padding for the button */
   font-size: 1.1rem; /* Slightly larger font size */
   background-color: #0056b3; /* Green background for edit button */
   color: white; /* Text color */
-  border: none; /* No border */
-  width: 20vh;
   height: auto;
-  border-radius: 4px; /* Rounded corners */
+  border-color: white;
+  border-radius: 5vw; /* Rounded corners */
   cursor: pointer; /* Pointer cursor on hover */
   transition: background-color 0.3s ease, transform 0.2s ease; /* Transition effects */
 }
+button:last-child {
+  border-radius: 5vw; /* Rounded corners */
+  margin-left: 1vw;
+}
+
+
+
 
 .singlepage-edit-btn:hover {
   background-color: green; /* Darker green on hover */

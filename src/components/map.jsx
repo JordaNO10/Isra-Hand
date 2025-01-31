@@ -1,26 +1,24 @@
 import React, { useState, useEffect } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
+import "../css/map.css"; // Import the CSS file
 
-const Map = () => {
-  const [address, setAddress] = useState(""); // Address input
+const Map = ({ onSelectLocation, imageUrl }) => {
+  const [address, setAddress] = useState("");
   const [coordinates, setCoordinates] = useState([31.7701, 35.2138]); // Default location
   const [description, setDescription] = useState(
     "Default Location Description"
   );
-  const [imageUrl, setImageUrl] = useState("https://via.placeholder.com/100"); // Placeholder image
-  const [error, setError] = useState(null); // Error state for invalid address
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const map = L.map("map").setView(coordinates, 13);
 
-    // Add OpenStreetMap tile layer
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
       attribution:
         'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
     }).addTo(map);
 
-    // Add a marker with a popup
     const marker = L.marker(coordinates).addTo(map);
 
     const popupContent = `
@@ -32,10 +30,17 @@ const Map = () => {
     `;
     marker.bindPopup(popupContent).openPopup();
 
+    map.on("click", (e) => {
+      const { lat, lng } = e.latlng;
+      setCoordinates([lat, lng]);
+      marker.setLatLng([lat, lng]);
+      onSelectLocation([lat, lng]);
+    });
+
     return () => {
       map.remove();
     };
-  }, [coordinates, description, imageUrl]);
+  }, [coordinates, description, imageUrl, onSelectLocation]);
 
   const handleGeocode = async () => {
     if (!address) {
@@ -49,7 +54,6 @@ const Map = () => {
           address
         )}`
       );
-
       const data = await response.json();
       if (data.length === 0) {
         setError("Address not found. Please try another one.");
@@ -58,7 +62,8 @@ const Map = () => {
 
       const { lat, lon } = data[0];
       setCoordinates([parseFloat(lat), parseFloat(lon)]);
-      setError(null); // Clear error
+      setError(null);
+      onSelectLocation([parseFloat(lat), parseFloat(lon)]);
     } catch (err) {
       setError("Failed to fetch geocode data. Please try again later.");
     }
@@ -68,49 +73,29 @@ const Map = () => {
     <div>
       <h1>Interactive Map with Address Geocoding</h1>
 
-      <div style={{ marginBottom: "20px" }}>
+      <div className="map-container">
         <input
           type="text"
           placeholder="Enter an address"
           value={address}
           onChange={(e) => setAddress(e.target.value)}
-          style={{ marginBottom: "10px", padding: "8px", width: "80%" }}
+          className="map-input"
         />
-        <button
-          onClick={handleGeocode}
-          style={{
-            marginLeft: "10px",
-            padding: "8px 16px",
-            background: "blue",
-            color: "white",
-            border: "none",
-            cursor: "pointer",
-          }}
-        >
+        <button onClick={handleGeocode} className="map-button">
           Locate
         </button>
-        {error && (
-          <div style={{ color: "red", marginTop: "10px" }}>{error}</div>
-        )}
+        {error && <div className="error-message">{error}</div>}
         <br />
         <input
           type="text"
           placeholder="Enter a description"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
-          style={{ marginBottom: "10px", padding: "8px", width: "80%" }}
-        />
-        <br />
-        <input
-          type="text"
-          placeholder="Enter an image URL"
-          value={imageUrl}
-          onChange={(e) => setImageUrl(e.target.value)}
-          style={{ marginBottom: "10px", padding: "8px", width: "80%" }}
+          className="description-input"
         />
       </div>
 
-      <div id="map" style={{ width: "600px", height: "450px" }}></div>
+      <div id="map"></div>
     </div>
   );
 };

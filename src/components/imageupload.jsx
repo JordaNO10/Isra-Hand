@@ -27,12 +27,11 @@ const Uploadimage = ({ onUploadImage }) => {
     <div>
       <input type="file" accept="image/*" onChange={handleImageUpload} />
       {imageData && (
-        <div>
+        <div className="imageupload-image">
           <h3>Uploaded Image Preview:</h3>
           <img
             src={imageData}
             alt="Uploaded Preview"
-            style={{ maxWidth: "15vw", cursor: "pointer" }} // Change cursor to pointer
             onClick={toggleModal} // Open modal on click
           />
         </div>

@@ -8,6 +8,7 @@ import Singlepage from "./singlePage";
 import Header from "./Header";
 import Donation from "./donations";
 import Map from "./map";
+import SignupPage from "./signup";
 import "../css/style.css";
 const MyRouter = () => {
   return (
@@ -19,6 +20,7 @@ const MyRouter = () => {
         <Route path="/Donations" element={<Donation />} />
         <Route path="/Donations/:id" element={<Singlepage />} />
         <Route path="/Map" element={<Map />} />
+        <Route path="/Signup" element={<SignupPage />} />
         <Route path="/Contact" element={<Contact />} />
         <Route path="*" element={<h1 className="main">Not Found</h1>} />
       </Routes>

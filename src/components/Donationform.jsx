@@ -63,7 +63,7 @@ function DonationForm({ editedData, onSave, onChange }) {
         />
       </label>
       <label>
-        Current Image:
+        Current Donation Image:
         {editedData.image && (
           <img
             src={editedData.image} // Show current image

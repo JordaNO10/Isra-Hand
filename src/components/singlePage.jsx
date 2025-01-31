@@ -62,7 +62,9 @@ function Singlepage() {
             />
           ) : (
             <>
-              <h1 className="singlepage-title">{donationData.name}</h1>
+              <h1 className="singlepage-title">
+                Donation Name : {donationData.name}
+              </h1>
               <p className="singlepage-content">Email: {donationData.email}</p>
               <p className="singlepage-content">
                 Description: {donationData.description}
@@ -78,15 +80,13 @@ function Singlepage() {
                   />
                 </div>
               )}
-              <div>
-                <button onClick={handleEdit} className="singlepage-edit-btn">
-                  Edit
-                </button>
+              <div className="singlepage-buttons">
+                <button onClick={() => navigate("/Donations")}>Back</button>
+                <button onClick={handleEdit}>Edit</button>
               </div>
             </>
           )}
         </div>
-
         <DonationImageModal
           isOpen={isModalOpen}
           onClose={closeModal}

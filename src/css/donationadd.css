@@ -1,29 +1,40 @@
 /* Donation Add Form Styles */
+.donation-container {
+  display: flex;
+  justify-content: center; /* Center the form horizontally */
+  align-items: center; /* Center the form vertically */
+  margin: 2rem; /* Margin around the container */
+}
+
 .donation-add {
   display: flex;
-  flex-direction: column;
-  max-width: 500px; /* Set a maximum width for the form */
-  margin: 2rem auto; /* Center the form on the page */
+  flex-direction: column; /* Stack elements vertically */
+  max-width: 500px; /* Maximum width of the form */
+  width: 100%; /* Full width within the max limit */
   padding: 2rem; /* Padding inside the form */
   background-color: #ffffff; /* White background for the form */
   border-radius: 0.5rem; /* Rounded corners */
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); /* Subtle shadow */
 }
 
+/* Add space between labels */
 .donation-add label {
-  margin-bottom: 1rem; /* Space between labels */
+  margin-top: 1rem; /* Space above the label */
+  margin-bottom: 0.5rem; /* Space below the label */
   font-size: 1rem; /* Font size for labels */
+  font-weight: bold; /* Bold font for labels */
   color: #333; /* Dark gray color for text */
 }
 
+/* Style input fields */
 .donation-add input {
-  width: 100%; /* Full width for input fields */
+  width: 100%; /* Full width of input fields */
   padding: 0.75rem; /* Padding inside input fields */
-  margin-top: 0.5rem; /* Space above input fields */
-  border: 1px solid #ddd; /* Light border */
-  border-radius: 4px; /* Rounded corners */
+  margin-bottom: 1rem; /* Space below input fields */
   font-size: 1rem; /* Font size for input text */
-  box-sizing: border-box; /* Ensure padding is included in width */
+  border: 1px solid #ccc; /* Light gray border */
+  border-radius: 4px; /* Rounded corners */
+  box-sizing: border-box; /* Include padding and border in total width/height */
 }
 
 .donation-add input:focus {
@@ -31,30 +42,29 @@
   outline: none; /* Remove default outline */
 }
 
+/* Submit button styles */
 .submit-btn {
-  margin-top: 1rem; /* Space above submit button */
-  padding: 0.75rem 1.5rem; /* Padding for button */
-  font-size: 1rem; /* Font size for button text */
+  margin-top: 1rem; /* Space above the button */
+  padding: 0.75rem 1.5rem; /* Padding for button (top/bottom, left/right) */
+  font-size: 1.1rem; /* Slightly larger font size for better readability */
   background-color: #007bff; /* Blue background for button */
   color: white; /* White text color */
   border: none; /* No border */
-  border-radius: 4px; /* Rounded corners */
-  cursor: pointer; /* Pointer on hover */
-  transition: background-color 0.3s; /* Smooth transition for hover effect */
+  border-radius: 20vw; /* Rounded corners */
+  cursor: pointer; /* Pointer cursor on hover */
+  transition: background-color 0.3s ease, transform 0.2s ease; /* Smooth transitions for hover effects */
+  text-align: center; /* Center text horizontally */
 }
 
 .submit-btn:hover {
   background-color: #0056b3; /* Darker shade on hover */
+  transform: scale(1.05); /* Slightly enlarge button on hover */
 }
 
-/* Optional: Image upload section styling */
-.donation-add label:nth-of-type(4) {
-  margin-top: 1rem; /* Space above image upload label */
-}
-
-.donation-add .image-upload {
-  display: flex; /* Flexbox for the upload component */
-  align-items: center; /* Center items vertically */
-  justify-content: center; /* Center items horizontally */
-  margin-top: 0.5rem; /* Space above image upload */
+/* Image upload styling */
+.image-upload {
+  display: flex; /* Flexbox for image upload area */
+  justify-content: center; /* Center image upload area */
+  align-items: center; /* Center content vertically */
+  padding: 1rem; /* Padding around image upload area */
 }

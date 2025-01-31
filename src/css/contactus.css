@@ -1,21 +1,42 @@
-/* Contact Us  */
+
+/* Contact Us */
 .email-button {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0.625rem;
-  color: white;
+  padding: 0.625rem; /* Use rem for scalable padding */
+  background-color: #f9f9f9; /* Default background color */
   border: none;
-  border-radius: 50%;
+  border-radius: 50%; /* Ensure it's circular */
   cursor: pointer;
   transition: background-color 0.3s ease, opacity 0.3s ease;
+  width: 10vw; /* Responsive width */
+  height: 10vw; /* Responsive height */
+  max-width: 50px; /* Limit max size */
+  max-height: 50px; /* Limit max size */
 }
 
 .email-button img {
-  width: 2vw;
+  width: 100%; /* Responsive image width */
+  height: auto; /* Maintain aspect ratio */
 }
 
 .email-button:hover {
   background-color: #0056b3;
-  opacity: 0.8;
+  opacity: 1;
+}
+
+/* Media Query for Smaller Screens */
+@media (max-width: 600px) {
+  .email-button {
+    width: 15vw; /* Increase size for smaller screens */
+    height: 15vw; /* Increase size for smaller screens */
+  }
+}
+
+@media (max-width: 400px) {
+  .email-button {
+    width: 20vw; /* Further increase size for very small screens */
+    height: 20vw; /* Further increase size for very small screens */
+  }
 }
