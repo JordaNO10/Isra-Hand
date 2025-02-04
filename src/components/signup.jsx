@@ -2,18 +2,18 @@ import React, { useState } from "react";
 import "../css/signup.css";
 
 const SignupPage = () => {
-  // State to manage form inputs
   const [formData, setFormData] = useState({
-    role: "", // Donor or Requestor
-    userName: "",
-    password: "",
+    firstName: "",
+    lastName: "",
     email: "",
-    dateOfBirth: "",
-    phoneNumber: "",
-    address: "",
+    password: "",
+    confirmPassword: "",
+    role: "", // New field for role (Donor or Requestor)
   });
 
   const [errors, setErrors] = useState({});
+  const [isSignUp, setIsSignUp] = useState(true); // State to track if it's sign up or sign in
+  const [passwordsMatch, setPasswordsMatch] = useState(true); // State to track if passwords match
 
   // Handle input changes
   const handleInputChange = (e) => {
@@ -22,197 +22,185 @@ const SignupPage = () => {
       ...prevData,
       [name]: value,
     }));
-  };
 
-  // Validate password
-  const validatePassword = (password) => {
-    const regex =
-      /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#$%^&*()_+])[A-Za-z\d!@#$%^&*()_+]{8,}$/;
-    return regex.test(password);
+    // Check if passwords match whenever password or confirmPassword changes
+    if (name === "password" || name === "confirmPassword") {
+      const password = name === "password" ? value : formData.password;
+      const confirmPassword = name === "confirmPassword" ? value : formData.confirmPassword;
+      setPasswordsMatch(password === confirmPassword);
+    }
   };
 
   // Handle form submission
   const handleSubmit = (e) => {
     e.preventDefault();
-
-    // Validate required fields
     const newErrors = {};
-    if (!formData.role) newErrors.role = "Please select a role.";
-    if (!formData.userName) newErrors.userName = "Full name is required.";
-    if (!formData.email) newErrors.email = "Email is required.";
-    if (!formData.dateOfBirth)
-      newErrors.dateOfBirth = "Date of birth is required.";
-    if (!formData.password) {
-      newErrors.password = "Password is required.";
-    } else if (!validatePassword(formData.password)) {
-      newErrors.password =
-        "Password must contain at least 1 uppercase letter, 1 lowercase letter, 1 number, and 1 special character.";
+
+    if (isSignUp) {
+      // Validate required fields for sign up
+      if (!formData.firstName) newErrors.firstName = "First name is required.";
+      if (!formData.lastName) newErrors.lastName = "Last name is required.";
+      if (!formData.email) newErrors.email = "Email is required.";
+      if (!formData.password) newErrors.password = "Password is required.";
+      if (formData.password !== formData.confirmPassword)
+        newErrors.confirmPassword = "Passwords do not match.";
+      if (!formData.role) newErrors.role = "Please select a role."; // Validate role
+    } else {
+      // Validate required fields for sign in
+      if (!formData.email) newErrors.email = "Email is required.";
+      if (!formData.password) newErrors.password = "Password is required.";
     }
 
-    // Validate Donor-specific fields
-    if (formData.role === "Donor") {
-      if (!formData.phoneNumber)
-        newErrors.phoneNumber = "Phone number is required.";
-      if (!formData.address) newErrors.address = "Address is required.";
-    }
-
-    // If there are errors, stop submission
+    // If errors exist, stop submission
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       return;
     }
 
-    // Add the new user to localStorage
-    const newUser = { ...formData };
+    if (isSignUp) {
+      // Save user data to localStorage for sign up
+      const newUser = { ...formData };
+      const existingUsers = JSON.parse(localStorage.getItem("users")) || [];
+      localStorage.setItem("users", JSON.stringify([...existingUsers, newUser]));
+      alert("Signup successful!");
+    } else {
+      // Handle sign in logic
+      const existingUsers = JSON.parse(localStorage.getItem("users")) || [];
+      const user = existingUsers.find(
+        (user) => user.email === formData.email && user.password === formData.password
+      );
+      if (user) {
+        alert("Signin successful!");
+      } else {
+        alert("Invalid email or password.");
+      }
+    }
 
-    // Retrieve existing users from localStorage
-    const existingUsers = JSON.parse(localStorage.getItem("users")) || [];
-
-    // Add the new user to the list
-    const updatedUsers = [...existingUsers, newUser];
-
-    // Save the updated list back to localStorage
-    localStorage.setItem("users", JSON.stringify(updatedUsers));
-
-    // Reset the form
+    // Reset form
     setFormData({
-      role: "",
-      userName: "",
-      password: "",
+      firstName: "",
+      lastName: "",
       email: "",
-      dateOfBirth: "",
-      phoneNumber: "",
-      address: "",
+      password: "",
+      confirmPassword: "",
+      role: "", // Reset role
     });
 
     setErrors({});
-    alert("Signup successful!");
   };
 
   return (
-    <div className="signup-page">
-      <h1>Registration</h1>
-      <form onSubmit={handleSubmit}>
-        {/* Role Selection */}
-        <div className="form-group">
-          <label>Role:</label>
-          <div>
-            <label>
-              <input
-                type="radio"
-                name="role"
-                value="Donor"
-                checked={formData.role === "Donor"}
-                onChange={handleInputChange}
-              />
-              Donor
-            </label>
-            <label>
-              <input
-                type="radio"
-                name="role"
-                value="Requestor"
-                checked={formData.role === "Requestor"}
-                onChange={handleInputChange}
-              />
-              Requestor
-            </label>
-          </div>
-          {errors.role && <span className="error">{errors.role}</span>}
-        </div>
+    <form className="form" onSubmit={handleSubmit}>
+      <p className="title">{isSignUp ? "Register" : "Sign In"}</p>
+      <p className="message">
+        {isSignUp ? "Signup now and get full access to our app." : "Signin to access your account."}
+      </p>
 
-        {/* User name */}
-        <div className="form-group">
-          <label htmlFor="userName">User Name:</label>
-          <input
-            type="text"
-            id="userName"
-            name="userName"
-            value={formData.userName}
-            onChange={handleInputChange}
-            required
-          />
-          {errors.userName && <span className="error">{errors.userName}</span>}
-        </div>
+      {isSignUp && (
+        <div className="flex">
+          <label>
+            <input
+              required
+              placeholder=""
+              type="text"
+              className="input"
+              name="firstName"
+              value={formData.firstName}
+              onChange={handleInputChange}
+            />
+            <span>Firstname</span>
+            {errors.firstName && <span className="error">{errors.firstName}</span>}
+          </label>
 
-        {/* Password */}
-        <div className="form-group">
-          <label htmlFor="password">Password:</label>
-          <input
-            type="password"
-            id="password"
-            name="password"
-            value={formData.password}
-            onChange={handleInputChange}
-            required
-          />
-          {errors.password && <span className="error">{errors.password}</span>}
+          <label>
+            <input
+              required
+              placeholder=""
+              type="text"
+              className="input"
+              name="lastName"
+              value={formData.lastName}
+              onChange={handleInputChange}
+            />
+            <span>Lastname</span>
+            {errors.lastName && <span className="error">{errors.lastName}</span>}
+          </label>
         </div>
+      )}
 
-        {/* Email */}
-        <div className="form-group">
-          <label htmlFor="email">Email:</label>
-          <input
-            type="email"
-            id="email"
-            name="email"
-            value={formData.email}
-            onChange={handleInputChange}
-            required
-          />
-          {errors.email && <span className="error">{errors.email}</span>}
-        </div>
+      <label>
+        <input
+          required
+          placeholder=""
+          type="email"
+          className="input"
+          name="email"
+          value={formData.email}
+          onChange={handleInputChange}
+        />
+        <span>Email</span>
+        {errors.email && <span className="error">{errors.email}</span>}
+      </label>
 
-        {/* Date of Birth */}
-        <div className="form-group">
-          <label htmlFor="dateOfBirth">Date of Birth:</label>
-          <input
-            type="date"
-            id="dateOfBirth"
-            name="dateOfBirth"
-            value={formData.dateOfBirth}
-            onChange={handleInputChange}
-            required
-          />
-          {errors.dateOfBirth && (
-            <span className="error">{errors.dateOfBirth}</span>
-          )}
-        </div>
+      <label>
+        <input
+          required
+          placeholder=""
+          type="password"
+          className="input"
+          name="password"
+          value={formData.password}
+          onChange={handleInputChange}
+        />
+        <span>Password</span>
+        {errors.password && <span className="error">{errors.password}</span>}
+      </label>
 
-        {/* Phone Number (Always Visible) */}
-        <div className="form-group">
-          <label htmlFor="phoneNumber">Phone Number:</label>
-          <input
-            type="tel"
-            id="phoneNumber"
-            name="phoneNumber"
-            value={formData.phoneNumber}
-            onChange={handleInputChange}
-            required={formData.role === "Donor"} // Required only for Donor
-          />
-          {errors.phoneNumber && (
-            <span className="error">{errors.phoneNumber}</span>
-          )}
-        </div>
+      {isSignUp && (
+        <>
+          <label>
+            <input
+              required
+              placeholder=""
+              type="password"
+              className={`input ${!passwordsMatch ? "input-error" : ""}`} // Add error class if passwords don't match
+              name="confirmPassword"
+              value={formData.confirmPassword}
+              onChange={handleInputChange}
+            />
+            <span>Confirm password</span>
+            {errors.confirmPassword && <span className="error">{errors.confirmPassword}</span>}
+          </label>
 
-        {/* Address (Always Visible) */}
-        <div className="form-group">
-          <label htmlFor="address">Address:</label>
-          <input
-            type="text"
-            id="address"
-            name="address"
-            value={formData.address}
-            onChange={handleInputChange}
-            required={formData.role === "Donor"} // Required only for Donor
-          />
-          {errors.address && <span className="error">{errors.address}</span>}
-        </div>
+          {/* Role Selection Dropdown */}
+          <label>
+            <select
+              required
+              className="input"
+              name="role"
+              value={formData.role}
+              onChange={handleInputChange}
+            >
+              <option value=""></option>
+              <option value="Donor">Donor</option>
+              <option value="Requestor">Requestor</option>
+            </select>
+            <span>Role</span>
+            {errors.role && <span className="error">{errors.role}</span>}
+          </label>
+        </>
+      )}
 
-        {/* Submit Button */}
-        <button type="submit">Sign Up</button>
-      </form>
-    </div>
+      <button className="submit" type="submit">
+        {isSignUp ? "Submit" : "Sign In"}
+      </button>
+      <p className="signin">
+        {isSignUp ? "Already have an account? " : "Don't have an account? "}
+        <a href="#" onClick={() => setIsSignUp(!isSignUp)}>
+          {isSignUp ? "Signin" : "Signup"}
+        </a>
+      </p>
+    </form>
   );
 };
 

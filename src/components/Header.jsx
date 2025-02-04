@@ -8,8 +8,13 @@ const Header = () => {
       <h1>IsraHand</h1>
       <nav>
         <div className="navigation-container">
-          <span className="navigation-label"> Navigation</span>
+          {/* Replace the "Navigation" text with the hoverable button */}
+          <button className="btn">
+            <span className="icon">☰</span> {/* Hamburger icon */}
+            <span className="text">תפריט</span>
+          </button>
 
+          {/* Navigation links */}
           <ul className="navigation-menu">
             <img src={logo} alt="Logo" height="35" width="auto" />
             <li>
@@ -19,7 +24,7 @@ const Header = () => {
                   isActive ? "menu-item active" : "menu-item"
                 }
               >
-                Home
+                דף הבית
               </NavLink>
             </li>
             <li>
@@ -29,7 +34,7 @@ const Header = () => {
                   isActive ? "menu-item active" : "menu-item"
                 }
               >
-                Sign up
+                הרשמה
               </NavLink>
             </li>
             <li>
@@ -39,7 +44,7 @@ const Header = () => {
                   isActive ? "menu-item active" : "menu-item"
                 }
               >
-                About
+                אודות
               </NavLink>
             </li>
             <li>
@@ -49,7 +54,7 @@ const Header = () => {
                   isActive ? "menu-item active" : "menu-item"
                 }
               >
-                Donations
+                תרומות
               </NavLink>
             </li>
             <li>
@@ -59,7 +64,7 @@ const Header = () => {
                   isActive ? "menu-item active" : "menu-item"
                 }
               >
-                Contact
+                יצירת קשר
               </NavLink>
             </li>
           </ul>
