@@ -12,11 +12,7 @@ function DonationImageModal({ isOpen, onClose, image }) {
         <span className="singlepage-close" onClick={onClose}>
           &times;
         </span>
-        <img
-          src={image}
-          alt="Donation"
-          className="singlepage-modal-image"
-        />
+        <img src={image} alt="Donation" className="singlepage-modal-image" />
       </div>
     </div>
   );

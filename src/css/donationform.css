@@ -57,3 +57,16 @@ textarea {
   overflow-y: auto; /* Allow vertical scrolling */
   box-sizing: border-box; /* Ensure padding is included in width/height */
 }
+.singlepage-delete-btn {
+  background-color: red;
+  color: white;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: 0.3s;
+}
+
+.singlepage-delete-btn:hover {
+  background-color: darkred;
+}

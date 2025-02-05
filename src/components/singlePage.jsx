@@ -31,6 +31,14 @@ function Singlepage() {
     navigate(0);
   };
 
+  const handleDelete = () => {
+    const updatedDonations = storedDonations.filter(
+      (donation) => donation.id.toString() !== id
+    );
+    localStorage.setItem("donations", JSON.stringify(updatedDonations));
+    navigate("/Donations"); // Redirect after deletion
+  };
+
   const handleDropdownChange = (selectedId) => {
     if (selectedId) {
       navigate(`/donations/${selectedId}`);
@@ -44,7 +52,6 @@ function Singlepage() {
   return (
     <section className="singlepage-container">
       <div className="singlepage-content">
-        {/* Render DonationDropdown only when not editing */}
         {!isEditing && (
           <DonationDropdown
             donations={storedDonations}
@@ -63,15 +70,17 @@ function Singlepage() {
           ) : (
             <>
               <h1 className="singlepage-title">
-                Donation Name : {donationData.name}
+                {donationData.name} : שם התרומה
               </h1>
-              <p className="singlepage-content">Email: {donationData.email}</p>
               <p className="singlepage-content">
-                Description: {donationData.description}
+                {donationData.email} : אימייל
+              </p>
+              <p className="singlepage-content">
+                {donationData.description} : תיאור התרומה
               </p>
               {donationData.image && (
                 <div className="singlepage-image">
-                  <h3>Donation Image:</h3>
+                  <h3>: תמונת התרומה</h3>
                   <img
                     src={donationData.image}
                     alt="Donation"
@@ -81,8 +90,18 @@ function Singlepage() {
                 </div>
               )}
               <div className="singlepage-buttons">
-                <button onClick={() => navigate("/Donations")}>Back</button>
-                <button onClick={handleEdit}>Edit</button>
+                <button
+                  onClick={() => navigate("/Donations")}
+                  className="back-button"
+                >
+                  חזור אחורה
+                </button>
+                <button onClick={handleEdit} className="edit-button">
+                  ערוך
+                </button>
+                <button onClick={handleDelete} className="delete-button">
+                  מחק תרומה
+                </button>
               </div>
             </>
           )}

@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import "../css/signup.css";
-
 const SignupPage = () => {
   const [formData, setFormData] = useState({
     firstName: "",
@@ -26,7 +25,8 @@ const SignupPage = () => {
     // Check if passwords match whenever password or confirmPassword changes
     if (name === "password" || name === "confirmPassword") {
       const password = name === "password" ? value : formData.password;
-      const confirmPassword = name === "confirmPassword" ? value : formData.confirmPassword;
+      const confirmPassword =
+        name === "confirmPassword" ? value : formData.confirmPassword;
       setPasswordsMatch(password === confirmPassword);
     }
   };
@@ -61,13 +61,17 @@ const SignupPage = () => {
       // Save user data to localStorage for sign up
       const newUser = { ...formData };
       const existingUsers = JSON.parse(localStorage.getItem("users")) || [];
-      localStorage.setItem("users", JSON.stringify([...existingUsers, newUser]));
+      localStorage.setItem(
+        "users",
+        JSON.stringify([...existingUsers, newUser])
+      );
       alert("Signup successful!");
     } else {
       // Handle sign in logic
       const existingUsers = JSON.parse(localStorage.getItem("users")) || [];
       const user = existingUsers.find(
-        (user) => user.email === formData.email && user.password === formData.password
+        (user) =>
+          user.email === formData.email && user.password === formData.password
       );
       if (user) {
         alert("Signin successful!");
@@ -93,7 +97,9 @@ const SignupPage = () => {
     <form className="form" onSubmit={handleSubmit}>
       <p className="title">{isSignUp ? "Register" : "Sign In"}</p>
       <p className="message">
-        {isSignUp ? "Signup now and get full access to our app." : "Signin to access your account."}
+        {isSignUp
+          ? "Signup now and get full access to our app."
+          : "Signin to access your account."}
       </p>
 
       {isSignUp && (
@@ -101,29 +107,31 @@ const SignupPage = () => {
           <label>
             <input
               required
-              placeholder=""
+              placeholder="שם פרטי"
               type="text"
               className="input"
               name="firstName"
               value={formData.firstName}
               onChange={handleInputChange}
             />
-            <span>Firstname</span>
-            {errors.firstName && <span className="error">{errors.firstName}</span>}
+            {errors.firstName && (
+              <span className="error">{errors.firstName}</span>
+            )}
           </label>
 
           <label>
             <input
               required
-              placeholder=""
+              placeholder="שם משפחה"
               type="text"
               className="input"
               name="lastName"
               value={formData.lastName}
               onChange={handleInputChange}
             />
-            <span>Lastname</span>
-            {errors.lastName && <span className="error">{errors.lastName}</span>}
+            {errors.lastName && (
+              <span className="error">{errors.lastName}</span>
+            )}
           </label>
         </div>
       )}
@@ -131,28 +139,26 @@ const SignupPage = () => {
       <label>
         <input
           required
-          placeholder=""
+          placeholder="אימייל"
           type="email"
           className="input"
           name="email"
           value={formData.email}
           onChange={handleInputChange}
         />
-        <span>Email</span>
         {errors.email && <span className="error">{errors.email}</span>}
       </label>
 
       <label>
         <input
           required
-          placeholder=""
+          placeholder="סיסמא"
           type="password"
           className="input"
           name="password"
           value={formData.password}
           onChange={handleInputChange}
         />
-        <span>Password</span>
         {errors.password && <span className="error">{errors.password}</span>}
       </label>
 
@@ -161,15 +167,16 @@ const SignupPage = () => {
           <label>
             <input
               required
-              placeholder=""
+              placeholder="אימות סיסמא"
               type="password"
               className={`input ${!passwordsMatch ? "input-error" : ""}`} // Add error class if passwords don't match
               name="confirmPassword"
               value={formData.confirmPassword}
               onChange={handleInputChange}
             />
-            <span>Confirm password</span>
-            {errors.confirmPassword && <span className="error">{errors.confirmPassword}</span>}
+            {errors.confirmPassword && (
+              <span className="error">{errors.confirmPassword}</span>
+            )}
           </label>
 
           {/* Role Selection Dropdown */}
@@ -181,11 +188,13 @@ const SignupPage = () => {
               value={formData.role}
               onChange={handleInputChange}
             >
-              <option value=""></option>
-              <option value="Donor">Donor</option>
-              <option value="Requestor">Requestor</option>
+              <option value="" disabled>
+                בחר סוג משתמש
+              </option>
+              <option value="Donor">תורם</option>
+              <option value="Requestor">מבקש תרומה</option>
             </select>
-            <span>Role</span>
+            <span>סוג משתמש</span>
             {errors.role && <span className="error">{errors.role}</span>}
           </label>
         </>
@@ -196,9 +205,13 @@ const SignupPage = () => {
       </button>
       <p className="signin">
         {isSignUp ? "Already have an account? " : "Don't have an account? "}
-        <a href="#" onClick={() => setIsSignUp(!isSignUp)}>
+        <button
+          type="button"
+          className="link-button"
+          onClick={() => setIsSignUp(!isSignUp)}
+        >
           {isSignUp ? "Signin" : "Signup"}
-        </a>
+        </button>
       </p>
     </form>
   );

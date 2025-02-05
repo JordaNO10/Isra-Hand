@@ -87,11 +87,10 @@ const Donationadd = ({ onAddDonation }) => {
         <div className="image-upload">
           <Uploadimage onUploadImage={handleImageUpload} />
         </div>
-
       </form>
-        <button className="submit-btn" type="submit">
-          Submit
-        </button>
+      <button className="submit-btn" type="submit">
+        Submit
+      </button>
     </div>
   );
 };

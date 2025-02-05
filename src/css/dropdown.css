@@ -1,10 +1,11 @@
 .donation-dropdown-container {
   display: flex; /* Use flexbox for alignment */
-  justify-content: flex-start; /* Align items to the left */
+  justify-content: start; /* Align items to the left */
   margin: 1rem 0; /* Add some margin */
 }
 
 .donation-dropdown {
+  text-align: end;
   padding: 0.625rem; /* Padding for better touch targets */
   font-size: 1rem; /* Set font size */
   border: 1px solid #007bff; /* Border color */

@@ -64,17 +64,18 @@ button:last-child {
   cursor: pointer; /* Pointer cursor on hover */
   transition: background-color 0.3s ease, transform 0.2s ease; /* Transition effects */
 }
-button:last-child {
-  border-radius: 5vw; /* Rounded corners */
-  margin-left: 1vw;
+
+.delete-button:hover {
+  background-color: darkred;
+  transform: translateY(-2px);
 }
-
-
-
-
-.singlepage-edit-btn:hover {
-  background-color: green; /* Darker green on hover */
-  transform: translateY(-2px); /* Lift effect on hover */
+.back-button:hover {
+  background-color: darkred;
+  transform: translateY(-2px);
+}
+.edit-button:hover {
+  background-color: green;
+  transform: translateY(-2px);
 }
 
 /* Modal Styles */

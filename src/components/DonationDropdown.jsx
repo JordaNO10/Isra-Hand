@@ -8,7 +8,7 @@ function DonationDropdown({ donations, currentId, onSelectDonation }) {
         className="donation-dropdown"
         onChange={(e) => onSelectDonation(e.target.value)}
       >
-        <option value="">Select a Donation</option>
+        <option value="">בחר תרומה</option>
         {donations
           .filter((donation) => donation.id.toString() !== currentId) // Exclude the current donation
           .map((donation) => (
