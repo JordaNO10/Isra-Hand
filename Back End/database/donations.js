@@ -1,21 +1,17 @@
-// donations.js
 const express = require("express");
 const router = express.Router();
-const connection = require("./connection.js");
+const db = require("../database/connection.js");
 
-// Route for adding donations (placeholder)
-router.post("/donate", (req, res) => {
-  const { fullName, amount } = req.body; // Add relevant fields as necessary
-
-  const sql = `INSERT INTO Donations (full_name, amount) VALUES (?, ?)`;
-  connection.query(sql, [fullName, amount], (error, results) => {
+// Get all donations
+router.get("/donate", (req, res) => {
+  const sql = "SELECT * FROM Donations"; // Make sure the table name is correct
+  db.query(sql, (error, results) => {
     if (error) {
-      return res.status(500).json({ error: "Database error" });
+      console.error("Error fetching donations:", error);
+      return res.status(500).json({ error: "Failed to fetch donations" });
     }
-    res.status(200).json({ message: "Donation recorded successfully!" });
+    res.status(200).json(results);
   });
 });
 
-// Additional donation routes can be added here
-
-module.exports = router; // Export the router
+module.exports = router;

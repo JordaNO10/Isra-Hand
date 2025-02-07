@@ -1,5 +1,5 @@
-import MyRouter from "./components/MyRouter";
-import AccessibilityButton from "./components/AccessibilityButton";
+import MyRouter from "./components/Page layout/MyRouter";
+import AccessibilityButton from "./components/Page layout/AccessibilityButton";
 import { BrowserRouter } from "react-router-dom";
 function App() {
   return (
