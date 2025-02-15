@@ -40,7 +40,7 @@
 }
 
 .singlepage-image-preview {
-  max-width: 10%; /* Full width for image previews */
+  max-width: 50%; /* Full width for image previews */
   height: auto; /* Maintain aspect ratio */
   border-radius: 4px;
   cursor: pointer;

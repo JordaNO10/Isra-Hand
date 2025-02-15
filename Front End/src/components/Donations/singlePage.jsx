@@ -1,43 +1,79 @@
-import React, { useState } from "react";
-import "./css/singlepage.css"; // Only use the singlepage styles now
+import React, { useState, useEffect } from "react";
+import "./css/singlepage.css";
 import { useParams, useNavigate } from "react-router-dom";
 import DonationForm from "./Donationform";
 import DonationImageModal from "./donationimage";
 import DonationDropdown from "./DonationDropdown";
+import axios from "axios";
 
 function Singlepage() {
-  const { id } = useParams();
+  const { id } = useParams(); // Extract the id from the URL
   const navigate = useNavigate();
-  const storedDonations = JSON.parse(localStorage.getItem("donations")) || [];
-  const donationData = storedDonations.find(
-    (donation) => donation.id.toString() === id
-  );
-
+  const [donationData, setDonationData] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const [editedData, setEditedData] = useState(donationData);
+  const [editedData, setEditedData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchDonationData = async () => {
+      try {
+        const response = await axios.get(`/donations/${id}`);
+        setDonationData(response.data);
+        setEditedData(response.data);
+      } catch (err) {
+        setError(err.response?.data?.error || err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDonationData();
+  }, [id]);
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
 
   const handleEdit = () => setIsEditing(true);
 
-  const handleSave = (data) => {
-    const updatedDonations = storedDonations.map((donation) =>
-      donation.id.toString() === id ? data : donation
-    );
-    localStorage.setItem("donations", JSON.stringify(updatedDonations));
-    setIsEditing(false);
-    navigate(0);
+  const handleSave = async (data) => {
+    const formData = new FormData();
+
+    // Append all fields to the FormData object
+    formData.append("donation_name", data.donation_name);
+    formData.append("description", data.description);
+    formData.append("email", data.email);
+
+    // Append the image file if it exists
+    if (data.image instanceof File) {
+      formData.append("image", data.image); // Append the new image file
+    }
+
+    try {
+      const response = await axios.put(`/donations/${id}`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data", // Set the correct content type
+        },
+      });
+
+      // Update the local state with the response data
+      setDonationData(response.data);
+      setEditedData(response.data);
+      setIsEditing(false);
+    } catch (err) {
+      setError(err.response?.data?.error || err.message);
+    }
   };
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     if (window.confirm("Are you sure you want to delete this donation?")) {
-      const updatedDonations = storedDonations.filter(
-        (donation) => donation.id.toString() !== id
-      );
-      localStorage.setItem("donations", JSON.stringify(updatedDonations));
-      navigate("/Donations"); // Redirect after deletion
+      try {
+        await axios.delete(`/donations/${id}`);
+        navigate("/Donations");
+      } catch (err) {
+        setError(err.response?.data?.error || err.message);
+      }
     }
   };
 
@@ -47,16 +83,16 @@ function Singlepage() {
     }
   };
 
-  if (!donationData) {
-    return <div>Donation not found.</div>;
-  }
+  if (loading) return <div>Loading donation...</div>;
+  if (error) return <div>Error: {error}</div>;
+  if (!donationData) return <div>Donation not found.</div>;
 
   return (
     <section className="singlepage-container">
       <div className="singlepage-content">
         {!isEditing && (
           <DonationDropdown
-            donations={storedDonations}
+            donations={[]}
             currentId={id}
             onSelectDonation={handleDropdownChange}
           />
@@ -72,7 +108,7 @@ function Singlepage() {
           ) : (
             <>
               <h1 className="singlepage-title">
-                {donationData.name} : שם התרומה
+                {donationData.donation_name} : שם התרומה
               </h1>
               <p className="singlepage-content">
                 {donationData.email} : אימייל
@@ -80,11 +116,11 @@ function Singlepage() {
               <p className="singlepage-content">
                 {donationData.description} : תיאור התרומה
               </p>
-              {donationData.image && (
+              {donationData.donat_photo && (
                 <div className="singlepage-image">
                   <h3>: תמונת התרומה</h3>
                   <img
-                    src={donationData.image}
+                    src={`${donationData.donat_photo}`} // Use the full URL
                     alt="Donation"
                     className="singlepage-image-preview"
                     onClick={openModal}
@@ -116,7 +152,7 @@ function Singlepage() {
         <DonationImageModal
           isOpen={isModalOpen}
           onClose={closeModal}
-          image={donationData.image}
+          image={donationData.donat_photo}
         />
       </div>
     </section>

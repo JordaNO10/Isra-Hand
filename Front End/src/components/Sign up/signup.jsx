@@ -4,6 +4,7 @@ import "./css/signup.css";
 
 const SignupPage = () => {
   const [formData, setFormData] = useState({
+    username: "",
     firstName: "",
     lastName: "",
     email: "",
@@ -50,7 +51,8 @@ const SignupPage = () => {
       }
 
       try {
-        const response = await axios.post("http://localhost:5000/api/signup", {
+        const response = await axios.post("/signUp", {
+          username: formData.username,
           name: `${formData.firstName} ${formData.lastName}`,
           email: formData.email,
           password: formData.password,
@@ -59,6 +61,7 @@ const SignupPage = () => {
         alert(response.data.message);
         // Clear form data only after successful signup
         setFormData({
+          username: "",
           firstName: "",
           lastName: "",
           email: "",
@@ -80,6 +83,7 @@ const SignupPage = () => {
       }
     } else {
       // Sign-in logic
+      // Remmeber to change to email or bla bla
       if (!formData.email) newErrors.email = "Email is required.";
       if (!formData.password) newErrors.password = "Password is required.";
 
@@ -87,15 +91,15 @@ const SignupPage = () => {
         setErrors(newErrors);
         return;
       }
-
       try {
-        const response = await axios.post("http://localhost:5000/api/signin", {
-          email: formData.email,
+        const response = await axios.post("/signIn", {
+          emailOrUsername: formData.email,
           password: formData.password,
         });
         alert("Signin successful!");
         // Clear form data only after successful signin
         setFormData({
+          username: "",
           firstName: "",
           lastName: "",
           email: "",
@@ -129,6 +133,21 @@ const SignupPage = () => {
 
       {isSignUp && (
         <div className="flex">
+          <label>
+            <input
+              required
+              placeholder="שם משתמש (אנגלית)"
+              type="text"
+              className="input"
+              name="username"
+              value={formData.username}
+              onChange={handleInputChange}
+              autoComplete=""
+            />
+            {errors.username && (
+              <span className="error">{errors.username}</span>
+            )}
+          </label>
           <label>
             <input
               required

@@ -9,26 +9,29 @@ const Donation = () => {
   const [donations, setDonations] = useState([]);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
 
   // Load donations and categories from the backend on first render
   useEffect(() => {
     const fetchData = async () => {
       try {
         const [donationResponse, categoryResponse] = await Promise.all([
-          axios.get("http://localhost:5000/api/donate"),
-          axios.get("http://localhost:5000/api/categories"),
+          axios.get("/donations", {
+            headers: {
+              Accept: "application/json", // Optional, but can help clarify what type of response you expect
+            },
+          }),
+          axios.get("/categories", {
+            headers: {
+              Accept: "application/json", // Optional, but can help clarify what type of response you expect
+            },
+          }),
         ]);
-
-        console.log("Donations:", donationResponse.data); // Log donations
-        console.log("Categories:", categoryResponse.data); // Log categories
 
         setDonations(donationResponse.data);
         setCategories(categoryResponse.data);
       } catch (error) {
-        setError(error.response?.data?.error || error.message); // Use error response from Axios
       } finally {
-        setLoading(false); // Set loading to false after fetch
+        setLoading(false);
       }
     };
 
@@ -41,7 +44,6 @@ const Donation = () => {
   };
 
   if (loading) return <p>Loading donations...</p>;
-  if (error) return <p>Error: {error}</p>;
 
   return (
     <section className="donation-section">
@@ -49,34 +51,31 @@ const Donation = () => {
       <div className="donation-container">
         <h1>Donations</h1>
 
-        {donations.length === 0 ? (
-          <p className="no-donations">
-            No donations yet. Be the first to contribute!
-          </p>
-        ) : (
-          <div className="donation-items">
-            {donations.map((item) => (
-              <div key={item.id} className="donation-card">
-                <h2>{item.name}</h2>
-                <p>{item.email}</p>
-                <p>{item.description}</p>
+        <div className="donation-items">
+          {donations.map((item) => (
+            <div key={item.donation_id} className="donation-card">
+              <h2>Item name: {item.donation_name}</h2>
+              <p>Email: {item.email}</p>
+              <p>Description: {item.description}</p>
+              {item.donat_photo && (
+                <div className="donation-image">
+                  <img src={item.donat_photo} alt="Donation" />
+                </div>
+              )}
+              <button
+                className="donation-button"
+                onClick={() => navigate(`/donations/${item.donation_id}`)}
+              >
+                View {item.donation_name}
+              </button>
+            </div>
+          ))}
+        </div>
 
-                {item.image && (
-                  <div className="donation-image">
-                    <img src={item.image} alt="Donation" />
-                  </div>
-                )}
-
-                <button
-                  className="donation-button"
-                  onClick={() => navigate(`/donations/${item.id}`)}
-                >
-                  View {item.name}
-                </button>
-              </div>
-            ))}
-          </div>
-        )}
+        {/* Always show this message at the bottom */}
+        <p className="no-donations">
+          No donations yet. Be the first to contribute!
+        </p>
       </div>
     </section>
   );

@@ -1,26 +1,24 @@
-import React, { useState, useEffect } from "react"; // Import useEffect to fetch categories
+import React, { useState, useEffect } from "react";
 import Uploadimage from "./imageupload";
-import Map from "../Map/map"; // Import the Map component
 import "./css/donationadd.css";
+import axios from "axios";
 
 const Donationadd = ({ onAddDonation }) => {
   const [formData, setFormData] = useState({
-    name: "",
+    donationname: "",
     description: "",
     email: "",
-    categoryId: "", // Add categoryId to form data
+    categoryId: "",
   });
 
-  const [imageData, setImageData] = useState(null);
-  const [categories, setCategories] = useState([]); // State to hold categories
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [categories, setCategories] = useState([]);
 
   useEffect(() => {
-    // Fetch categories from the backend when the component mounts
     const fetchCategories = async () => {
       try {
-        const response = await fetch("/api/categories");
-        const data = await response.json();
-        setCategories(data);
+        const response = await axios.get("/categories");
+        setCategories(response.data);
       } catch (error) {
         console.error("Failed to fetch categories:", error);
       }
@@ -37,53 +35,51 @@ const Donationadd = ({ onAddDonation }) => {
     });
   };
 
-  const handleImageUpload = (image) => {
-    setImageData(image);
+  const handleImageUpload = (imageFile) => {
+    setSelectedFile(imageFile); // Store the actual file, not just the path
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (
-      !formData.name ||
+      !formData.donationname ||
       !formData.description ||
       !formData.email ||
-      !formData.categoryId || // Ensure categoryId is selected
-      !imageData
+      !formData.categoryId ||
+      !selectedFile // Ensure an image file is selected
     ) {
       alert("Please fill in all fields, including uploading an image.");
       return;
     }
 
-    // Create a new donation object
-    const newDonation = {
-      ...formData,
-      image: imageData,
-    };
+    const formDataToSend = new FormData();
+    formDataToSend.append("donationname", formData.donationname);
+    formDataToSend.append("description", formData.description);
+    formDataToSend.append("email", formData.email);
+    formDataToSend.append("categoryId", formData.categoryId);
+    formDataToSend.append("image", selectedFile); // Append the actual file
 
-    // Send the donation data to the backend
-    const response = await fetch("/api/donate", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(newDonation),
-    });
+    try {
+      const response = await axios.post("/donationadd", formDataToSend, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
 
-    if (response.ok) {
-      const savedDonation = await response.json();
-      onAddDonation(savedDonation); // Call the parent function to update the donations list
+      onAddDonation(response.data); // Update the donations list
       alert("Donation added successfully!");
 
       // Reset the form
       setFormData({
-        name: "",
+        donationname: "",
         description: "",
         email: "",
-        categoryId: "", // Reset categoryId
+        categoryId: "",
       });
-      setImageData(null);
-    } else {
+      setSelectedFile(null);
+    } catch (error) {
+      console.error("Failed to add donation:", error);
       alert("Failed to add donation. Please try again.");
     }
   };
@@ -91,13 +87,11 @@ const Donationadd = ({ onAddDonation }) => {
   return (
     <div className="donation-container">
       <form className="donation-add" onSubmit={handleSubmit}>
-        {imageData && <Map imageUrl={imageData} onSelectLocation={() => {}} />}
-
         <label>: שם התרומה</label>
         <input
           type="text"
-          name="name"
-          value={formData.name}
+          name="donationname"
+          value={formData.donationname}
           onChange={handleChange}
         />
 

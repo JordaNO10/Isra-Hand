@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
+import "./css/singlepage.css"; // Ensure you have the necessary CSS styles
 
 function DonationImageModal({ isOpen, onClose, image }) {
   const [isLoading, setIsLoading] = useState(true);
-  const [hasError, setHasError] = useState(false); // State to track image loading errors
+  const [hasError, setHasError] = useState(false);
 
   // Close modal on Escape key press
   useEffect(() => {
@@ -20,6 +21,14 @@ function DonationImageModal({ isOpen, onClose, image }) {
       window.removeEventListener("keydown", handleKeyDown);
     };
   }, [isOpen, onClose]);
+
+  // Reset loading and error states when the image changes
+  useEffect(() => {
+    if (image) {
+      setIsLoading(true);
+      setHasError(false);
+    }
+  }, [image]);
 
   if (!isOpen) return null;
 
@@ -39,11 +48,21 @@ function DonationImageModal({ isOpen, onClose, image }) {
           className="singlepage-close"
           onClick={onClose}
           aria-label="Close modal"
+          tabIndex={0} // Make the close button focusable
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              onClose();
+            }
+          }}
         >
           &times;
         </span>
+
+        {/* Show loading spinner while the image is loading */}
         {isLoading && <div className="loading-spinner">Loading...</div>}
-        {!hasError && (
+
+        {/* Show the image if it exists and has no errors */}
+        {!hasError && image && (
           <img
             src={image}
             alt="Donation"
@@ -51,13 +70,17 @@ function DonationImageModal({ isOpen, onClose, image }) {
             onLoad={() => setIsLoading(false)}
             onError={() => {
               setHasError(true);
-              setIsLoading(false); // Stop loading on error
+              setIsLoading(false);
             }}
             style={isLoading ? { display: "none" } : {}}
           />
         )}
-        {hasError && <p className="error-message">Failed to load image.</p>}{" "}
-        {/* Error message for image loading failures */}
+
+        {/* Show an error message if the image fails to load or is invalid */}
+        {hasError && <p className="error-message">Failed to load image.</p>}
+
+        {/* Show a fallback message if the image is undefined or null */}
+        {!image && <p className="error-message">No image available.</p>}
       </div>
     </div>
   );

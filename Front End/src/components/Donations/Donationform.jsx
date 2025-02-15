@@ -1,41 +1,45 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom"; // Import useNavigate
+import { useNavigate } from "react-router-dom";
 import Uploadimage from "./imageupload";
-import "./css/donationform.css"; // Only use the single page styles now
+import "./css/donationform.css";
 
 function DonationForm({ editedData, onSave, onChange }) {
-  const navigate = useNavigate(); // Initialize useNavigate
-  const [temporaryImage, setTemporaryImage] = useState(null); // State for temporary image
+  const navigate = useNavigate();
+  const [temporaryImage, setTemporaryImage] = useState(null); // State for new uploaded image
   const [isModalOpen, setIsModalOpen] = useState(false); // State for modal visibility
   const [errorMessage, setErrorMessage] = useState(""); // State for error messages
 
   const handleChange = (e) => {
-    onChange({ ...editedData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    onChange({ ...editedData, [name]: value }); // Update editedData
   };
 
   const handleImageUpload = (image) => {
-    setTemporaryImage(image); // Set the temporary image without updating editedData
+    setTemporaryImage(image); // Set the temporary image for preview
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
     // Basic validation
-    if (!editedData.name || !editedData.email || !editedData.description) {
+    if (
+      !editedData.donation_name ||
+      !editedData.email ||
+      !editedData.description
+    ) {
       setErrorMessage("Please fill in all fields.");
       return;
     }
 
-    // Only update the image in editedData if a temporary image is set
+    // Prepare the data to be sent
     const updatedData = {
       ...editedData,
-      image: temporaryImage || editedData.image,
+      image: temporaryImage || editedData.image, // Include the new image if available
     };
 
-    onSave(updatedData);
+    onSave(updatedData); // Pass the updated data to the parent component
     setErrorMessage(""); // Clear error message on successful submission
   };
-
   const handleBack = () => {
     navigate("/donations"); // Navigate to the donations page
   };
@@ -46,14 +50,13 @@ function DonationForm({ editedData, onSave, onChange }) {
 
   return (
     <form onSubmit={handleSubmit} className="singlepage-form">
-      {errorMessage && <p className="error-message">{errorMessage}</p>}{" "}
-      {/* Display error message */}
+      {errorMessage && <p className="error-message">{errorMessage}</p>}
       <label>
         Name:
         <input
           type="text"
-          name="name"
-          value={editedData.name}
+          name="donation_name"
+          value={editedData.donation_name || ""}
           onChange={handleChange}
         />
       </label>
@@ -62,7 +65,7 @@ function DonationForm({ editedData, onSave, onChange }) {
         <input
           type="email"
           name="email"
-          value={editedData.email}
+          value={editedData.email || ""}
           onChange={handleChange}
         />
       </label>
@@ -70,15 +73,15 @@ function DonationForm({ editedData, onSave, onChange }) {
         Description:
         <textarea
           name="description"
-          value={editedData.description}
+          value={editedData.description || ""}
           onChange={handleChange}
         />
       </label>
       <label>
         Current Donation Image:
-        {editedData.image && (
+        {editedData.donat_photo && (
           <img
-            src={editedData.image} // Show current image
+            src={editedData.donat_photo} // Show current image
             alt="Current Donation"
             className="singlepage-image-preview"
             onClick={toggleModal} // Open modal on click
@@ -111,7 +114,14 @@ function DonationForm({ editedData, onSave, onChange }) {
             <span className="close" onClick={toggleModal}>
               &times;
             </span>
-            <img src={editedData.image} alt="Enlarged Donation" />
+            <img
+              src={
+                temporaryImage
+                  ? URL.createObjectURL(temporaryImage)
+                  : editedData.donat_photo
+              } // Show new image if available, otherwise show current image
+              alt="Enlarged Donation"
+            />
           </div>
         </div>
       )}

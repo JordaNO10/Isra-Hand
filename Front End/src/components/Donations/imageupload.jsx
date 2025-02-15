@@ -2,12 +2,12 @@ import React, { useState } from "react";
 import "./css/imageupload.css";
 
 const Uploadimage = ({ onUploadImage }) => {
-  const [imageData, setImageData] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false); // State for modal visibility
-  const [error, setError] = useState(""); // State for error messages
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [error, setError] = useState("");
 
-  const handleImageUpload = (e) => {
-    const file = e.target.files[0]; // Get the selected file
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
 
     if (file) {
       const validImageTypes = ["image/jpeg", "image/png", "image/gif"];
@@ -17,14 +17,10 @@ const Uploadimage = ({ onUploadImage }) => {
       }
 
       setError(""); // Reset error message
-      const reader = new FileReader();
+      setSelectedFile(file); // Save file for preview
 
-      reader.onloadend = () => {
-        setImageData(reader.result); // Save base64 image to state
-        onUploadImage(reader.result); // Pass image to parent component
-      };
-
-      reader.readAsDataURL(file); // Convert the image to base64
+      // Pass the file to the parent component for handling in form submission
+      onUploadImage(file);
     }
   };
 
@@ -34,22 +30,22 @@ const Uploadimage = ({ onUploadImage }) => {
 
   return (
     <div>
-      <input type="file" accept="image/*" onChange={handleImageUpload} />
-      {error && <p className="error-message">{error}</p>}{" "}
-      {/* Display error message */}
-      {imageData && (
+      <input type="file" accept="image/*" onChange={handleFileChange} />
+      {error && <p className="error-message">{error}</p>}
+
+      {selectedFile && (
         <div className="imageupload-image">
-          <h3>Uploaded Image Preview:</h3>
+          <h3>Image Preview:</h3>
           <img
-            src={imageData}
-            alt="Uploaded Preview"
-            onClick={toggleModal} // Open modal on click
-            style={{ cursor: "pointer" }} // Change cursor to pointer
+            src={URL.createObjectURL(selectedFile)}
+            alt="Preview"
+            onClick={toggleModal}
+            style={{ cursor: "pointer" }}
           />
         </div>
       )}
-      {/* Modal for displaying the enlarged uploaded image */}
-      {isModalOpen && (
+
+      {isModalOpen && selectedFile && (
         <div className="image-modal" onClick={toggleModal}>
           <div
             className="image-modal-content"
@@ -62,7 +58,10 @@ const Uploadimage = ({ onUploadImage }) => {
             >
               &times;
             </span>
-            <img src={imageData} alt="Enlarged Uploaded" />
+            <img
+              src={URL.createObjectURL(selectedFile)}
+              alt="Enlarged Preview"
+            />
           </div>
         </div>
       )}
