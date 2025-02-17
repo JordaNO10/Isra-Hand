@@ -1,8 +1,11 @@
 import React, { useState } from "react";
-import axios from "axios"; // Import Axios
+import axios from "axios";
+import SigninPage from "./signin";
+import { useNavigate } from "react-router-dom"; // Change to useNavigate
 import "./css/signup.css";
 
 const SignupPage = () => {
+  const navigate = useNavigate(); // Initialize useNavigate
   const [formData, setFormData] = useState({
     username: "",
     firstName: "",
@@ -10,12 +13,12 @@ const SignupPage = () => {
     email: "",
     password: "",
     confirmPassword: "",
-    role: "", // Field for role (1 = Donor, 2 = Requestor)
+    role: "",
   });
 
   const [errors, setErrors] = useState({});
-  const [isSignUp, setIsSignUp] = useState(true); // State to track if it's sign up or sign in
-  const [passwordsMatch, setPasswordsMatch] = useState(true); // State to track if passwords match
+  const [isSignUp, setIsSignUp] = useState(true);
+  const [passwordsMatch, setPasswordsMatch] = useState(true);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -37,7 +40,6 @@ const SignupPage = () => {
     const newErrors = {};
 
     if (isSignUp) {
-      // Sign-up logic
       if (!passwordsMatch) {
         newErrors.confirmPassword = "Passwords do not match.";
       }
@@ -56,9 +58,13 @@ const SignupPage = () => {
           name: `${formData.firstName} ${formData.lastName}`,
           email: formData.email,
           password: formData.password,
-          role: formData.role, // Use the role selected (1 or 2)
+          role: formData.role,
         });
         alert(response.data.message);
+
+        // Redirect to dashboard after successful signup
+        navigate("/dashboard");
+
         // Clear form data only after successful signup
         setFormData({
           username: "",
@@ -67,7 +73,7 @@ const SignupPage = () => {
           email: "",
           password: "",
           confirmPassword: "",
-          role: "", // Reset role
+          role: "",
         });
         setErrors({});
       } catch (error) {
@@ -81,187 +87,143 @@ const SignupPage = () => {
           alert("Signup failed: " + error.message);
         }
       }
-    } else {
-      // Sign-in logic
-      // Remmeber to change to email or bla bla
-      if (!formData.email) newErrors.email = "Email is required.";
-      if (!formData.password) newErrors.password = "Password is required.";
-
-      if (Object.keys(newErrors).length > 0) {
-        setErrors(newErrors);
-        return;
-      }
-      try {
-        const response = await axios.post("/signIn", {
-          emailOrUsername: formData.email,
-          password: formData.password,
-        });
-        alert("Signin successful!");
-        // Clear form data only after successful signin
-        setFormData({
-          username: "",
-          firstName: "",
-          lastName: "",
-          email: "",
-          password: "",
-          confirmPassword: "",
-          role: "", // Reset role
-        });
-        setErrors({});
-      } catch (error) {
-        if (error.response) {
-          alert("Signin failed: " + error.response.data.error);
-        } else if (error.request) {
-          alert(
-            "Signin failed: No response from server. Please check your server."
-          );
-        } else {
-          alert("Signin failed: " + error.message);
-        }
-      }
     }
   };
 
   return (
-    <form className="form" onSubmit={handleSubmit}>
-      <p className="title">{isSignUp ? "Register" : "Sign In"}</p>
-      <p className="message">
-        {isSignUp
-          ? "Signup now and get full access to our app."
-          : "Signin to access your account."}
-      </p>
-
-      {isSignUp && (
-        <div className="flex">
+    <>
+      {isSignUp ? (
+        <form className="signup form" onSubmit={handleSubmit}>
+          <p className="title">הרשמה</p>
+          <p className="message">בצע הרשמה על-מנת לגשת לאפליקצייה שלנו</p>
+          <div className="flex">
+            <label>
+              <input
+                required
+                placeholder="שם משתמש (אנגלית)"
+                type="text"
+                className="input"
+                name="username"
+                value={formData.username}
+                onChange={handleInputChange}
+                autoComplete="off"
+              />
+              {errors.username && (
+                <span className="error">{errors.username}</span>
+              )}
+            </label>
+            <label>
+              <input
+                required
+                placeholder="שם פרטי"
+                type="text"
+                className="input"
+                name="firstName"
+                value={formData.firstName}
+                onChange={handleInputChange}
+                autoComplete="given-name"
+              />
+              {errors.firstName && (
+                <span className="error">{errors.firstName}</span>
+              )}
+            </label>
+            <label>
+              <input
+                required
+                placeholder="שם משפחה"
+                type="text"
+                className="input"
+                name="lastName"
+                value={formData.lastName}
+                onChange={handleInputChange}
+                autoComplete="family-name"
+              />
+              {errors.lastName && (
+                <span className="error">{errors.lastName}</span>
+              )}
+            </label>
+          </div>
           <label>
             <input
               required
-              placeholder="שם משתמש (אנגלית)"
-              type="text"
+              placeholder="אימייל"
+              type="email"
               className="input"
-              name="username"
-              value={formData.username}
+              name="email"
+              value={formData.email}
               onChange={handleInputChange}
-              autoComplete=""
+              autoComplete="email"
             />
-            {errors.username && (
-              <span className="error">{errors.username}</span>
-            )}
+            {errors.email && <span className="error">{errors.email}</span>}
           </label>
           <label>
             <input
               required
-              placeholder="שם פרטי"
-              type="text"
-              className="input"
-              name="firstName"
-              value={formData.firstName}
-              onChange={handleInputChange}
-              autoComplete="given-name"
-            />
-            {errors.firstName && (
-              <span className="error">{errors.firstName}</span>
-            )}
-          </label>
-
-          <label>
-            <input
-              required
-              placeholder="שם משפחה"
-              type="text"
-              className="input"
-              name="lastName"
-              value={formData.lastName}
-              onChange={handleInputChange}
-              autoComplete="family-name"
-            />
-            {errors.lastName && (
-              <span className="error">{errors.lastName}</span>
-            )}
-          </label>
-        </div>
-      )}
-
-      <label>
-        <input
-          required
-          placeholder="אימייל"
-          type="email"
-          className="input"
-          name="email"
-          value={formData.email}
-          onChange={handleInputChange}
-          autoComplete="email"
-        />
-        {errors.email && <span className="error">{errors.email}</span>}
-      </label>
-
-      <label>
-        <input
-          required
-          placeholder="סיסמא"
-          type="password"
-          className="input"
-          name="password"
-          value={formData.password}
-          onChange={handleInputChange}
-          autoComplete="new-password"
-        />
-        {errors.password && <span className="error">{errors.password}</span>}
-      </label>
-
-      {isSignUp && (
-        <>
-          <label>
-            <input
-              required
-              placeholder="אימות סיסמא"
+              placeholder="סיסמא"
               type="password"
-              className={`input ${!passwordsMatch ? "input-error" : ""}`}
-              name="confirmPassword"
-              value={formData.confirmPassword}
+              className="input"
+              name="password"
+              value={formData.password}
               onChange={handleInputChange}
               autoComplete="new-password"
             />
-            {errors.confirmPassword && (
-              <span className="error">{errors.confirmPassword}</span>
+            {errors.password && (
+              <span className="error">{errors.password}</span>
             )}
           </label>
-
-          <label>
-            <select
-              required
-              className="input"
-              name="role"
-              value={formData.role}
-              onChange={handleInputChange}
+          {isSignUp && (
+            <>
+              <label>
+                <input
+                  required
+                  placeholder="אימות סיסמא"
+                  type="password"
+                  className={`input ${!passwordsMatch ? "input-error" : ""}`}
+                  name="confirmPassword"
+                  value={formData.confirmPassword}
+                  onChange={handleInputChange}
+                  autoComplete="new-password"
+                />
+                {errors.confirmPassword && (
+                  <span className="error">{errors.confirmPassword}</span>
+                )}
+              </label>
+              <label>
+                <select
+                  required
+                  className="input"
+                  name="role"
+                  value={formData.role}
+                  onChange={handleInputChange}
+                >
+                  <option value="" disabled>
+                    בחר/י סוג משתמש
+                  </option>
+                  <option value="Donor">תורם/ת</option>
+                  <option value="Requestor">מבקש/ת</option>
+                </select>
+                {errors.role && <span className="error">{errors.role}</span>}
+              </label>
+            </>
+          )}
+          <button className="submit" type="submit">
+            הירשם
+          </button>
+          <p className="signin">
+            <button
+              type="button"
+              className="link-button"
+              onClick={() => setIsSignUp(false)}
             >
-              <option value="" disabled>
-                בחר סוג משתמש
-              </option>
-              <option value="Donor">תורם</option> {/* Donor */}
-              <option value="Requestor">מבקש תרומה</option> {/* Requestor */}
-            </select>
-            <span>סוג משתמש</span>
-            {errors.role && <span className="error">{errors.role}</span>}
-          </label>
-        </>
+              יש לך חשבון?
+            </button>
+            ?התחבר
+          </p>
+        </form>
+      ) : (
+        <SigninPage onSignup={() => setIsSignUp(true)} />
       )}
-
-      <button className="submit" type="submit">
-        {isSignUp ? "Submit" : "Sign In"}
-      </button>
-      <p className="signin">
-        {isSignUp ? "Already have an account? " : "Don't have an account? "}
-        <button
-          type="button"
-          className="link-button"
-          onClick={() => setIsSignUp(!isSignUp)}
-        >
-          {isSignUp ? "Signin" : "Signup"}
-        </button>
-      </p>
-    </form>
+    </>
   );
 };
 

@@ -1,8 +1,11 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
+import Cookies from "js-cookie"; // Import the Cookies library
 import logo from "./assets/IsraHand.jpg";
 
 const Header = () => {
+  const isAuthenticated = !!Cookies.get("userId"); // Check if userId cookie exists
+
   return (
     <>
       <h1>IsraHand</h1>
@@ -29,12 +32,13 @@ const Header = () => {
             </li>
             <li>
               <NavLink
-                to="/signup"
+                to={isAuthenticated ? "/dashboard" : "/signup"} // Change based on authentication
                 className={({ isActive }) =>
                   isActive ? "menu-item active" : "menu-item"
                 }
               >
-                הרשמה
+                {isAuthenticated ? "לוח בקרה" : "הרשמה"}{" "}
+                {/* Change the text based on authentication */}
               </NavLink>
             </li>
             <li>

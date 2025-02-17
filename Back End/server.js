@@ -4,6 +4,8 @@ const helmet = require("helmet");
 const morgan = require("morgan");
 const signIn = require("./database/signin");
 const signUp = require("./database/signup");
+const logoutRoute = require("./database/logout");
+const usersRouter = require("./database/users");
 const donationAll = require("./database/donations");
 const donationAdd = require("./database/donationadd"); // Correct import for the donation route
 const categories = require("./database/categories"); // Import categories route
@@ -36,6 +38,8 @@ app.use(
 // Use user, donation, and category routes
 app.use("/signIn", signIn);
 app.use("/signUp", signUp);
+app.use("/logout", logoutRoute);
+app.use("/users", usersRouter);
 app.use("/donations", donationAll);
 app.use("/donationadd", donationAdd); // Correctly use donationAdd route
 app.use("/categories", categories); // Use categories route

@@ -33,11 +33,11 @@ router.post("/", (req, res) => {
         }
 
         if (!isMatch) {
-          console.log("Invalid credentials for:", email);
+          console.log("Invalid credentials for:", emailOrUsername);
           return res.status(401).json({ error: "Invalid email or password." });
         }
 
-        console.log("Signin successful for user:", email);
+        console.log("Signin successful for user:", emailOrUsername);
         res.status(200).json({
           message: "Signin successful!",
           userId: results[0].user_id, // Correctly reference user_id here

@@ -7,9 +7,12 @@ import Footer from "../Page layout/Footer";
 import Singlepage from "../Donations/singlePage";
 import Header from "../Page layout/Header";
 import Donation from "../Donations/donations";
+import UserDashboard from "../userpage/dashboard";
 import SignupPage from "../Sign up/signup";
 import "./css/style.css";
-const MyRouter = () => {
+
+const MyRouter = ({ onLogout }) => {
+  // Accept onLogout as a prop
   return (
     <>
       <Header />
@@ -19,6 +22,10 @@ const MyRouter = () => {
         <Route path="/Donations" element={<Donation />} />
         <Route path="/Donations/:id" element={<Singlepage />} />
         <Route path="/Signup" element={<SignupPage />} />
+        <Route
+          path="/dashboard"
+          element={<UserDashboard onLogout={onLogout} />}
+        />{" "}
         <Route path="/Contact" element={<Contact />} />
         <Route path="*" element={<h1 className="main">Not Found</h1>} />
       </Routes>
@@ -26,4 +33,5 @@ const MyRouter = () => {
     </>
   );
 };
+
 export default MyRouter;
