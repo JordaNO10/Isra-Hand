@@ -46,7 +46,6 @@
   cursor: pointer;
 }
 .singlepage-buttons,
-button,
 button:first-child,
 button:last-child {
   display: flex;

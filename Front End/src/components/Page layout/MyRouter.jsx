@@ -8,20 +8,23 @@ import Singlepage from "../Donations/singlePage";
 import Header from "../Page layout/Header";
 import Donation from "../Donations/donations";
 import UserDashboard from "../userpage/dashboard";
+import Donationadd from "../Donations/Donationadd";
 import SignupPage from "../Sign up/signup";
-import "./css/style.css";
+import AdminPage from "../userpage/adminpage";
 
 const MyRouter = ({ onLogout }) => {
   // Accept onLogout as a prop
   return (
     <>
-      <Header />
+      <Header onLogout={onLogout} />
       <Routes>
         <Route path="/" element={<Homepage />} />
         <Route path="/About" element={<About />} />
-        <Route path="/Donations" element={<Donation />} />
-        <Route path="/Donations/:id" element={<Singlepage />} />
         <Route path="/Signup" element={<SignupPage />} />
+        <Route path="/Donations" element={<Donation />} />
+        <Route path="/Donationadd/" element={<Donationadd />} />
+        <Route path="/Donations/:id" element={<Singlepage />} />
+        <Route path="/Admin" element={<AdminPage />} />
         <Route
           path="/dashboard"
           element={<UserDashboard onLogout={onLogout} />}

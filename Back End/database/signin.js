@@ -37,6 +37,9 @@ router.post("/", (req, res) => {
           return res.status(401).json({ error: "Invalid email or password." });
         }
 
+        // Store user ID in session
+        req.session.userId = results[0].user_id;
+
         console.log("Signin successful for user:", emailOrUsername);
         res.status(200).json({
           message: "Signin successful!",

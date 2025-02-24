@@ -4,7 +4,11 @@ const db = require("../database/connection.js");
 const upload = require("../config/multer.js");
 // Get all donations
 router.get("/", async (req, res) => {
-  const sql = "SELECT * FROM donations";
+  const sql = `
+    SELECT donations.*, categories.category_name 
+    FROM donations 
+    JOIN categories ON categories.category_id = donations.category_id
+`;
 
   try {
     console.log("Fetching donations...");

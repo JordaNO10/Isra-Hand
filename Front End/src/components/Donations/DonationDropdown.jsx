@@ -41,15 +41,29 @@ function DonationDropdown({ currentId = "", onSelectDonation }) {
         <option value="" disabled>
           בחר תרומה
         </option>
-        {donations
-          .filter(
-            (item) => item.donation_id.toString() !== currentId.toString()
-          ) // Ensure currentId is a string
-          .map((item) => (
-            <option key={item.donation_id} value={item.donation_id}>
-              {item.donat_name}
-            </option>
-          ))}
+
+        {/* Group donations by category name */}
+        {Object.entries(
+          donations.reduce((acc, donation) => {
+            if (!acc[donation.category_name]) {
+              acc[donation.category_name] = [];
+            }
+            acc[donation.category_name].push(donation);
+            return acc;
+          }, {})
+        ).map(([category, categoryDonations]) => (
+          <optgroup key={category} label={category}>
+            {categoryDonations
+              .filter(
+                (item) => item.donation_id.toString() !== currentId.toString()
+              )
+              .map((item) => (
+                <option key={item.donation_id} value={item.donation_id}>
+                  {item.donation_name}
+                </option>
+              ))}
+          </optgroup>
+        ))}
       </select>
     </div>
   );

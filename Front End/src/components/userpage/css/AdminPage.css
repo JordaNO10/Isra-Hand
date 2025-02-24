@@ -1,0 +1,87 @@
+/* General styles for the Admin Page */
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f9f9f9;
+  color: #333;
+  margin: 0;
+  padding: 0;
+}
+
+.admin-container {
+  display: flex;
+  flex-direction: column;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: auto;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.admin-section {
+  margin: 20px 0;
+  padding: 15px;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  background-color: #fefefe;
+}
+
+h2 {
+  margin: 0 0 10px 0;
+  font-size: 1.5rem;
+}
+
+.user-list,
+.category-list {
+  display: list-item; /* Use grid layout */
+  grid-template-columns: repeat(3, 1fr); /* Three equal columns */
+  gap: 15px; /* Space between items */
+  list-style: none;
+  padding: 0;
+}
+
+.user-item,
+.category-item {
+  border: 3px solid #e0e0e0; /* Optional: add a border for better visibility */
+  border-radius: 3vh; /* Optional: round the corners */
+  background-color: #fefefe; /* Optional: background color */
+}
+
+.manage-button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 10px 15px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.manage-button:hover {
+  background-color: #0056b3;
+}
+
+@media (max-width: 768px) {
+  .admin-container {
+    padding: 10px;
+  }
+
+  h2 {
+    font-size: 1.25rem;
+  }
+
+  .manage-button {
+    width: 100%;
+  }
+
+  /* Adjust grid layout for smaller screens */
+  .user-list,
+  .category-list {
+    grid-template-columns: repeat(2, 1fr); /* Two columns for smaller screens */
+  }
+}

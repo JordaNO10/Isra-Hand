@@ -11,9 +11,7 @@ function App() {
 
   return (
     <BrowserRouter>
-      <MyRouter onLogout={handleLogout} />{" "}
-      {/* Pass the handleLogout function as a prop */}
-      <AccessibilityButton />
+      <MyRouter onLogout={handleLogout} /> <AccessibilityButton />
     </BrowserRouter>
   );
 }

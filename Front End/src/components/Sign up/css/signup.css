@@ -1,23 +1,22 @@
-.signup .form {
+.signup-form {
   display: flex;
   flex-direction: column;
-  gap: 15px;
-  max-width: 350px;
-  width: 100%;
+  gap: 10px;
   background-color: #fff;
-  padding: 25px;
-  border-radius: 20px;
+  margin: 23vh;
+  padding: 2vh;
+  border-radius: 22px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
-.signup .message,
-.signup .signin {
+.signup-form .message,
+.signup-form .signin {
   color: rgba(88, 87, 87, 0.822);
   font-size: 14px;
   text-align: center;
 }
 
-.signup .link-button {
+.signup-form .link-button {
   background: none;
   border: none;
   color: royalblue;
@@ -29,30 +28,29 @@
   display: inline;
 }
 
-.signup .link-button:hover {
+.signup-form .link-button:hover {
   text-decoration: underline;
 }
 
-.signup .form label {
+.signup-form label {
   display: flex;
   position: relative;
   justify-content: center;
   width: 100%;
 }
 
-.signup .form label .input,
-.signup .form label select.input {
+.signup-form label .input,
+.signup-form label select.input {
   width: 100%;
-  padding: 12px;
   outline: 0;
   border: 1px solid rgba(105, 105, 105, 0.397);
-  border-radius: 10px;
-  font-size: 14px;
+  border-radius: 4px;
+  font-size: 20px;
   transition: border-color 0.3s ease;
   background-color: white;
 }
 
-.signup .form label select.input {
+.signup-form label select.input {
   appearance: none;
   background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22007bff%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
   background-repeat: no-repeat;
@@ -64,13 +62,13 @@
   text-align: right;
 }
 
-.signup .form label .input:focus,
-.signup .form label select.input:focus {
+.signup-form label .input:focus,
+.signup-form label select.input:focus {
   border-color: royalblue;
 }
 
-.signup .form label .input + span,
-.signup .form label select.input + span {
+.signup-form label .input + span,
+.signup-form label select.input + span {
   position: absolute;
   left: 12px;
   top: 12px;
@@ -83,10 +81,10 @@
   pointer-events: none;
 }
 
-.signup .form label .input:not(:placeholder-shown) + span,
-.signup .form label .input:focus + span,
-.signup .form label select.input:not(:placeholder-shown) + span,
-.signup .form label select.input:focus + span {
+.signup-form label .input:not(:placeholder-shown) + span,
+.signup-form label .input:focus + span,
+.signup-form label select.input:not(:placeholder-shown) + span,
+.signup-form label select.input:focus + span {
   top: -8px;
   font-size: 0.7em;
   font-weight: 600;
@@ -94,12 +92,12 @@
   color: royalblue;
 }
 
-.signup .form label .input:valid + span,
-.signup .form label select.input:valid + span {
+.signup-form label .input:valid + span,
+.signup-form label select.input:valid + span {
   color: green;
 }
 
-.signup .submit {
+.signup-form .submit {
   border: none;
   outline: none;
   background-color: royalblue;
@@ -116,25 +114,75 @@
   width: 100%;
 }
 
-.signup .submit:hover {
+.signup-form .submit:hover {
   background-color: rgb(56, 90, 194);
 }
 
-.signup .error {
+.signup-form .error {
   color: red;
   font-size: 0.8em;
   display: block;
   margin-top: 5px;
 }
 
-.signup .input-error {
+.signup-form .input-error {
   border-color: red !important;
 }
 
-.signup .input-error + span {
+.signup-form .input-error + span {
   color: red !important;
 }
 
-.signup ::placeholder {
+.signup-form ::placeholder {
   text-align: right;
+}
+
+/* Password Requirements Styles */
+.password-requirements {
+  font-size: 0.9em;
+  color: #666;
+  background-color: #f9f9f9;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(105, 105, 105, 0.2);
+  position: absolute;
+  left: calc(100% + 10px);
+  width: 20rem;
+}
+
+.password-requirements ul {
+  padding-left: 0;
+  margin: 0;
+}
+
+.password-requirements li {
+  margin-bottom: 2px;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.password-requirements li::before {
+  content: "•";
+  color: #666;
+  font-size: 1.2em;
+}
+
+.password-requirements li.valid {
+  color: green;
+}
+
+.password-requirements li.valid::before {
+  content: "✓";
+  color: green;
+  font-size: 1em;
+}
+
+.password-requirements li:not(.valid) {
+  color: red;
+}
+
+.password-requirements li:not(.valid)::before {
+  content: "•";
+  color: red;
 }

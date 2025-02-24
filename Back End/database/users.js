@@ -2,12 +2,28 @@ const express = require("express");
 const router = express.Router();
 const connection = require("./connection.js"); // Adjust the path as necessary
 
+// GET /users - Get all users
+router.get("/", (req, res) => {
+  const sql = `
+    SELECT users.username, users.full_name, users.role_id, users.email, roles.role_name 
+    FROM users 
+    JOIN roles ON users.role_id = roles.role_id`;
+
+  connection.query(sql, (error, results) => {
+    if (error) {
+      console.error("Database error while fetching users:", error);
+      return res.status(500).json({ error: "Database error" });
+    }
+
+    res.status(200).json(results); // Return the list of users
+  });
+});
 // GET /users/:id - Get user information by ID
 router.get("/:id", (req, res) => {
   const userId = req.params.id;
 
   const sql = `
-    SELECT users.username, users.full_name, users.email, roles.role_name 
+    SELECT users.username, users.full_name,users.role_id, users.email, roles.role_name 
     FROM users 
     JOIN roles ON users.role_id = roles.role_id 
     WHERE users.user_id = ?`;

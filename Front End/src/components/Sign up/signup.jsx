@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import axios from "axios";
 import SigninPage from "./signin";
-import { useNavigate } from "react-router-dom"; // Change to useNavigate
+import { useNavigate } from "react-router-dom";
 import "./css/signup.css";
 
 const SignupPage = () => {
-  const navigate = useNavigate(); // Initialize useNavigate
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     username: "",
     firstName: "",
@@ -19,6 +19,33 @@ const SignupPage = () => {
   const [errors, setErrors] = useState({});
   const [isSignUp, setIsSignUp] = useState(true);
   const [passwordsMatch, setPasswordsMatch] = useState(true);
+  const [passwordValidation, setPasswordValidation] = useState({
+    minLength: false,
+    hasUpperCase: false,
+    hasLowerCase: false,
+    hasNumber: false,
+    hasSpecialChar: false,
+  });
+
+  const validatePassword = (password) => {
+    const minLength = password.length >= 8;
+    const hasUpperCase = /[A-Z]/.test(password);
+    const hasLowerCase = /[a-z]/.test(password);
+    const hasNumber = /\d/.test(password);
+    const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+
+    setPasswordValidation({
+      minLength,
+      hasUpperCase,
+      hasLowerCase,
+      hasNumber,
+      hasSpecialChar,
+    });
+
+    return (
+      minLength && hasUpperCase && hasLowerCase && hasNumber && hasSpecialChar
+    );
+  };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -26,6 +53,10 @@ const SignupPage = () => {
       ...prevData,
       [name]: value,
     }));
+
+    if (name === "password") {
+      validatePassword(value);
+    }
 
     if (name === "password" || name === "confirmPassword") {
       const password = name === "password" ? value : formData.password;
@@ -46,6 +77,9 @@ const SignupPage = () => {
       if (!formData.role) {
         newErrors.role = "Role is required.";
       }
+      if (!validatePassword(formData.password)) {
+        newErrors.password = "Password does not meet the requirements.";
+      }
 
       if (Object.keys(newErrors).length > 0) {
         setErrors(newErrors);
@@ -64,6 +98,7 @@ const SignupPage = () => {
 
         // Redirect to dashboard after successful signup
         navigate("/dashboard");
+        window.location.reload();
 
         // Clear form data only after successful signup
         setFormData({
@@ -93,7 +128,7 @@ const SignupPage = () => {
   return (
     <>
       {isSignUp ? (
-        <form className="signup form" onSubmit={handleSubmit}>
+        <form className="signup-form" onSubmit={handleSubmit}>
           <p className="title">הרשמה</p>
           <p className="message">בצע הרשמה על-מנת לגשת לאפליקצייה שלנו</p>
           <div className="flex">
@@ -167,6 +202,28 @@ const SignupPage = () => {
               onChange={handleInputChange}
               autoComplete="new-password"
             />
+            <div className="password-requirements">
+              <p>Password must contain:</p>
+              <ul>
+                <li className={passwordValidation.minLength ? "valid" : ""}>
+                  At least 8 characters
+                </li>
+                <li className={passwordValidation.hasUpperCase ? "valid" : ""}>
+                  At least one uppercase letter (A-Z)
+                </li>
+                <li className={passwordValidation.hasLowerCase ? "valid" : ""}>
+                  At least one lowercase letter (a-z)
+                </li>
+                <li className={passwordValidation.hasNumber ? "valid" : ""}>
+                  At least one number (0-9)
+                </li>
+                <li
+                  className={passwordValidation.hasSpecialChar ? "valid" : ""}
+                >
+                  At least one special symbol (!@#$%^&*)
+                </li>
+              </ul>
+            </div>
             {errors.password && (
               <span className="error">{errors.password}</span>
             )}
@@ -206,7 +263,7 @@ const SignupPage = () => {
               </label>
             </>
           )}
-          <button className="submit" type="submit">
+          <button className="signup-btn" type="submit">
             הירשם
           </button>
           <p className="signin">

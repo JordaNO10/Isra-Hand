@@ -10,6 +10,7 @@
 /* Container for all donations */
 .donation-container {
   width: 100%;
+  margin: auto;
   padding: 2rem;
   display: flex;
   background-color: #fff;
@@ -89,7 +90,8 @@
   border: none;
   border-radius: 5vw;
   cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.2s ease; /* Added transform for button effects */}
+  transition: background-color 0.3s ease, transform 0.2s ease; /* Added transform for button effects */
+}
 
 .donation-button:hover {
   background-color: #0056b3;

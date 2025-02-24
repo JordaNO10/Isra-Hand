@@ -4,32 +4,23 @@ import Donationadd from "./Donationadd";
 import axios from "axios"; // Import axios
 import "./css/donations.css";
 
-const Donation = () => {
+const Donations = () => {
   const navigate = useNavigate();
   const [donations, setDonations] = useState([]);
-  const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Load donations and categories from the backend on first render
+  // Load donations from the backend on first render
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [donationResponse, categoryResponse] = await Promise.all([
-          axios.get("/donations", {
-            headers: {
-              Accept: "application/json", // Optional, but can help clarify what type of response you expect
-            },
-          }),
-          axios.get("/categories", {
-            headers: {
-              Accept: "application/json", // Optional, but can help clarify what type of response you expect
-            },
-          }),
-        ]);
-
-        setDonations(donationResponse.data);
-        setCategories(categoryResponse.data);
+        const response = await axios.get("/donations", {
+          headers: {
+            Accept: "application/json",
+          },
+        });
+        setDonations(response.data);
       } catch (error) {
+        console.error("Failed to fetch donations:", error);
       } finally {
         setLoading(false);
       }
@@ -47,16 +38,15 @@ const Donation = () => {
 
   return (
     <section className="donation-section">
-      <Donationadd onAddDonation={addDonation} categories={categories} />
       <div className="donation-container">
         <h1>Donations</h1>
 
         <div className="donation-items">
           {donations.map((item) => (
             <div key={item.donation_id} className="donation-card">
-              <h2>Item name: {item.donation_name}</h2>
-              <p>Email: {item.email}</p>
-              <p>Description: {item.description}</p>
+              <h2>שם התרומה : {item.donation_name}</h2>
+              <p>{item.email} אימייל :</p>
+              <p>{item.description}תיאור התרומה :</p>
               {item.donat_photo && (
                 <div className="donation-image">
                   <img src={item.donat_photo} alt="Donation" />
@@ -74,11 +64,11 @@ const Donation = () => {
 
         {/* Always show this message at the bottom */}
         <p className="no-donations">
-          No donations yet. Be the first to contribute!
-        </p>
+טרם הכנסת תרומה לאתר באפשרותך לייצר תרומה בלחיצה על הכפתור הבא        </p>
+        <button onClick={() => navigate("/donationadd")}>העלאת תרומה</button>
       </div>
     </section>
   );
 };
 
-export default Donation;
+export default Donations;

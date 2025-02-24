@@ -1,140 +1,78 @@
-.signin .form {
+.signin-dropdown {
+  width: 370px;
+  background: linear-gradient(
+    180deg,
+    rgb(0, 183, 255) 25%,
+    rgb(255, 255, 255) 20%
+  );
+  height: auto; /* Adjusted for flexible height based on content */
+  padding: 20px; /* Added padding for better spacing */
+  border-radius: 8px; /* Optional: to give it rounded corners */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Optional: add shadow */
   display: flex;
   flex-direction: column;
-  gap: 15px;
-  max-width: 350px;
-  width: 100%;
-  background-color: #fff;
-  padding: 25px;
-  border-radius: 20px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-}
-
-.signin .message,
-.signin .signin {
-  color: rgba(88, 87, 87, 0.822);
-  font-size: 14px;
-  text-align: center;
-}
-
-.signin .link-button {
-  background: none;
-  border: none;
-  color: royalblue;
-  cursor: pointer;
-  text-decoration: none;
-  font-size: inherit;
-  font-family: inherit;
-  padding: 0;
-  display: inline;
-}
-
-.signin .link-button:hover {
-  text-decoration: underline;
-}
-
-.signin .form label {
-  display: flex;
+  justify-content: flex-start; /* Changed to flex-start for better alignment */
   position: relative;
-  justify-content: center;
-  width: 100%;
 }
 
-.signin .form label .input,
-.signin .form label select.input {
-  width: 100%;
-  padding: 12px;
-  outline: 0;
-  border: 1px solid rgba(105, 105, 105, 0.397);
-  border-radius: 10px;
-  font-size: 14px;
-  transition: border-color 0.3s ease;
-  background-color: white;
+.signin-dropdown .text-xl {
+  font-size: 24px; /* Adjusted font size */
+  font-weight: 600; /* Semi-bold for the title */
+  margin-bottom: 20px; /* Adjusted bottom margin */
 }
-
-.signin .form label select.input {
-  appearance: none;
-  background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22007bff%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
-  background-repeat: no-repeat;
-  background-position: left 12px center;
-  background-size: 12px;
-  padding-left: 30px;
-  padding-right: 12px;
-  cursor: pointer;
-  text-align: right;
-}
-
-.signin .form label .input:focus,
-.signin .form label select.input:focus {
-  border-color: royalblue;
-}
-
-.signin .form label .input + span,
-.signin .form label select.input + span {
-  position: absolute;
-  left: 12px;
-  top: 12px;
-  color: black;
-  font-size: 0.9em;
-  cursor: text;
-  transition: 0.3s ease;
-  background-color: white;
-  padding: 0 4px;
-  pointer-events: none;
-}
-
-.signin .form label .input:not(:placeholder-shown) + span,
-.signin .form label .input:focus + span,
-.signin .form label select.input:not(:placeholder-shown) + span,
-.signin .form label select.input:focus + span {
-  top: -8px;
-  font-size: 0.7em;
-  font-weight: 600;
-  background-color: white;
-  color: royalblue;
-}
-
-.signin .form label .input:valid + span,
-.signin .form label select.input:valid + span {
-  color: green;
-}
-
-.signin .submit {
+.close-button {
+  background: transparent;
   border: none;
-  outline: none;
-  background-color: royalblue;
-  padding: 12px;
-  border-radius: 10px;
-  color: #fff;
-  font-size: 16px;
-  font-weight: 600;
+  font-size: 20px;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  color: #333; /* Change this color as needed */
+}
+
+.close-button:hover {
+  color: red; /* Change the hover color if desired */
+}
+.signin-dropdown .input {
   display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
+  flex-direction: column;
+  padding: auto;
+  margin: 10px;
+  height: 5vh;
+  border: none;
+  background-color: rgb(224, 231, 236);
+  margin-bottom: 10px; /* Added margin for spacing between inputs */
+  border-radius: 4px; /* Optional: rounded corners for inputs */
 }
 
-.signin .submit:hover {
-  background-color: rgb(56, 90, 194);
+.signin-dropdown .input:focus {
+  outline: none;
+  border: 2px solid rgb(0, 183, 255); /* Highlight border on focus */
 }
 
-.signin .error {
-  color: red;
-  font-size: 0.8em;
-  display: block;
-  margin-top: 5px;
+.signin-dropdown .login-button {
+  height: 40px; /* Increased height for the button */
+  background-color: rgb(0, 183, 255);
+  color: white;
+  font-size: 16px;
+  border-radius: 4px; /* Optional: rounded corners for button */
+  cursor: pointer; /* Pointer cursor on hover */
 }
 
-.signin .input-error {
-  border-color: red !important;
+.signin-dropdown .login-button:hover {
+  background-color: rgb(0, 150, 230); /* Darker shade on hover */
 }
 
-.signin .input-error + span {
-  color: red !important;
+.signin-dropdown .text-red-500 {
+  color: rgb(255, 0, 0); /* Red color for error messages */
+  font-size: 12px; /* Adjusted font size for error messages */
 }
 
-.signin ::placeholder {
-  text-align: right;
+.signin-dropdown .text-blue-500 {
+  color: rgb(0, 0, 255); /* Blue color for the link */
+  font-size: 14px; /* Adjusted font size for the link */
+  text-decoration: underline; /* Underline for the link */
+  cursor: pointer; /* Pointer cursor for the link */
+}
+
+.signin-dropdown .text-blue-500:hover {
+  text-decoration: none; /* Remove underline on hover */
 }

@@ -11,7 +11,7 @@
   flex-direction: column; /* Stack elements vertically */
   max-width: 500px; /* Maximum width of the form */
   width: 100%; /* Full width within the max limit */
-  padding: 2rem; /* Padding inside the form */
+  padding: 5rem; /* Padding inside the form */
   background-color: #ffffff; /* White background for the form */
   border-radius: 0.5rem; /* Rounded corners */
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); /* Subtle shadow */
