@@ -12,6 +12,7 @@
   right: 0; /* Align it to the right of the viewport */
   z-index: 1000; /* Ensure it is above other content */
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Optional: Add a shadow for better visibility */
+  padding: 10px 20px; /* Add some padding for aesthetics */
 }
 
 /* Add padding to the body or main content to prevent overlap */
@@ -46,6 +47,7 @@ body {
   cursor: pointer;
   border-radius: 5px;
   transition: background 0.3s;
+  min-width: 100px; /* Ensure minimum button width */
 }
 
 .btn-login:hover,
@@ -101,10 +103,31 @@ body {
 /* Responsive Styles */
 @media (max-width: 768px) {
   .navigation-container {
-    flex-direction: column; /* Stack items vertically on smaller screens */
+    flex-direction: row; /* Stack items vertically on smaller screens */
+    padding: 2px; /* Adjust padding for smaller screens */
   }
 
   .nav-links {
     flex-direction: column; /* Stack nav links vertically on small screens */
+    align-items: center; /* Center align links */
+    gap: 10px; /* Space between links */
+  }
+
+  .auth-buttons {
+    flex-direction: column; /* Stack auth buttons vertically */
+    align-items: center; /* Center align buttons */
+    gap: 10px; /* Space between buttons */
+  }
+
+  .header {
+    font-size: 1.5rem; /* Reduce font size for smaller screens */
+  }
+
+  .btn-login,
+  .btn-register,
+  .btn-dashboard,
+  .logout {
+    width: 100%; /* Make buttons full width */
+    min-width: auto; /* Remove min-width on small screens */
   }
 }

@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
 import Cookies from "js-cookie";
-import { useNavigate } from "react-router-dom";
 import "./css/signin.css";
 
 const DropdownSignin = ({ setShowForm }) => {
@@ -99,9 +98,7 @@ const DropdownSignin = ({ setShowForm }) => {
         {errors.password && (
           <span className="text-red-500 text-sm">{errors.password}</span>
         )}
-        <span className="text-blue-500 text-sm">
-          <a href="#">Forgot Password?</a>
-        </span>
+        <span className="text-blue-500 text-sm"></span>
         <input className="input login-button" type="submit" value="Sign In" />
         {errors.server && (
           <span className="text-red-500 text-sm">{errors.server}</span>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "./css/adminpage.css";
+import { useNavigate } from "react-router-dom";
 
 const AdminPage = () => {
   const [users, setUsers] = useState([]);
@@ -41,6 +42,7 @@ const AdminPage = () => {
     };
     fetchAdminData();
   }, []);
+  const navigate = useNavigate();
 
   const handleDeleteUser = async (userId) => {
     if (window.confirm("Are you sure you want to delete this user?")) {
@@ -416,14 +418,7 @@ const AdminPage = () => {
       <div className="admin-donations-section">
         <h2>תרומות</h2>
         <div className="create-donation-form">
-          <input
-            type="text"
-            value={newDonationDescription}
-            onChange={(e) => setNewDonationDescription(e.target.value)}
-            placeholder="Donation Description"
-            required
-          />
-          <button onClick={handleCreateDonation}>יצירת תרומה</button>
+          <button onClick={() => navigate("/donationadd")}>יצירת תרומה</button>
         </div>
 
         <table>
@@ -458,7 +453,9 @@ const AdminPage = () => {
                     מחיקת תרומה
                   </button>
                   <button
-                    onClick={() => handleEditDonation(donation.donation_id)}
+                    onClick={() =>
+                      navigate(`/donations/${donation.donation_id}`)
+                    }
                   >
                     עדכון תרומה
                   </button>

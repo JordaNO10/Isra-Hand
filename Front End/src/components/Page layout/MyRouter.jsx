@@ -11,10 +11,8 @@ import UserDashboard from "../userpage/dashboard";
 import Donationadd from "../Donations/Donationadd";
 import SignupPage from "../Sign up/signup";
 import AdminPage from "../userpage/adminpage";
-import Cookies from "js-cookie";
 import PrivateRoute from "../Sign up/PrivateRoute";
 
-const userRole = Cookies.get("userRole");
 const MyRouter = ({ onLogout }) => {
   // Accept onLogout as a prop
   return (
@@ -30,15 +28,13 @@ const MyRouter = ({ onLogout }) => {
         <Route
           path="/Donationadd"
           element={
-            <PrivateRoute element={<Donationadd />} roles={["1", " 2"]} />
+            <PrivateRoute element={<Donationadd />} roles={["1", "2"]} />
           }
         />
 
         <Route
           path="/Donations/:id"
-          element={
-            <PrivateRoute element={<Singlepage />} roles={["1", " 2"]} />
-          }
+          element={<PrivateRoute element={<Singlepage />} roles={["1", "2"]} />}
         />
 
         <Route

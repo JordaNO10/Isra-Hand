@@ -5,6 +5,7 @@ import DonationForm from "./Donationform";
 import DonationImageModal from "./donationimage";
 import DonationDropdown from "./DonationDropdown";
 import axios from "axios";
+import Cookies from "js-cookie";
 
 function Singlepage() {
   const { id } = useParams(); // Extract the id from the URL
@@ -64,6 +65,7 @@ function Singlepage() {
     } catch (err) {
       setError(err.response?.data?.error || err.message);
     }
+    window.location.reload();
   };
 
   const handleDelete = async () => {
@@ -134,7 +136,15 @@ function Singlepage() {
               )}
               <div className="singlepage-button">
                 <button
-                  onClick={() => navigate("/Donations")}
+                  onClick={() => {
+                    const userRole = Number(Cookies.get("userRole")); // Retrieve and convert userRole to a number
+
+                    if (userRole === 1) {
+                      navigate("/admin");
+                    } else {
+                      navigate("/Donations");
+                    }
+                  }}
                   className="singlepage-button back-button"
                   aria-label="Go back to donations"
                 >
