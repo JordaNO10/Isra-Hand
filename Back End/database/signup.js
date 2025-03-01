@@ -5,7 +5,7 @@ const connection = require("./connection.js"); // Adjust the path as necessary
 
 // POST /signup
 router.post("/", async (req, res) => {
-  const { username, name, email, password, role } = req.body;
+  const { username, name, email, password, role, birthdate } = req.body;
 
   console.log("Received signup request:", { username, name, email, role });
 
@@ -48,10 +48,10 @@ router.post("/", async (req, res) => {
         }
 
         const sql =
-          "INSERT INTO users (username, full_name, email, password, role_id) VALUES (?, ?, ?, ?, ?)";
+          "INSERT INTO users (username, full_name, email, password, role_id, birth_date) VALUES (?, ?, ?, ?, ?, ?)";
         connection.query(
           sql,
-          [username, name, email, hashedPassword, roleId], // Use the role_id here
+          [username, name, email, hashedPassword, roleId, birthdate], // Use the role_id here
           (error, results) => {
             if (error) {
               console.error("Database error during user insertion:", error);
@@ -106,12 +106,10 @@ router.post("/users", (req, res) => {
           return res.status(500).json({ error: "Database error" });
         }
 
-        res
-          .status(201)
-          .json({
-            message: "User created successfully.",
-            userId: results.insertId,
-          });
+        res.status(201).json({
+          message: "User created successfully.",
+          userId: results.insertId,
+        });
       }
     );
   });

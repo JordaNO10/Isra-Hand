@@ -11,6 +11,7 @@ const SignupPage = () => {
     firstName: "",
     lastName: "",
     email: "",
+    birthdate: "",
     password: "",
     confirmPassword: "",
     role: "",
@@ -66,6 +67,32 @@ const SignupPage = () => {
     }
   };
 
+  // Function to handle automatic sign-in after successful signup
+  const autoSignIn = async (username, password) => {
+    try {
+      // Matching the server endpoint and parameter names
+      const response = await axios.post("/signin", {
+        emailOrUsername: username, // Using the correct parameter name
+        password: password,
+      });
+
+      // Store user data in session based on your server response
+      if (response.data && response.data.userId) {
+        console.log("Auto sign-in successful:", response.data);
+
+        // Navigate to dashboard
+        navigate("/");
+        window.location.reload();
+        return true;
+      } else {
+        throw new Error("Invalid response format");
+      }
+    } catch (error) {
+      console.error("Auto sign-in failed:", error);
+      return false;
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const newErrors = {};
@@ -91,14 +118,24 @@ const SignupPage = () => {
           username: formData.username,
           name: `${formData.firstName} ${formData.lastName}`,
           email: formData.email,
+          birthdate: formData.birthdate, // Added birthdate here
           password: formData.password,
           role: formData.role,
         });
         alert(response.data.message);
 
-        // Redirect to dashboard after successful signup
-        navigate("/dashboard");
-        window.location.reload();
+        // Auto sign-in after successful signup - store username for sign-in
+        const signInSuccess = await autoSignIn(
+          formData.username,
+          formData.password
+        );
+
+        if (!signInSuccess) {
+          alert(
+            "Registration successful! Please sign in with your new account."
+          );
+          setIsSignUp(false);
+        }
 
         // Clear form data only after successful signup
         setFormData({
@@ -106,6 +143,7 @@ const SignupPage = () => {
           firstName: "",
           lastName: "",
           email: "",
+          birthdate: "", // Clear birthdate as well
           password: "",
           confirmPassword: "",
           role: "",
@@ -194,6 +232,19 @@ const SignupPage = () => {
           <label>
             <input
               required
+              type="date"
+              className="input"
+              name="birthdate"
+              value={formData.birthdate}
+              onChange={handleInputChange}
+            />
+            {errors.birthdate && (
+              <span className="error">{errors.birthdate}</span>
+            )}
+          </label>
+          <label>
+            <input
+              required
               placeholder="סיסמא"
               type="password"
               className="input"
@@ -263,22 +314,16 @@ const SignupPage = () => {
               </label>
             </>
           )}
-          <button className="signup-btn" type="submit">
-            הירשם
+          <button type="submit" className="button">
+            הרשמה
           </button>
-          <p className="signin">
-            <button
-              type="button"
-              className="link-button"
-              onClick={() => setIsSignUp(false)}
-            >
-              יש לך חשבון?
-            </button>
-            ?התחבר
+          <p className="message">
+            יש לך כבר חשבון?{" "}
+            <button onClick={() => setIsSignUp(false)}>כניסה</button>
           </p>
         </form>
       ) : (
-        <SigninPage onSignup={() => setIsSignUp(true)} />
+        <SigninPage />
       )}
     </>
   );

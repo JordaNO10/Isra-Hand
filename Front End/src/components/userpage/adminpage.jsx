@@ -8,7 +8,7 @@ const AdminPage = () => {
   const [newFullName, setNewFullName] = useState("");
   const [donations, setDonations] = useState([]);
   const [categories, setCategories] = useState([]);
-  const [newBirthdate, setNewBirthdate] = useState(""); // Renamed for clarity
+  const [newBirthdate, setNewBirthdate] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [editUserId, setEditUserId] = useState(null);
@@ -17,7 +17,7 @@ const AdminPage = () => {
   const [newUserName, setNewUserName] = useState("");
   const [newRoleId, setNewRoleId] = useState("");
   const [newEmail, setNewEmail] = useState("");
-  const [newPassword, setNewPassword] = useState(""); // New state for password
+  const [newPassword, setNewPassword] = useState("");
   const [newDonationDescription, setNewDonationDescription] = useState("");
   const [newCategoryName, setNewCategoryName] = useState("");
 
@@ -99,7 +99,7 @@ const AdminPage = () => {
         full_name: newFullName,
         email: newEmail,
         birth_date: newBirthdate,
-        password: newPassword, // Include password in the request
+        password: newPassword,
       });
 
       setUsers([...users, response.data]);
@@ -109,7 +109,7 @@ const AdminPage = () => {
       setNewFullName("");
       setNewEmail("");
       setNewBirthdate("");
-      setNewPassword(""); // Clear password input after submission
+      setNewPassword("");
     } catch (err) {
       console.error("Error creating user:", err);
     }
@@ -147,6 +147,11 @@ const AdminPage = () => {
     const user = users.find((u) => u.user_id === userId);
     setEditUserId(userId);
     setNewUserName(user.username);
+    setNewFullName(user.full_name);
+    setNewEmail(user.email);
+    setNewBirthdate(user.birth_date);
+    setNewRoleId(user.role_id);
+    setNewPassword(""); // Clear password field for security
   };
 
   const handleEditDonation = (donationId) => {
@@ -162,59 +167,42 @@ const AdminPage = () => {
   };
 
   const updateUser = async () => {
-    const updatedData = {}; // Create the updatedData object at the start
+    const updatedData = {};
 
-    // Check if the user wants to update the birth date
-    if (newBirthdate) {
-      const birthDateObject = new Date(newBirthdate);
-      if (!isNaN(birthDateObject.getTime())) {
-        // Valid birth date provided
-        updatedData.birth_date = birthDateObject.toISOString().split("T")[0];
-      } else {
-        // If newBirthdate is provided but invalid
-        alert("Invalid birth date format. Please use YYYY-MM-DD.");
-        return;
-      }
-    }
-
-    // Prepare the update data, including only fields that are provided
     if (newUserName) updatedData.username = newUserName;
     if (newFullName) updatedData.full_name = newFullName;
     if (newEmail) updatedData.email = newEmail;
     if (newRoleId) updatedData.role_id = newRoleId;
+    if (newBirthdate) updatedData.birth_date = newBirthdate;
     if (newPassword) updatedData.password = newPassword;
 
-    // Perform the update request only if there's something to update
     if (Object.keys(updatedData).length > 0) {
       try {
         await axios.put(`/users/${editUserId}`, updatedData);
 
-        // Update the users state with the modified user
         setUsers(
           users.map((user) =>
             user.user_id === editUserId
               ? {
                   ...user,
-                  ...updatedData, // Update only the fields that were modified
+                  ...updatedData,
                 }
               : user
           )
         );
 
-        // Clear input fields after updating
         setEditUserId(null);
         setNewUserName("");
         setNewFullName("");
         setNewEmail("");
         setNewRoleId("");
         setNewBirthdate("");
-        setNewPassword(""); // Clear password input after submission
+        setNewPassword("");
       } catch (err) {
         console.error("Error updating user:", err);
         alert("Failed to update user. Please try again.");
       }
     } else {
-      // If there were no fields to update, you can notify the user if needed
       alert("No changes were made to the user.");
     }
   };
@@ -312,13 +300,18 @@ const AdminPage = () => {
               onChange={(e) => setNewBirthdate(e.target.value)}
               required
             />
-            <input
-              type="text"
+            <select
               value={newRoleId}
               onChange={(e) => setNewRoleId(e.target.value)}
-              placeholder="Role ID"
               required
-            />
+            >
+              <option value="" disabled>
+                Select Role{" "}
+              </option>
+              <option value="1">Admin</option>
+              <option value="2">Donator</option>
+              <option value="3">Requestor</option>
+            </select>
             <input
               type="password"
               value={newPassword}
@@ -327,6 +320,60 @@ const AdminPage = () => {
               required
             />
             <button onClick={handleCreateUser}>Create User</button>
+          </div>
+        )}
+
+        {editUserId && (
+          <div className="edit-user-form">
+            <h3>Edit User</h3>
+            <input
+              type="text"
+              value={newUserName}
+              onChange={(e) => setNewUserName(e.target.value)}
+              placeholder="Username"
+              required
+            />
+            <input
+              type="text"
+              value={newFullName}
+              onChange={(e) => setNewFullName(e.target.value)}
+              placeholder="Full Name"
+              required
+            />
+            <input
+              type="text"
+              value={newEmail}
+              onChange={(e) => setNewEmail(e.target.value)}
+              placeholder="Email"
+              required
+            />
+            <input
+              type="date"
+              value={newBirthdate}
+              onChange={(e) => setNewBirthdate(e.target.value)}
+              required
+            />
+            <select
+              value={newRoleId}
+              onChange={(e) => setNewRoleId(e.target.value)}
+              required
+            >
+              <option value="" disabled>
+                Select Role{" "}
+              </option>
+              <option value="1">Admin</option>
+              <option value="2">Donator</option>
+              <option value="3">Requestor</option>
+            </select>
+            <input
+              type="password"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              placeholder="Password"
+              required
+            />
+            <button onClick={updateUser}>Update User</button>
+            <button onClick={() => setEditUserId(null)}>Cancel</button>
           </div>
         )}
 
@@ -401,7 +448,7 @@ const AdminPage = () => {
                   <img
                     src={donation.donat_photo}
                     alt="Donation"
-                    style={{ maxWidth: "100px", height: "auto" }} // Adjust size as needed
+                    style={{ maxWidth: "100px", height: "auto" }}
                   />
                 </td>
                 <td>
@@ -433,7 +480,7 @@ const AdminPage = () => {
             placeholder="Category Name"
             required
           />
-          <button onClick={handleCreateCategory}>יצירת קטגוריה</button>
+          <button onClick={updateDonation}>יצירת קטגוריה</button>
         </div>
 
         <table>
