@@ -7,7 +7,6 @@ import "./css/signin.css";
 const DropdownSignin = ({ setShowForm }) => {
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [errors, setErrors] = useState({});
-  const navigate = useNavigate();
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -41,7 +40,10 @@ const DropdownSignin = ({ setShowForm }) => {
 
       alert("Signin successful!");
       Cookies.set("userId", response.data.userId, { expires: 7, secure: true });
-
+      Cookies.set("userRole", response.data.roleId, {
+        expires: 7,
+        secure: true,
+      });
       // Hide the dropdown only after successful login
       setShowForm(false);
 

@@ -5,25 +5,39 @@
   align-items: center;
   justify-content: space-between;
   background-color: #0077cc;
-  padding: 10px 20px;
   color: white;
+  position: fixed; /* Fix the header at the top */
+  top: 0; /* Align it to the top of the viewport */
+  left: 0; /* Align it to the left of the viewport */
+  right: 0; /* Align it to the right of the viewport */
+  z-index: 1000; /* Ensure it is above other content */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Optional: Add a shadow for better visibility */
 }
 
-/* Logo and Header */
-.header {
-  font-size: 24px;
-  font-weight: bold;
+/* Add padding to the body or main content to prevent overlap */
+body {
+  padding-top: 60px; /* Adjust this value based on header height */
+  margin: 0; /* Remove default margin */
 }
+
+/* Header */
+.header {
+  font-size: 2rem; /* Adjusted for prominence */
+  text-align: center; /* Center the header text */
+  flex-grow: 1; /* Allow the header to grow and take available space */
+}
+
 /* Auth buttons */
 .auth-buttons {
   display: flex;
-  flex-direction: row;
-  gap: 10px;
+  flex-direction: row-reverse;
+  gap: 10px; /* Space between buttons */
 }
 
 .btn-login,
-.btn-logout,
-.btn-register {
+.btn-register,
+.btn-dashboard,
+.logout {
   background-color: white;
   color: #0077cc;
   border: none;
@@ -35,26 +49,17 @@
 }
 
 .btn-login:hover,
-.btn-logout:hover,
-.btn-register {
-  background-color: #f0f0f0;
+.btn-register:hover,
+.btn-dashboard:hover,
+.logout:hover {
+  background-color: #f0f0f0; /* Light background on hover */
 }
 
 /* Navigation menu */
-.nav-inner {
+.nav-links {
   display: flex;
-  align-items: center;
-  margin-bottom: 30px;
-}
-.nav-inner:hover .navigation-menu {
-  display: flex;
-  opacity: 1;
-  pointer-events: auto;
-  margin: 15px;
-}
-
-.navigation-menu li {
-  display: inline;
+  flex-direction: row-reverse;
+  gap: 1.5rem; /* Space between links */
 }
 
 .menu-item {
@@ -67,22 +72,10 @@
 
 .menu-item.active,
 .menu-item:hover {
-  background-color: #005fa3;
+  background-color: #005fa3; /* Background for active and hovered items */
 }
 
-/* Hamburger menu button */
-.btn-menu {
-  display: none;
-  background: none;
-  border: none;
-  font-size: 18px;
-  color: white;
-  cursor: pointer;
-}
-
-.icon {
-  margin-left: 5px;
-}
+/* Dropdown overlay */
 .dropdown-overlay {
   position: fixed; /* Overlay that covers the entire screen */
   top: 0;
@@ -108,26 +101,10 @@
 /* Responsive Styles */
 @media (max-width: 768px) {
   .navigation-container {
-    flex-direction: column;
+    flex-direction: column; /* Stack items vertically on smaller screens */
   }
 
-  .navigation-menu {
-    display: none;
-    flex-direction: column;
-    width: 100%;
-    background-color: #005fa3;
-    text-align: center;
-    position: absolute;
-    top: 60px;
-    margin: 5hv;
-    right: 0;
-  }
-
-  .btn {
-    display: block;
-  }
-
-  .btn:hover + .navigation-menu {
-    display: flex;
+  .nav-links {
+    flex-direction: column; /* Stack nav links vertically on small screens */
   }
 }

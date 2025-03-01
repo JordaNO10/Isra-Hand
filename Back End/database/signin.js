@@ -9,7 +9,8 @@ router.post("/", (req, res) => {
 
   console.log("Received signin request:", { emailOrUsername });
 
-  const sql = "SELECT * FROM users WHERE email = ? OR username = ?";
+  const sql =
+    "SELECT user_id, password, role_id FROM users WHERE email = ? OR username = ?";
   connection.query(
     sql,
     [emailOrUsername, emailOrUsername],
@@ -39,11 +40,13 @@ router.post("/", (req, res) => {
 
         // Store user ID in session
         req.session.userId = results[0].user_id;
+        req.session.roleId = results[0].role_id;
 
         console.log("Signin successful for user:", emailOrUsername);
         res.status(200).json({
           message: "Signin successful!",
-          userId: results[0].user_id, // Correctly reference user_id here
+          userId: results[0].user_id,
+          roleId: results[0].role_id, // Correctly reference user_id here
         });
       });
     }

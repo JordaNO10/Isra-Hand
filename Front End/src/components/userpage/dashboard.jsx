@@ -55,11 +55,11 @@ const UserDashboard = ({ onLogout }) => {
   }
   return (
     <div className="dashboard">
-      <h1>Welcome, {userData.username}!</h1>
-      <p>Email: {userData.email}</p>
-      <p>Role: {userData.role_name}</p>
+      <h1> {userData.full_name} ! ברוך הבא </h1>
+      <p> {userData.email}: אימייל</p>
+      <p> {userData.role_name} : סוג משתמש</p>
       <div className="actions">
-        <h2>Your Actions</h2>
+        <h2>הפעולות שלך</h2>
 
         {userData.role_id === 2 && (
           <button onClick={() => navigate("/donations")}>
@@ -72,7 +72,7 @@ const UserDashboard = ({ onLogout }) => {
           </button>
         )}
         {userData.role_id === 1 && (
-          <button onClick={() => navigate("/admin")}>Admin Dashboard</button>
+          <button onClick={() => navigate("/admin")}>תפריט מנהל</button>
         )}
       </div>
     </div>

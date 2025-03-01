@@ -64,8 +64,14 @@ const Donations = () => {
 
         {/* Always show this message at the bottom */}
         <p className="no-donations">
-טרם הכנסת תרומה לאתר באפשרותך לייצר תרומה בלחיצה על הכפתור הבא        </p>
-        <button onClick={() => navigate("/donationadd")}>העלאת תרומה</button>
+          טרם הכנסת תרומה לאתר באפשרותך לייצר תרומה בלחיצה על הכפתור הבא{" "}
+        </p>
+        <button
+          onClick={() => navigate("/donationadd")}
+          className="donation-add"
+        >
+          העלאת תרומה
+        </button>
       </div>
     </section>
   );

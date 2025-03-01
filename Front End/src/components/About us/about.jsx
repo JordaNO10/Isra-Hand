@@ -4,9 +4,9 @@ import yarden from "./assets/yarden.jpg";
 const About = () => {
   return (
     <div className="main">
-      <h1 class="about-us-h1"> The Team Behind The Project</h1>
+      <h1 class="about-us-h1"> יוצר האתר</h1>
       <p className="middle">
-        Yarden Halely <br />
+        ירדן הללי
         <img src={yarden} alt="yarden" />
       </p>
     </div>

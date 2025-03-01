@@ -36,6 +36,7 @@
 
 /* Action Buttons */
 .actions button {
+  justify-content: center;
   margin: 10px; /* Spacing between buttons */
   padding: 10px 15px; /* Padding for buttons */
   font-size: 16px; /* Font size for buttons */

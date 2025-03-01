@@ -2,6 +2,9 @@ const express = require("express");
 const router = express.Router();
 const db = require("../database/connection.js");
 const upload = require("../config/multer.js");
+const fs = require("fs");
+const path = require("path");
+
 // Get all donations
 router.get("/", async (req, res) => {
   const sql = `
@@ -105,5 +108,51 @@ router.put("/:id", upload.single("image"), async (req, res) => {
     res.status(500).json({ error: "Failed to update donation" });
   }
 });
+// DELETE /donations/:id
+router.delete("/:id", async (req, res) => {
+  const donationId = req.params.id;
 
+  try {
+    // Check if the donation exists and get the image path
+    const [results] = await db
+      .promise()
+      .query("SELECT donat_photo FROM donations WHERE donation_id = ?", [
+        donationId,
+      ]);
+
+    if (results.length === 0) {
+      return res.status(404).json({ error: "Donation not found" });
+    }
+
+    const imageUrl = results[0].donat_photo;
+
+    // Delete the donation from the database
+    await db
+      .promise()
+      .query("DELETE FROM donations WHERE donation_id = ?", [donationId]);
+
+    // If there's an image, delete it from the uploads folder
+    if (imageUrl) {
+      const imagePath = path.join(
+        __dirname,
+        "../uploads",
+        path.basename(imageUrl)
+      );
+      console.log("image path to delete :", imagePath);
+
+      fs.unlink(imagePath, (err) => {
+        if (err) {
+          console.error(`Error deleting image at ${imagePath}:`, err);
+          return; // Exit the function to avoid further actions
+        }
+        console.log(`Successfully deleted image at ${imagePath}`);
+      });
+    }
+
+    res.json({ message: "Donation deleted successfully" });
+  } catch (error) {
+    console.error("Database error:", error);
+    res.status(500).json({ error: "Database error" });
+  }
+});
 module.exports = router;

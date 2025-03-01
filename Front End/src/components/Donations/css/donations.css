@@ -47,6 +47,7 @@
   padding: 1rem;
   transition: transform 0.2s ease-in-out;
   text-align: left;
+  align-items: center;
 }
 
 .donation-card:hover {
@@ -73,7 +74,6 @@
   display: flex;
   justify-content: center;
 }
-
 .donation-image img {
   width: 100px;
   height: 100px;
@@ -82,7 +82,8 @@
 }
 
 /* Donation Button */
-.donation-button {
+.donation-button,
+.donation-add {
   padding: 0.75rem 1.5rem; /* Adjusted padding for larger buttons */
   font-size: 1.1rem; /* Slightly larger font size */
   background-color: #007bff;

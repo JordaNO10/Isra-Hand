@@ -11,7 +11,10 @@ import UserDashboard from "../userpage/dashboard";
 import Donationadd from "../Donations/Donationadd";
 import SignupPage from "../Sign up/signup";
 import AdminPage from "../userpage/adminpage";
+import Cookies from "js-cookie";
+import PrivateRoute from "../Sign up/PrivateRoute";
 
+const userRole = Cookies.get("userRole");
 const MyRouter = ({ onLogout }) => {
   // Accept onLogout as a prop
   return (
@@ -22,13 +25,31 @@ const MyRouter = ({ onLogout }) => {
         <Route path="/About" element={<About />} />
         <Route path="/Signup" element={<SignupPage />} />
         <Route path="/Donations" element={<Donation />} />
-        <Route path="/Donationadd/" element={<Donationadd />} />
-        <Route path="/Donations/:id" element={<Singlepage />} />
-        <Route path="/Admin" element={<AdminPage />} />
+
+        {/* Protected routes for Admin and Donator */}
+        <Route
+          path="/Donationadd"
+          element={
+            <PrivateRoute element={<Donationadd />} roles={["1", " 2"]} />
+          }
+        />
+
+        <Route
+          path="/Donations/:id"
+          element={
+            <PrivateRoute element={<Singlepage />} roles={["1", " 2"]} />
+          }
+        />
+
+        <Route
+          path="/Admin"
+          element={<PrivateRoute element={<AdminPage />} roles={["1"]} />}
+        />
+
         <Route
           path="/dashboard"
           element={<UserDashboard onLogout={onLogout} />}
-        />{" "}
+        />
         <Route path="/Contact" element={<Contact />} />
         <Route path="*" element={<h1 className="main">Not Found</h1>} />
       </Routes>

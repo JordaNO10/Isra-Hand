@@ -40,14 +40,15 @@ router.post("/", async (req, res) => {
       }
 
       // Hash password before inserting into the database
-      bcrypt.hash(password, 10, (err, hashedPassword) => {
+      const saltRounds = 12; // Number of salt rounds for bcrypt
+      bcrypt.hash(password, saltRounds, (err, hashedPassword) => {
         if (err) {
           console.error("Error hashing password:", err);
           return res.status(500).json({ error: "Database error" });
         }
 
         const sql =
-          "INSERT INTO users (username,full_name, email, password, role_id) VALUES (?, ?, ?, ?,?)";
+          "INSERT INTO users (username, full_name, email, password, role_id) VALUES (?, ?, ?, ?, ?)";
         connection.query(
           sql,
           [username, name, email, hashedPassword, roleId], // Use the role_id here
@@ -66,6 +67,53 @@ router.post("/", async (req, res) => {
         );
       });
     });
+  });
+});
+
+// POST /users - Create a new user (consider merging with signup)
+router.post("/users", (req, res) => {
+  const { username, full_name, role_id, email, password, birthdate } = req.body;
+
+  if (
+    !username ||
+    !full_name ||
+    !role_id ||
+    !email ||
+    !password ||
+    !birthdate
+  ) {
+    return res.status(400).json({ error: "All fields are required." });
+  }
+
+  // Hash password before inserting into the database
+  const saltRounds = 12; // Number of salt rounds for bcrypt
+  bcrypt.hash(password, saltRounds, (err, hashedPassword) => {
+    if (err) {
+      console.error("Error hashing password:", err);
+      return res.status(500).json({ error: "Database error" });
+    }
+
+    const sql = `
+      INSERT INTO users (username, full_name, role_id, email, password, birth_date)
+      VALUES (?, ?, ?, ?, ?, ?)`;
+
+    connection.query(
+      sql,
+      [username, full_name, role_id, email, hashedPassword, birthdate],
+      (error, results) => {
+        if (error) {
+          console.error("Database error while creating user:", error);
+          return res.status(500).json({ error: "Database error" });
+        }
+
+        res
+          .status(201)
+          .json({
+            message: "User created successfully.",
+            userId: results.insertId,
+          });
+      }
+    );
   });
 });
 

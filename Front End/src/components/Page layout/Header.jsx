@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import logo from "./assets/IsraHand.jpg";
@@ -12,23 +12,22 @@ const Header = ({ onLogout }) => {
     !!Cookies.get("userId")
   );
   const [showSigninDropdown, setShowSigninDropdown] = useState(false);
-  const navigate = useNavigate(); // Initialize navigate
-  const [logoutMessage, setLogoutMessage] = useState(""); // State for logout message
+  const navigate = useNavigate();
+  const [logoutMessage, setLogoutMessage] = useState("");
 
   const handleLogin = () => {
-    console.log("Login button clicked"); // Debugging log
     setShowSigninDropdown((prev) => !prev);
   };
 
   const handleLogout = async () => {
     try {
-      const response = await axios.post("/logout"); // Adjust the endpoint as needed
+      const response = await axios.post("/logout");
       if (response.status === 200) {
-        Cookies.remove("userId"); // Remove the cookie on successful logout
-        setLogoutMessage("You have been logged out successfully!"); // Set logout message
+        Cookies.remove("userId");
+        setLogoutMessage("You have been logged out successfully!");
         setTimeout(() => {
-          onLogout(); // Call the logout prop to update the app state
-          navigate("/"); // Navigate to the homepage
+          onLogout();
+          navigate("/");
           window.location.reload();
         }, 2000);
       }
@@ -38,105 +37,76 @@ const Header = ({ onLogout }) => {
     }
   };
 
-  const handleCloseDropdown = (e) => {
-    if (!e.target.closest(".dropdown-container")) return;
-    setShowSigninDropdown(true);
-  };
-
-  useEffect(() => {
-    if (showSigninDropdown) {
-      window.addEventListener("click", handleCloseDropdown);
-    }
-    return () => {
-      window.removeEventListener("click", handleCloseDropdown);
-    };
-  }, [showSigninDropdown]);
-
   return (
-    <div>
-      <nav>
-        <div className="navigation-container">
-          <div className="auth-buttons">
-            {!isAuthenticated ? (
-              <>
-                <button className="btn-login" onClick={handleLogin}>
-                  התחבר
-                </button>
-                {showSigninDropdown && (
-                  <div className="dropdown-overlay">
-                    <div className="dropdown-container">
-                      <DropdownSignin setShowForm={setShowSigninDropdown} />
-                    </div>
+    <nav>
+      <div className="navigation-container">
+        <div className="auth-buttons">
+          {!isAuthenticated ? (
+            <>
+              <button className="btn-login" onClick={handleLogin}>
+                התחבר
+              </button>
+              {showSigninDropdown && (
+                <div className="dropdown-overlay">
+                  <div className="dropdown-container">
+                    <DropdownSignin setShowForm={setShowSigninDropdown} />
                   </div>
-                )}
-                <button
-                  onClick={() => navigate("/signup")}
-                  className="btn-register"
-                >
-                  הרשמה
-                </button>
-              </>
-            ) : (
-              <>
-                <button
-                  onClick={() => navigate("/dashboard")}
-                  className="btn-dashboard"
-                >
-                  לוח בקרה
-                </button>
-                <button className="logout" onClick={handleLogout}>
-                  התנתק
-                </button>
-                {logoutMessage && (
-                  <div className="logout-message">{logoutMessage}</div>
-                )}
-              </>
-            )}
-          </div>
-          <h1 className="header">IsraHand</h1>
-          <div className="nav-inner">
-            <button className="btn">
-              <span className="icon">☰</span>
-              <span className="text">תפריט</span>
-            </button>
-            <ul className="navigation-menu">
-              <img src={logo} alt="Logo" height="35" width="auto" />
-              <li>
-                <NavLink
-                  to="/"
-                  className={({ isActive }) =>
-                    isActive ? "menu-item active" : "menu-item"
-                  }
-                >
-                  דף הבית
-                </NavLink>
-              </li>
-              <li>
-                <NavLink
-                  to="/about"
-                  className={({ isActive }) =>
-                    isActive ? "menu-item active" : "menu-item"
-                  }
-                >
-                  אודות
-                </NavLink>
-              </li>
-
-              <li>
-                <NavLink
-                  to="/contact"
-                  className={({ isActive }) =>
-                    isActive ? "menu-item active" : "menu-item"
-                  }
-                >
-                  יצירת קשר
-                </NavLink>
-              </li>
-            </ul>
-          </div>
+                </div>
+              )}
+              <button
+                onClick={() => navigate("/signup")}
+                className="btn-register"
+              >
+                הרשמה
+              </button>
+            </>
+          ) : (
+            <>
+              <button
+                onClick={() => navigate("/dashboard")}
+                className="btn-dashboard"
+              >
+                לוח בקרה
+              </button>
+              <button className="logout" onClick={handleLogout}>
+                התנתק
+              </button>
+              {logoutMessage && (
+                <div className="logout-message">{logoutMessage}</div>
+              )}
+            </>
+          )}
         </div>
-      </nav>
-    </div>
+        <h1 className="header">IsraHand</h1>
+        <img src={logo} alt="Logo" height="35" width="auto" />
+        <div className="nav-links">
+          <NavLink
+            to="/"
+            className={({ isActive }) =>
+              isActive ? "menu-item active" : "menu-item"
+            }
+          >
+            דף הבית
+          </NavLink>
+          <NavLink
+            to="/about"
+            className={({ isActive }) =>
+              isActive ? "menu-item active" : "menu-item"
+            }
+          >
+            אודות
+          </NavLink>
+          <NavLink
+            to="/contact"
+            className={({ isActive }) =>
+              isActive ? "menu-item active" : "menu-item"
+            }
+          >
+            יצירת קשר
+          </NavLink>
+        </div>
+      </div>
+    </nav>
   );
 };
 

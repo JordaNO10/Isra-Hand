@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import Uploadimage from "./imageupload";
 import "./css/donationadd.css";
 import axios from "axios";
 
-const Donationadd = ({ onAddDonation }) => {
+const Donationadd = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     donationname: "",
     description: "",
@@ -61,13 +63,12 @@ const Donationadd = ({ onAddDonation }) => {
     formDataToSend.append("image", selectedFile); // Append the actual file
 
     try {
-      const response = await axios.post("/donationadd", formDataToSend, {
+      await axios.post("/donationadd", formDataToSend, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       });
 
-      onAddDonation(response.data); // Update the donations list
       alert("Donation added successfully!");
 
       // Reset the form
@@ -78,6 +79,7 @@ const Donationadd = ({ onAddDonation }) => {
         categoryId: "",
       });
       setSelectedFile(null);
+      navigate("/Donations");
     } catch (error) {
       console.error("Failed to add donation:", error);
       alert("Failed to add donation. Please try again.");
@@ -86,7 +88,7 @@ const Donationadd = ({ onAddDonation }) => {
 
   return (
     <div className="donation-container">
-      <form className="donation-add" onSubmit={handleSubmit}>
+      <form className="donation-addForm" onSubmit={handleSubmit}>
         <label>: שם התרומה</label>
         <input
           type="text"

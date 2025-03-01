@@ -45,36 +45,51 @@
   border-radius: 4px;
   cursor: pointer;
 }
-.singlepage-buttons,
-button:first-child,
-button:last-child {
+
+.singlepage-button {
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
-  margin-right: 1%;
-  border: solid;
-  padding: 1rem 1rem; /* Adjusted padding for the button */
+  margin-right: 1%; /* Margin to the right */
+  padding: 0.8rem 1.5rem; /* Adjusted padding for better button size */
   font-size: 1.1rem; /* Slightly larger font size */
-  background-color: #0056b3; /* Green background for edit button */
+  background-color: #0056b3; /* Default background for buttons */
   color: white; /* Text color */
-  height: auto;
-  border-color: white;
-  border-radius: 5vw; /* Rounded corners */
+  border: none; /* Remove border */
+  border-radius: 10px; /* Rounded corners */
+  justify-content: space-between; /* Space between buttons */
+
   cursor: pointer; /* Pointer cursor on hover */
   transition: background-color 0.3s ease, transform 0.2s ease; /* Transition effects */
+  box-shadow: 0 10px 5px rgba(0, 0, 0, 0.2); /* Subtle shadow for depth */
+}
+
+.singlepage-button:hover {
+  transform: translateY(-2px); /* Hover effect */
+}
+
+/* Specific Button Colors */
+.back-button {
+  background-color: #040296; /* Red background for back button */
+}
+
+.back-button:hover {
+  background-color: darkred; /* Darker red on hover */
+}
+
+.edit-button {
+  background-color: green; /* Green background for edit button */
+}
+
+.edit-button:hover {
+  background-color: darkgreen; /* Darker green on hover */
+}
+
+.delete-button {
+  background-color: darkred; /* Dark red background for delete button */
 }
 
 .delete-button:hover {
-  background-color: darkred;
-  transform: translateY(-2px);
-}
-.back-button:hover {
-  background-color: darkred;
-  transform: translateY(-2px);
-}
-.edit-button:hover {
-  background-color: green;
-  transform: translateY(-2px);
+  background-color: crimson; /* Brighter red on hover */
 }
 
 /* Modal Styles */

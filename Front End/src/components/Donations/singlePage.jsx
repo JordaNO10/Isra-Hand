@@ -69,9 +69,14 @@ function Singlepage() {
   const handleDelete = async () => {
     if (window.confirm("Are you sure you want to delete this donation?")) {
       try {
-        await axios.delete(`/donations/${id}`);
-        navigate("/Donations");
+        const response = await axios.delete(`/donations/${id}`);
+        console.log("Delete response:", response); // Log the response for debugging
+        if (response.status === 200) {
+          alert("Donation deleted successfully!"); // Optional: Inform the user
+          navigate("/Donations"); // Navigate if deletion is successful
+        }
       } catch (err) {
+        console.error("Error deleting donation:", err); // Log the error for debugging
         setError(err.response?.data?.error || err.message);
       }
     }
@@ -127,20 +132,23 @@ function Singlepage() {
                   />
                 </div>
               )}
-              <div className="singlepage-buttons">
+              <div className="singlepage-button">
                 <button
                   onClick={() => navigate("/Donations")}
-                  className="back-button"
+                  className="singlepage-button back-button"
                   aria-label="Go back to donations"
                 >
                   חזור אחורה
                 </button>
-                <button onClick={handleEdit} className="edit-button">
+                <button
+                  onClick={handleEdit}
+                  className="singlepage-button edit-button"
+                >
                   ערוך
                 </button>
                 <button
                   onClick={handleDelete}
-                  className="delete-button"
+                  className="singlepage-button delete-button"
                   aria-label="Delete donation"
                 >
                   מחק תרומה
