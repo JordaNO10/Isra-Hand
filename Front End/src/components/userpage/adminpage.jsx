@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import "./css/AdminPage.css";
+import "./css/adminpage.css";
 import { useNavigate } from "react-router-dom";
 
 const AdminPage = () => {
