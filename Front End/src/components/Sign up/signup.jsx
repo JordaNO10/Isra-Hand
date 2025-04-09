@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
-import SigninPage from "./signin";
+import PageSignin from "./PageSignin"; // ✅ Updated import
 import { useNavigate } from "react-router-dom";
 import "./css/signup.css";
 
@@ -67,20 +67,15 @@ const SignupPage = () => {
     }
   };
 
-  // Function to handle automatic sign-in after successful signup
   const autoSignIn = async (username, password) => {
     try {
-      // Matching the server endpoint and parameter names
       const response = await axios.post("/signin", {
-        emailOrUsername: username, // Using the correct parameter name
+        emailOrUsername: username,
         password: password,
       });
 
-      // Store user data in session based on your server response
       if (response.data && response.data.userId) {
         console.log("Auto sign-in successful:", response.data);
-
-        // Navigate to dashboard
         navigate("/");
         window.location.reload();
         return true;
@@ -118,13 +113,13 @@ const SignupPage = () => {
           username: formData.username,
           name: `${formData.firstName} ${formData.lastName}`,
           email: formData.email,
-          birthdate: formData.birthdate, // Added birthdate here
+          birthdate: formData.birthdate,
           password: formData.password,
           role: formData.role,
         });
+
         alert(response.data.message);
 
-        // Auto sign-in after successful signup - store username for sign-in
         const signInSuccess = await autoSignIn(
           formData.username,
           formData.password
@@ -137,13 +132,12 @@ const SignupPage = () => {
           setIsSignUp(false);
         }
 
-        // Clear form data only after successful signup
         setFormData({
           username: "",
           firstName: "",
           lastName: "",
           email: "",
-          birthdate: "", // Clear birthdate as well
+          birthdate: "",
           password: "",
           confirmPassword: "",
           role: "",
@@ -279,51 +273,51 @@ const SignupPage = () => {
               <span className="error">{errors.password}</span>
             )}
           </label>
-          {isSignUp && (
-            <>
-              <label>
-                <input
-                  required
-                  placeholder="אימות סיסמא"
-                  type="password"
-                  className={`input ${!passwordsMatch ? "input-error" : ""}`}
-                  name="confirmPassword"
-                  value={formData.confirmPassword}
-                  onChange={handleInputChange}
-                  autoComplete="new-password"
-                />
-                {errors.confirmPassword && (
-                  <span className="error">{errors.confirmPassword}</span>
-                )}
-              </label>
-              <label>
-                <select
-                  required
-                  className="input"
-                  name="role"
-                  value={formData.role}
-                  onChange={handleInputChange}
-                >
-                  <option value="" disabled>
-                    בחר/י סוג משתמש
-                  </option>
-                  <option value="Donor">תורם/ת</option>
-                  <option value="Requestor">מבקש/ת</option>
-                </select>
-                {errors.role && <span className="error">{errors.role}</span>}
-              </label>
-            </>
-          )}
+          <>
+            <label>
+              <input
+                required
+                placeholder="אימות סיסמא"
+                type="password"
+                className={`input ${!passwordsMatch ? "input-error" : ""}`}
+                name="confirmPassword"
+                value={formData.confirmPassword}
+                onChange={handleInputChange}
+                autoComplete="new-password"
+              />
+              {errors.confirmPassword && (
+                <span className="error">{errors.confirmPassword}</span>
+              )}
+            </label>
+            <label>
+              <select
+                required
+                className="input"
+                name="role"
+                value={formData.role}
+                onChange={handleInputChange}
+              >
+                <option value="" disabled>
+                  בחר/י סוג משתמש
+                </option>
+                <option value="Donor">תורם/ת</option>
+                <option value="Requestor">מבקש/ת</option>
+              </select>
+              {errors.role && <span className="error">{errors.role}</span>}
+            </label>
+          </>
           <button type="submit" className="button">
             הרשמה
           </button>
           <p className="message">
             יש לך כבר חשבון?{" "}
-            <button onClick={() => setIsSignUp(false)}>כניסה</button>
+            <button type="button" onClick={() => setIsSignUp(false)}>
+              כניסה
+            </button>
           </p>
         </form>
       ) : (
-        <SigninPage />
+        <PageSignin /> 
       )}
     </>
   );

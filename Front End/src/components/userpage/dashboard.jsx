@@ -62,9 +62,14 @@ const UserDashboard = ({ onLogout }) => {
         <h2>הפעולות שלך</h2>
 
         {userData.role_id === 2 && (
-          <button onClick={() => navigate("/donations")}>
-            צפייה בתרומות שלי
-          </button>
+          <>
+            <button onClick={() => navigate("/donations")}>
+              צפייה בתרומות שלי
+            </button>
+            <button onClick={() => navigate("/donationadd")}>
+              העלאת תרומה
+            </button>
+          </>
         )}
         {userData.role_id === 3 && (
           <button onClick={() => alert("Make a Request")}>

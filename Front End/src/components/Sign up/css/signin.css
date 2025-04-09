@@ -1,78 +1,111 @@
-.signin-dropdown {
-  width: 370px;
-  background: linear-gradient(
-    180deg,
-    rgb(0, 183, 255) 25%,
-    rgb(255, 255, 255) 20%
-  );
-  height: auto; /* Adjusted for flexible height based on content */
-  padding: 20px; /* Added padding for better spacing */
-  border-radius: 8px; /* Optional: to give it rounded corners */
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Optional: add shadow */
+/* Shared container style (for both dropdown and full-page) */
+.signin-container {
+  width: 100%;
+  max-width: 400px;
+  background: linear-gradient(180deg, rgb(0, 183, 255) 25%, white 20%);
+  padding: 24px;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   display: flex;
   flex-direction: column;
-  justify-content: flex-start; /* Changed to flex-start for better alignment */
   position: relative;
+  margin: 0 auto;
+}
+.signin-page {
+  display: flex;
+  margin-top: 50px;
+}
+/* New: header inside the dropdown */
+.signin-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
 }
 
-.signin-dropdown .text-xl {
-  font-size: 24px; /* Adjusted font size */
-  font-weight: 600; /* Semi-bold for the title */
-  margin-bottom: 20px; /* Adjusted bottom margin */
+.signin-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #333;
 }
+
+/* Used specifically for dropdown */
+.signin-dropdown {
+  width: 370px;
+}
+
+/* Header styling */
+.signin-container .text-xl {
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
+/* Close button for dropdown */
 .close-button {
   background: transparent;
   border: none;
   font-size: 20px;
   cursor: pointer;
-  color: #333; /* Change this color as needed */
+  color: #333;
+  position: absolute;
+  top: 10px;
+  right: 10px;
 }
 
 .close-button:hover {
-  color: red; /* Change the hover color if desired */
+  color: red;
 }
-.signin-dropdown .input {
-  display: flex;
-  flex-direction: column;
-  padding: auto;
-  margin: 10px;
-  height: 5vh;
+
+/* Input fields */
+.signin-container .input {
+  padding: 12px;
+  margin-bottom: 12px;
   border: none;
   background-color: rgb(224, 231, 236);
-  margin-bottom: 10px; /* Added margin for spacing between inputs */
-  border-radius: 4px; /* Optional: rounded corners for inputs */
+  border-radius: 6px;
+  font-size: 14px;
+  transition: border 0.3s ease;
 }
 
-.signin-dropdown .input:focus {
+.signin-container .input:focus {
   outline: none;
-  border: 2px solid rgb(0, 183, 255); /* Highlight border on focus */
+  border: 2px solid rgb(0, 183, 255);
 }
 
-.signin-dropdown .login-button {
-  height: 40px; /* Increased height for the button */
+/* Submit button */
+.signin-container .login-button {
+  padding: 12px;
   background-color: rgb(0, 183, 255);
   color: white;
   font-size: 16px;
-  border-radius: 4px; /* Optional: rounded corners for button */
-  cursor: pointer; /* Pointer cursor on hover */
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: background-color 0.3s ease;
 }
 
-.signin-dropdown .login-button:hover {
-  background-color: rgb(0, 150, 230); /* Darker shade on hover */
+.signin-container .login-button:hover {
+  background-color: rgb(0, 150, 230);
 }
 
-.signin-dropdown .text-red-500 {
-  color: rgb(255, 0, 0); /* Red color for error messages */
-  font-size: 12px; /* Adjusted font size for error messages */
+/* Error messages */
+.signin-container .text-red-500 {
+  color: red;
+  font-size: 12px;
+  margin-top: -8px;
+  margin-bottom: 8px;
 }
 
-.signin-dropdown .text-blue-500 {
-  color: rgb(0, 0, 255); /* Blue color for the link */
-  font-size: 14px; /* Adjusted font size for the link */
-  text-decoration: underline; /* Underline for the link */
-  cursor: pointer; /* Pointer cursor for the link */
+/* Link styles (like Forgot Password) */
+.signin-container .text-blue-500 {
+  color: blue;
+  font-size: 14px;
+  text-decoration: underline;
+  cursor: pointer;
 }
 
-.signin-dropdown .text-blue-500:hover {
-  text-decoration: none; /* Remove underline on hover */
+.signin-container .text-blue-500:hover {
+  text-decoration: none;
 }
