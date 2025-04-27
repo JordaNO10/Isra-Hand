@@ -1,90 +1,18 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { useNavigate } from "react-router-dom";
 import Uploadimage from "./imageupload";
+import { useDonationAddForm } from "./Helpers/useDonationForm";
 import "./css/donationadd.css";
-import axios from "axios";
 
 const Donationadd = () => {
   const navigate = useNavigate();
-  const [formData, setFormData] = useState({
-    donationname: "",
-    description: "",
-    email: "",
-    categoryId: "",
-  });
-
-  const [selectedFile, setSelectedFile] = useState(null);
-  const [categories, setCategories] = useState([]);
-
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const response = await axios.get("/categories");
-        setCategories(response.data);
-      } catch (error) {
-        console.error("Failed to fetch categories:", error);
-      }
-    };
-
-    fetchCategories();
-  }, []);
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
-  };
-
-  const handleImageUpload = (imageFile) => {
-    setSelectedFile(imageFile); // Store the actual file, not just the path
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    if (
-      !formData.donationname ||
-      !formData.description ||
-      !formData.email ||
-      !formData.categoryId ||
-      !selectedFile // Ensure an image file is selected
-    ) {
-      alert("Please fill in all fields, including uploading an image.");
-      return;
-    }
-
-    const formDataToSend = new FormData();
-    formDataToSend.append("donationname", formData.donationname);
-    formDataToSend.append("description", formData.description);
-    formDataToSend.append("email", formData.email);
-    formDataToSend.append("categoryId", formData.categoryId);
-    formDataToSend.append("image", selectedFile); // Append the actual file
-
-    try {
-      await axios.post("/donationadd", formDataToSend, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
-
-      alert("Donation added successfully!");
-
-      // Reset the form
-      setFormData({
-        donationname: "",
-        description: "",
-        email: "",
-        categoryId: "",
-      });
-      setSelectedFile(null);
-      navigate("/Donations");
-    } catch (error) {
-      console.error("Failed to add donation:", error);
-      alert("Failed to add donation. Please try again.");
-    }
-  };
+  const {
+    formData,
+    categories,
+    handleInputChange,
+    handleImageUpload,
+    handleSubmit,
+  } = useDonationAddForm(navigate);
 
   return (
     <div className="donation-container">
@@ -94,7 +22,7 @@ const Donationadd = () => {
           type="text"
           name="donationname"
           value={formData.donationname}
-          onChange={handleChange}
+          onChange={handleInputChange}
         />
 
         <label>: תיאור התרומה</label>
@@ -102,7 +30,7 @@ const Donationadd = () => {
           type="text"
           name="description"
           value={formData.description}
-          onChange={handleChange}
+          onChange={handleInputChange}
         />
 
         <label>: אימייל</label>
@@ -110,14 +38,14 @@ const Donationadd = () => {
           type="email"
           name="email"
           value={formData.email}
-          onChange={handleChange}
+          onChange={handleInputChange}
         />
 
         <label>: קטגוריה</label>
         <select
           name="categoryId"
           value={formData.categoryId}
-          onChange={handleChange}
+          onChange={handleInputChange}
           required
         >
           <option value="" disabled>

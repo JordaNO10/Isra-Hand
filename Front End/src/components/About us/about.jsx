@@ -1,5 +1,4 @@
 import React from "react";
-import "./css/aboutus.css";
 import yarden from "./assets/yarden.jpg";
 const About = () => {
   return (

@@ -1,62 +1,40 @@
 import React, { useState } from "react";
-import { FaWheelchair, FaFont, FaAdjust } from "react-icons/fa"; // Icons for accessibility features
-import "./css/accessibilityButton.css";
+import { useAccessibility } from "./Helpers/useAccessibility";
+import "./css/Accessibility.css";
 
 const AccessibilityButton = () => {
-  const [highContrast, setHighContrast] = useState(false);
-  const [fontSize, setFontSize] = useState(16); // Default font size in pixels
+  const { fontSize, increaseFontSize, decreaseFontSize, resetFontSize } =
+    useAccessibility();
+  const [isOpen, setIsOpen] = useState(false);
 
-  // Toggle high contrast mode
-  const toggleHighContrast = () => {
-    setHighContrast(!highContrast);
-    document.body.classList.toggle("high-contrast");
-  };
-
-  // Increase font size
-  const increaseFontSize = () => {
-    setFontSize((prevSize) => prevSize + 2);
-    document.body.style.fontSize = `${fontSize + 2}px`;
-  };
-
-  // Decrease font size
-  const decreaseFontSize = () => {
-    setFontSize((prevSize) => prevSize - 2);
-    document.body.style.fontSize = `${fontSize - 2}px`;
+  const toggleOptions = () => {
+    setIsOpen((prev) => !prev);
   };
 
   return (
-    <div className="accessibility-container">
-      <button
-        className="accessibility-btn"
-        aria-label="Accessibility Settings"
-        onClick={toggleHighContrast}
-      >
-        <FaWheelchair />
+    <div
+      className={`accessibility-container ${isOpen ? "open" : ""}`}
+      style={{ fontSize: `${fontSize}px` }}
+    >
+      {/* Main Button */}
+      <button className="accessibility-btn" onClick={toggleOptions}>
+        ♿
       </button>
 
-      <div className="accessibility-options">
-        <button
-          className="accessibility-option"
-          aria-label="Increase Font Size"
-          onClick={increaseFontSize}
-        >
-          <FaFont /> +
-        </button>
-        <button
-          className="accessibility-option"
-          aria-label="Decrease Font Size"
-          onClick={decreaseFontSize}
-        >
-          <FaFont /> -
-        </button>
-        <button
-          className="accessibility-option"
-          aria-label="Toggle High Contrast Mode"
-          onClick={toggleHighContrast}
-        >
-          <FaAdjust />
-        </button>
-      </div>
+      {/* Extra Options (only when open) */}
+      {isOpen && (
+        <div className="accessibility-options">
+          <button className="accessibility-option" onClick={increaseFontSize}>
+            A+
+          </button>
+          <button className="accessibility-option" onClick={decreaseFontSize}>
+            A-
+          </button>
+          <button className="accessibility-option" onClick={resetFontSize}>
+            🔄
+          </button>
+        </div>
+      )}
     </div>
   );
 };

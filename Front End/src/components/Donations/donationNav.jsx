@@ -1,23 +1,13 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React from "react";
+import { useDonationNavigation } from "./Helpers/useDonationNavigation";
 
 function DonationNavigation({ donations, currentId, onSelectDonation }) {
-  const navigate = useNavigate();
-  const [selectedId, setSelectedId] = useState(""); // State to manage the selected donation ID
-
-  const handleSelectChange = (e) => {
-    const value = e.target.value;
-    setSelectedId(value); // Update the selected ID state
-
-    if (value) {
-      onSelectDonation(value); // Call the onSelectDonation function with the selected ID
-      setSelectedId(""); // Reset the dropdown value
-    }
-  };
+  const { selectedId, handleSelectChange, handleBackClick } =
+    useDonationNavigation(onSelectDonation);
 
   return (
     <div className="navigation">
-      <button onClick={() => navigate("/donations")}>Back To Donations</button>
+      <button onClick={handleBackClick}>Back To Donations</button>
       {donations.length > 0 && (
         <select value={selectedId} onChange={handleSelectChange}>
           <option value="" disabled>

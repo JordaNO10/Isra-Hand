@@ -1,0 +1,65 @@
+.accessibility-container {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1000;
+}
+
+.accessibility-btn {
+  background-color: #1877f2;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  font-size: 24px;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: background-color 0.3s ease;
+}
+
+.accessibility-btn:hover {
+  background-color: #0056b3;
+}
+
+.accessibility-options {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.accessibility-option {
+  background-color: #4d9de0;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  font-size: 18px;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: background-color 0.3s ease;
+}
+
+.accessibility-option:hover {
+  background-color: #0056b3;
+}
+
+/* High Contrast Mode */
+body.high-contrast {
+  background-color: black;
+  color: yellow;
+}
+
+body.high-contrast .accessibility-btn,
+body.high-contrast .accessibility-option {
+  background-color: yellow;
+  color: black;
+}

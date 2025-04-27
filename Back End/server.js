@@ -1,19 +1,18 @@
 const express = require("express");
-const bodyParser = require("body-parser");
 const helmet = require("helmet");
 const morgan = require("morgan");
 const path = require("path");
 const fs = require("fs");
-const sessionMiddleware = require("./config/session"); // Import session middleware
-const dotenv = require("dotenv"); // Require dotenv
+const sessionMiddleware = require("./config/session");
+const dotenv = require("dotenv");
+const cors = require("cors");
 
-const signIn = require("./database/signin");
-const signUp = require("./database/signup");
-const logoutRoute = require("./database/logout");
-const usersRouter = require("./database/users");
-const donationAll = require("./database/donations");
-const donationAdd = require("./database/donationadd");
-const categories = require("./database/categories");
+//  Route imports
+const userRoutes = require("./routes/userRoutes");
+const donationRoutes = require("./routes/donationRoutes");
+const categoryRoutes = require("./routes/categoryRoutes");
+const { router: forgotPasswordRouter } = require("./routes/forgotPassword");
+
 const app = express();
 const PORT = process.env.PORT || 5000;
 
@@ -23,15 +22,29 @@ if (!fs.existsSync(uploadDirectory)) {
   fs.mkdirSync(uploadDirectory, { recursive: true });
 }
 
-// Middleware
+// Load environment variables
 dotenv.config({ path: "../config/session.env" });
+
+//  Security & Logging
 app.use(helmet());
 app.use(morgan("combined"));
-app.use(bodyParser.json());
+app.use("/users", forgotPasswordRouter);
 
-sessionMiddleware(app); // Apply session middleware
+//  JSON parsing
+app.use(express.json());
 
-// Serve static files from the uploads directory
+//  CORS setup
+app.use(
+  cors({
+    origin: "http://localhost:3000",
+    credentials: true,
+  })
+);
+
+//  Session middleware
+sessionMiddleware(app);
+
+//  Serve static uploads
 app.use(
   "/uploads",
   (req, res, next) => {
@@ -41,22 +54,18 @@ app.use(
   express.static(path.join(__dirname, "uploads"))
 );
 
-// Routes
-app.use("/signIn", signIn);
-app.use("/signUp", signUp);
-app.use("/logout", logoutRoute);
-app.use("/users", usersRouter);
-app.use("/donations", donationAll);
-app.use("/donationadd", donationAdd);
-app.use("/categories", categories);
+//  Routes
+app.use("/users", userRoutes); // login, register, logout
+app.use("/donations", donationRoutes); // add, get, update, delete donations
+app.use("/categories", categoryRoutes);
 
-// Error handling middleware
+// Error handler
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).json({ error: "Something went wrong!" });
 });
 
-// Start server
+//  Start server
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });

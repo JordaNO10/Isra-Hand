@@ -1,32 +1,10 @@
-import React, { useState } from "react";
+import React from "react";
+import { useImageUpload } from "./Helpers/useDonationImage";
 import "./css/imageupload.css";
 
 const Uploadimage = ({ onUploadImage }) => {
-  const [selectedFile, setSelectedFile] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [error, setError] = useState("");
-
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-
-    if (file) {
-      const validImageTypes = ["image/jpeg", "image/png", "image/gif"];
-      if (!validImageTypes.includes(file.type)) {
-        setError("Please upload a valid image (JPEG, PNG, or GIF).");
-        return;
-      }
-
-      setError(""); // Reset error message
-      setSelectedFile(file); // Save file for preview
-
-      // Pass the file to the parent component for handling in form submission
-      onUploadImage(file);
-    }
-  };
-
-  const toggleModal = () => {
-    setIsModalOpen(!isModalOpen); // Toggle modal visibility
-  };
+  const { selectedFile, isModalOpen, error, handleFileChange, toggleModal } =
+    useImageUpload(onUploadImage);
 
   return (
     <div>

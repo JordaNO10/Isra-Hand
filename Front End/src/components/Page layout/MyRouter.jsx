@@ -1,17 +1,21 @@
 import React from "react";
 import { Route, Routes } from "react-router-dom";
-import Homepage from "../Page layout/homepage";
+import HomePage from "../Page layout/Home";
 import About from "../About us/about";
 import Contact from "../Contact us/contact";
 import Footer from "../Page layout/Footer";
 import Singlepage from "../Donations/singlePage";
 import Header from "../Page layout/Header";
 import Donation from "../Donations/donations";
-import UserDashboard from "../userpage/dashboard";
+// import UserDashboard from "../userpage/dashboard";
+import ForgotPassword from "../Register & Login/ForgotPassword";
 import Donationadd from "../Donations/Donationadd";
-import SignupPage from "../Sign up/signup";
+import SignupPage from "../Register & Login/signup";
 import AdminPage from "../userpage/adminpage";
-import PrivateRoute from "../Sign up/PrivateRoute";
+import Signin from "../Register & Login/Signin";
+import PrivateRoute from "../Register & Login/PrivateRoute";
+import RequestorDashboard from "../userpage/RequestorDashboard";
+import ResetPassword from "../Register & Login/ResetPassword";
 
 const MyRouter = ({ onLogout }) => {
   // Accept onLogout as a prop
@@ -19,10 +23,13 @@ const MyRouter = ({ onLogout }) => {
     <>
       <Header onLogout={onLogout} />
       <Routes>
-        <Route path="/" element={<Homepage />} />
+        <Route path="/" element={<HomePage />} />
         <Route path="/About" element={<About />} />
         <Route path="/Signup" element={<SignupPage />} />
+        <Route path="/Signin" element={<Signin />} />
         <Route path="/Donations" element={<Donation />} />
+        <Route path="/ForgotPassword" element={<ForgotPassword />} />
+        <Route path="/ResetPassword/:token" element={<ResetPassword />} />
 
         {/* Protected routes for Admin and Donator */}
         <Route
@@ -36,16 +43,22 @@ const MyRouter = ({ onLogout }) => {
           path="/Donations/:id"
           element={<PrivateRoute element={<Singlepage />} roles={["1", "2"]} />}
         />
+        <Route
+          path="/requestorDashboard"
+          element={
+            <PrivateRoute element={<RequestorDashboard />} roles={"3"} />
+          }
+        />
 
         <Route
           path="/Admin"
           element={<PrivateRoute element={<AdminPage />} roles={["1"]} />}
         />
 
-        <Route
+        {/* <Route
           path="/dashboard"
           element={<UserDashboard onLogout={onLogout} />}
-        />
+        /> */}
         <Route path="/Contact" element={<Contact />} />
         <Route path="*" element={<h1 className="main">Not Found</h1>} />
       </Routes>

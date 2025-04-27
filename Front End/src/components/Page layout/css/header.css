@@ -1,133 +1,115 @@
-/* Navigation container */
-.navigation-container {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
-  background-color: #0077cc;
+.header-nav {
+  background-color: #1877f2;
   color: white;
-  position: fixed; /* Fix the header at the top */
-  top: 0; /* Align it to the top of the viewport */
-  left: 0; /* Align it to the left of the viewport */
-  right: 0; /* Align it to the right of the viewport */
-  z-index: 1000; /* Ensure it is above other content */
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Optional: Add a shadow for better visibility */
-  padding: 10px 20px; /* Add some padding for aesthetics */
-}
-
-/* Add padding to the body or main content to prevent overlap */
-body {
-  padding-top: 60px; /* Adjust this value based on header height */
-  margin: 0; /* Remove default margin */
-}
-
-/* Header */
-.header {
-  font-size: 2rem; /* Adjusted for prominence */
-  text-align: center; /* Center the header text */
-  flex-grow: 1; /* Allow the header to grow and take available space */
-}
-
-/* Auth buttons */
-.auth-buttons {
   display: flex;
-  flex-direction: row-reverse;
-  gap: 10px; /* Space between buttons */
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.8rem 2rem;
+  direction: rtl;
 }
 
-.btn-login,
-.btn-register,
-.btn-dashboard,
-.logout {
-  background-color: white;
-  color: #0077cc;
-  border: none;
-  padding: 8px 15px;
-  font-size: 14px;
-  cursor: pointer;
-  border-radius: 5px;
-  transition: background 0.3s;
-  min-width: 100px; /* Ensure minimum button width */
+.header-logo {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: white;
 }
 
-.btn-login:hover,
-.btn-register:hover,
-.btn-dashboard:hover,
-.logout:hover {
-  background-color: #f0f0f0; /* Light background on hover */
-}
-
-/* Navigation menu */
-.nav-links {
+.header-links {
   display: flex;
-  flex-direction: row-reverse;
-  gap: 1.5rem; /* Space between links */
+  align-items: center;
+  gap: 2rem;
 }
 
-.menu-item {
+.header-link {
   color: white;
   text-decoration: none;
-  padding: 8px 12px;
-  border-radius: 5px;
-  transition: background 0.3s;
+  font-size: 1.2rem;
+  transition: color 0.3s;
 }
 
-.menu-item.active,
-.menu-item:hover {
-  background-color: #005fa3; /* Background for active and hovered items */
+.header-link:hover {
+  color: #4d9de0;
 }
 
-/* Dropdown overlay */
-.dropdown-overlay {
-  position: fixed; /* Overlay that covers the entire screen */
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
-  display: flex; /* Use flexbox to center the dropdown */
-  justify-content: center; /* Center horizontally */
-  align-items: center; /* Center vertically */
-  z-index: 1000; /* Ensure it is on top of other content */
+.header-auth {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
 }
 
-.dropdown-container {
-  background: #fff; /* White background for the dropdown */
-  border-radius: 10px; /* Rounded corners */
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); /* Subtle shadow for depth */
-  padding: 20px; /* Padding inside the dropdown */
-  max-width: 400px; /* Maximum width */
-  width: 100%; /* Full width up to max-width */
+.auth-button {
+  background-color: white;
+  color: #1877f2;
+  border: 1px solid #4d9de0;
+  border-radius: 8px;
+  padding: 0.4rem 1rem;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 1rem;
+  transition: background-color 0.3s, color 0.3s;
+  text-decoration: none;
 }
 
-/* Responsive Styles */
-@media (max-width: 768px) {
-  .navigation-container {
-    flex-direction: row; /* Stack items vertically on smaller screens */
-    padding: 2px; /* Adjust padding for smaller screens */
-  }
+.auth-button:hover {
+  background-color: #4d9de0;
+  color: white;
+}
 
-  .nav-links {
-    flex-direction: column; /* Stack nav links vertically on small screens */
-    align-items: center; /* Center align links */
-    gap: 10px; /* Space between links */
-  }
+.auth-button.secondary {
+  background-color: white;
+  color: #1877f2;
+  border: 1px solid #1877f2;
+}
+/* ===================== Login Toast ===================== */
 
-  .auth-buttons {
-    flex-direction: column; /* Stack auth buttons vertically */
-    align-items: center; /* Center align buttons */
-    gap: 10px; /* Space between buttons */
-  }
+.login-toast {
+  position: fixed;
+  top: 90px;
+  left: 30px;
+  background-color: #dbeafe; /* Light blue background */
+  color: #1e40af; /* Dark blue text */
+  padding: 15px 20px;
+  border-radius: 10px;
+  box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.2);
+  font-weight: 600;
+  font-size: 16px;
+  animation: fadeInOut 4s forwards;
+  z-index: 1001;
+}
 
-  .header {
-    font-size: 1.5rem; /* Reduce font size for smaller screens */
-  }
+/* ===================== Logout Toast ===================== */
 
-  .btn-login,
-  .btn-register,
-  .btn-dashboard,
-  .logout {
-    width: 100%; /* Make buttons full width */
-    min-width: auto; /* Remove min-width on small screens */
+.logout-toast {
+  position: fixed;
+  top: 90px;
+  left: 30px;
+  background-color: #d4edda; /* Light green background (Success color) */
+  color: #155724; /* Dark green text */
+  padding: 15px 20px;
+  border-radius: 10px;
+  box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.2);
+  font-weight: 600;
+  font-size: 16px;
+  animation: fadeInOut 4s forwards;
+  z-index: 1001;
+}
+
+/* Fade in and then fade out animation */
+@keyframes fadeInOut {
+  0% {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  10% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  90% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-20px);
   }
 }

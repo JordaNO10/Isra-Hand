@@ -1,111 +1,96 @@
-import React, { useState } from "react";
-import { NavLink, useNavigate } from "react-router-dom";
-import Cookies from "js-cookie";
-import logo from "./assets/IsraHand.jpg";
-import axios from "axios";
-import DropdownSignin from "../Sign up/DropdownSignin";
-import "./css/header.css";
-import "../Sign up/css/signin.css";
+import React from "react";
+import { NavLink } from "react-router-dom";
+import { useHeaderLogic } from "./Helpers/useHeaderLogic";
+import DropdownSignin from "../Register & Login/DropdownSignin";
+import "./css/Header.css";
 
 const Header = ({ onLogout }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState(
-    !!Cookies.get("userId")
-  );
-  const [showSigninDropdown, setShowSigninDropdown] = useState(false);
-  const navigate = useNavigate();
-  const [logoutMessage, setLogoutMessage] = useState("");
+  const {
+    isAuthenticated,
+    roleId,
+    showSigninDropdown,
+    loginMessage,
+    logoutMessage,
+    handleLogin,
+    handleLogout,
+    setShowSigninDropdown,
+  } = useHeaderLogic(onLogout);
 
-  const handleLogin = () => {
-    setShowSigninDropdown((prev) => !prev);
-  };
-
-  const handleLogout = async () => {
-    try {
-      const response = await axios.post("/logout");
-      if (response.status === 200) {
-        Cookies.remove("userId");
-        setLogoutMessage("You have been logged out successfully!");
-        setTimeout(() => {
-          onLogout();
-          navigate("/");
-          window.location.reload();
-        }, 2000);
-      }
-    } catch (error) {
-      console.error("Logout error:", error);
-      alert("Failed to log out. Please try again.");
+  // Determine dashboard path based on role
+  const getDashboardPath = () => {
+    switch (roleId) {
+      case "1":
+        return "/Admin";
+      case "2":
+        return "/donorpage";
+      case "3":
+        return "/RequestorDashboard";
+      default:
+        return "/";
     }
   };
 
   return (
-    <nav>
-      <div className="navigation-container">
-        <div className="auth-buttons">
-          {!isAuthenticated ? (
-            <>
-              <button className="btn-login" onClick={handleLogin}>
-                התחבר
-              </button>
-              {showSigninDropdown && (
-                <div className="dropdown-overlay">
-                  <div className="dropdown-container">
-                    <DropdownSignin setShowForm={setShowSigninDropdown} />
-                  </div>
-                </div>
-              )}
-              <button
-                onClick={() => navigate("/signup")}
-                className="btn-register"
-              >
-                הרשמה
-              </button>
-            </>
-          ) : (
-            <>
-              <button
-                onClick={() => navigate("/dashboard")}
-                className="btn-dashboard"
-              >
-                לוח בקרה
-              </button>
-              <button className="logout" onClick={handleLogout}>
-                התנתק
-              </button>
-              {logoutMessage && (
-                <div className="logout-message">{logoutMessage}</div>
-              )}
-            </>
-          )}
-        </div>
-        <h1 className="header">IsraHand</h1>
-        <img src={logo} alt="Logo" height="35" width="auto" />
-        <div className="nav-links">
-          <NavLink
-            to="/"
-            className={({ isActive }) =>
-              isActive ? "menu-item active" : "menu-item"
-            }
-          >
-            דף הבית
+    <nav className="header-nav">
+      {/* Logo */}
+      <div className="header-logo">IsraHand</div>
+
+      {/* Navigation Links */}
+      <div className="header-links">
+        <NavLink to="/" className="header-link">
+          דף הבית
+        </NavLink>
+        <NavLink to="/About" className="header-link">
+          אודות
+        </NavLink>
+        <NavLink to="/Contact" className="header-link">
+          צור קשר
+        </NavLink>
+
+        {/* Dashboard link if logged in */}
+        {isAuthenticated && roleId && (
+          <NavLink to={getDashboardPath()} className="header-link">
+            הדף האישי שלי
           </NavLink>
-          <NavLink
-            to="/about"
-            className={({ isActive }) =>
-              isActive ? "menu-item active" : "menu-item"
-            }
-          >
-            אודות
-          </NavLink>
-          <NavLink
-            to="/contact"
-            className={({ isActive }) =>
-              isActive ? "menu-item active" : "menu-item"
-            }
-          >
-            יצירת קשר
-          </NavLink>
-        </div>
+        )}
       </div>
+
+      {/* Authentication Section */}
+      <div className="header-auth">
+        {isAuthenticated && roleId && (
+          <span className="hello-message">
+            {roleId === "1" && "שלום אדמין 👑"}
+            {roleId === "2" && "שלום תורם 🙌"}
+            {roleId === "3" && "שלום מבקש 🎯"}
+          </span>
+        )}
+
+        {!isAuthenticated ? (
+          <>
+            <button className="auth-button" onClick={handleLogin}>
+              התחבר
+            </button>
+            <NavLink to="/Signup" className="auth-button secondary">
+              הרשמה
+            </NavLink>
+          </>
+        ) : (
+          <button className="auth-button" onClick={handleLogout}>
+            התנתק
+          </button>
+        )}
+      </div>
+
+      {/* Signin Dropdown */}
+      {showSigninDropdown && (
+        <DropdownSignin setShowForm={setShowSigninDropdown} />
+      )}
+
+      {/* Toast Messages */}
+      {loginMessage && <div className="toast login-toast">{loginMessage}</div>}
+      {logoutMessage && (
+        <div className="toast logout-toast">{logoutMessage}</div>
+      )}
     </nav>
   );
 };
