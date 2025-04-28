@@ -38,16 +38,13 @@ export const useDropdownSigninHelpers = (setShowForm, handleLoginSuccess) => {
         },
         { withCredentials: true }
       );
-
       if (response.status === 200) {
         Cookies.set("userId", response.data.userId);
         Cookies.set("userRole", response.data.roleId);
-
+        
         setErrorMessage("");
         setShowForm(false);
         handleLoginSuccess(); 
-
-        navigate("/"); 
       }
     } catch (error) {
       console.error("Login error:", error);

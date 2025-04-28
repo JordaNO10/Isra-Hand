@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import SigninForm from "./SigninForm";
 import "./css/signin.css";
 
-const DropdownSignin = ({ setShowForm }) => {
+const DropdownSignin = ({ setShowForm, handleLoginSuccess }) => {
   const [fadeOut, setFadeOut] = useState(false);
   const [bounceIn, setBounceIn] = useState(true);
 
@@ -29,7 +29,10 @@ const DropdownSignin = ({ setShowForm }) => {
           ✖
         </button>
       </div>
-      <SigninForm setShowForm={handleClose} />
+      <SigninForm
+        setShowForm={handleClose}
+        handleLoginSuccess={handleLoginSuccess}
+      />
     </div>
   );
 };

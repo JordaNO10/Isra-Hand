@@ -1,115 +1,63 @@
 .header-nav {
-  background-color: #1877f2;
+  position: fixed; /* 🛠️ Make the header stick */
+  top: 0;
+  left: 0;
+  right: 0;
+  background-color: #1877f2; /* Facebook blue */
   color: white;
+  padding: 10px 20px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.8rem 2rem;
+  z-index: 9999; /* Make sure it stays on top */
+  height: 70px; /* Good fixed height */
+  box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.15); /* Soft shadow */
   direction: rtl;
 }
 
+/* Make sure content below header isn't hidden */
+body {
+  padding-top: 80px; /* Leave space under the header */
+}
+
+/* Rest of your header style remains */
 .header-logo {
-  font-size: 1.8rem;
+  font-size: 24px;
   font-weight: bold;
-  color: white;
 }
 
 .header-links {
   display: flex;
-  align-items: center;
-  gap: 2rem;
+  gap: 20px;
 }
 
 .header-link {
   color: white;
   text-decoration: none;
-  font-size: 1.2rem;
-  transition: color 0.3s;
+  font-weight: 500;
+  font-size: 18px;
 }
 
 .header-link:hover {
-  color: #4d9de0;
+  text-decoration: underline;
 }
 
 .header-auth {
   display: flex;
-  align-items: center;
-  gap: 0.8rem;
+  gap: 10px;
 }
 
 .auth-button {
   background-color: white;
   color: #1877f2;
-  border: 1px solid #4d9de0;
+  border: none;
+  padding: 6px 12px;
   border-radius: 8px;
-  padding: 0.4rem 1rem;
-  cursor: pointer;
   font-weight: bold;
-  font-size: 1rem;
-  transition: background-color 0.3s, color 0.3s;
-  text-decoration: none;
+  cursor: pointer;
+  transition: 0.3s;
 }
 
 .auth-button:hover {
-  background-color: #4d9de0;
-  color: white;
-}
-
-.auth-button.secondary {
-  background-color: white;
-  color: #1877f2;
-  border: 1px solid #1877f2;
-}
-/* ===================== Login Toast ===================== */
-
-.login-toast {
-  position: fixed;
-  top: 90px;
-  left: 30px;
-  background-color: #dbeafe; /* Light blue background */
-  color: #1e40af; /* Dark blue text */
-  padding: 15px 20px;
-  border-radius: 10px;
-  box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.2);
-  font-weight: 600;
-  font-size: 16px;
-  animation: fadeInOut 4s forwards;
-  z-index: 1001;
-}
-
-/* ===================== Logout Toast ===================== */
-
-.logout-toast {
-  position: fixed;
-  top: 90px;
-  left: 30px;
-  background-color: #d4edda; /* Light green background (Success color) */
-  color: #155724; /* Dark green text */
-  padding: 15px 20px;
-  border-radius: 10px;
-  box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.2);
-  font-weight: 600;
-  font-size: 16px;
-  animation: fadeInOut 4s forwards;
-  z-index: 1001;
-}
-
-/* Fade in and then fade out animation */
-@keyframes fadeInOut {
-  0% {
-    opacity: 0;
-    transform: translateY(-20px);
-  }
-  10% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-  90% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-  100% {
-    opacity: 0;
-    transform: translateY(-20px);
-  }
+  background-color: #f0f2f5;
 }

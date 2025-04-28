@@ -3,9 +3,9 @@ import React from "react";
 import { useDropdownSigninHelpers } from "./Helpers/useDropdownSigninHelpers";
 import "./css/signin.css";
 
-const SigninForm = ({ setShowForm }) => {
+const SigninForm = ({ setShowForm, handleLoginSuccess }) => {
   const { formData, errorMessage, handleInputChange, handleSubmit } =
-    useDropdownSigninHelpers(setShowForm);
+    useDropdownSigninHelpers(setShowForm, handleLoginSuccess);
 
   return (
     <form className="signin-form" onSubmit={handleSubmit}>

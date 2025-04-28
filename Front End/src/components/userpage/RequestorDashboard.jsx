@@ -1,40 +1,40 @@
-// src/pages/RequestorDashboard.jsx
-import React, { useEffect, useState } from "react";
-import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import React from "react";
+import { useDashboardDataHelpers } from "./Helpers/useDashboardDataHelpers";
+import "./css/RequestorDashboard.css";
 
 const RequestorDashboard = () => {
-  const [donations, setDonations] = useState([]);
-  const navigate = useNavigate();
+  const { userData, donations, loading, error } = useDashboardDataHelpers();
 
-  useEffect(() => {
-    // Fetch available donations
-    const fetchDonations = async () => {
-      try {
-        const response = await axios.get("http://localhost:3001/donations");
-        setDonations(response.data);
-      } catch (error) {
-        console.error("Error fetching donations:", error);
-      }
-    };
-
-    fetchDonations();
-  }, []);
+  if (loading) return <div className="dashboard">טוען נתונים...</div>;
+  if (error) return <div className="dashboard error">{error}</div>;
+  if (!userData) return <div className="dashboard error">משתמש לא נמצא</div>;
 
   return (
-    <div className="requestor-dashboard">
-      <h1>Welcome, Requestor!</h1>
-      <h2>Available Donations:</h2>
-      <ul>
+    <div className="dashboard-container">
+      <h1 className="welcome-message">ברוך הבא, {userData.username}!</h1>
+
+      <div className="profile-info-box">
+        <h2>פרטים אישיים:</h2>
+        <p>
+          <strong>שם מלא :</strong> {userData.full_name}
+        </p>
+        <p>
+          <strong>אימייל :</strong> {userData.email}
+        </p>
+      </div>
+
+      <h2 className="section-title">פריטים שהתעניינתי בהם:</h2>
+
+      <div className="items-grid">
         {donations.map((donation) => (
-          <li key={donation.donation_id}>
-            {donation.title} - {donation.description}
-          </li>
+          <div key={donation.donation_id} className="item-card">
+            <div className="item-image-placeholder">תמונה</div>
+            <h3>{donation.donation_name}</h3>
+            <p>תיאור: {donation.description}</p>
+            <p>אימייל: {donation.email}</p>
+          </div>
         ))}
-      </ul>
-      <button onClick={() => alert("Request functionality coming soon!")}>
-        Request a Donation
-      </button>
+      </div>
     </div>
   );
 };

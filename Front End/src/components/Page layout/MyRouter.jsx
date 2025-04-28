@@ -7,7 +7,6 @@ import Footer from "../Page layout/Footer";
 import Singlepage from "../Donations/singlePage";
 import Header from "../Page layout/Header";
 import Donation from "../Donations/donations";
-// import UserDashboard from "../userpage/dashboard";
 import ForgotPassword from "../Register & Login/ForgotPassword";
 import Donationadd from "../Donations/Donationadd";
 import SignupPage from "../Register & Login/signup";
@@ -15,6 +14,7 @@ import AdminPage from "../userpage/adminpage";
 import Signin from "../Register & Login/Signin";
 import PrivateRoute from "../Register & Login/PrivateRoute";
 import RequestorDashboard from "../userpage/RequestorDashboard";
+import DonatorDashBoard from "../userpage/donorpage";
 import ResetPassword from "../Register & Login/ResetPassword";
 
 const MyRouter = ({ onLogout }) => {
@@ -55,10 +55,10 @@ const MyRouter = ({ onLogout }) => {
           element={<PrivateRoute element={<AdminPage />} roles={["1"]} />}
         />
 
-        {/* <Route
-          path="/dashboard"
-          element={<UserDashboard onLogout={onLogout} />}
-        /> */}
+        <Route
+          path="/donorpage"
+          element={<DonatorDashBoard onLogout={onLogout} />}
+        />
         <Route path="/Contact" element={<Contact />} />
         <Route path="*" element={<h1 className="main">Not Found</h1>} />
       </Routes>

@@ -4,7 +4,7 @@ const getUserById = (req, res) => {
   const { id } = req.params;
 
   const sql = `
-    SELECT users.*, roles.role_name 
+    SELECT users.*, roles.role_name
     FROM users 
     JOIN roles ON users.role_id = roles.role_id
     WHERE users.user_id = ?`;

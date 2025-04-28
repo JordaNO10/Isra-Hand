@@ -1,140 +1,64 @@
-/* adminpage.css */
+.admin-page {
+  padding: 20px;
+  background-color: #f0f2f5; /* Facebook-like background */
+}
 
-/* General Admin Dashboard Styles */
-.admin-dashboard {
-  display: flex;
-  margin: 10vh;
-  flex-direction: column;
-  font-family: Arial, sans-serif;
-  background-color: #f4f4f4;
+.admin-page h1,
+.admin-page h2 {
   text-align: center;
-  border-radius: 5px;
+  color: #1877f2;
+  margin-bottom: 20px;
+}
+
+.profile-box {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  padding: 15px;
+  border-radius: 10px;
+  margin: 0 auto 30px auto;
+  width: 300px;
+  box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
+  direction: rtl;
+}
+
+.admin-section {
+  margin-bottom: 40px;
+}
+
+.admin-section table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  border-radius: 10px;
+  overflow: hidden;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  padding: 20px; /* Added padding for better spacing */
 }
 
-.admin-dashboard h1 {
-  text-align: center; /* Center the title */
-}
-
-/* Header Styles */
-h1 {
-  color: #333; /* Dark color for better readability */
-  font-size: 2.5em; /* Increase font size */
-}
-
-/* Subheader Styles */
-h2 {
-  color: #555; /* Slightly lighter for subheaders */
-  margin-bottom: 15px; /* Space below subheaders */
-  font-size: 2em; /* Slightly smaller than h1 */
-}
-
-/* Button Styles */
-.admin-toggle-button,
-.admin-create-button,
-.admin-update-button,
-.admin-edit-button,
-.admin-delete-button {
-  background-color: #007bff; /* Bootstrap primary color */
-  color: white; /* White text */
-  border: none; /* Remove borders */
-  padding: 10px 15px; /* Increased padding for better button size */
-  border-radius: 5px; /* Rounded corners */
-  cursor: pointer; /* Pointer on hover */
-  transition: background-color 0.3s; /* Smooth transition */
-  font-size: 0.875em; /* Smaller font size */
-  margin: 5px; /* Space between buttons */
-}
-
-.admin-toggle-button:hover,
-.admin-create-button:hover,
-.admin-update-button:hover,
-.admin-edit-button:hover,
-.admin-delete-button:hover {
-  display: flex;
-  flex-direction: row;
-  justify-content: end;
-  background-color: #0056b3; /* Darker shade on hover */
-}
-
-/* Input Styles */
-.create-user-form input,
-.create-donation-form input,
-.create-category-form input {
+.admin-section th,
+.admin-section td {
+  padding: 12px;
+  border: 1px solid #ddd;
   text-align: center;
-  width: 100%; /* Full width inputs */
-  padding: 10px; /* Padding for inputs */
-  margin-bottom: 10px; /* Space between inputs */
-  border: 1px solid #ccc; /* Light gray border */
-  border-radius: 5px; /* Rounded corners */
 }
 
-/* Table Styles */
-table {
-  width: 100%; /* Full width tables */
-  border-collapse: collapse; /* Remove space between table cells */
-  margin-bottom: 20px; /* Space below tables */
+button {
+  background-color: #1877f2;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.3s;
 }
 
-th,
-td {
-  padding: 12px; /* Padding inside table cells */
-  text-align: right; /* Align text to the left */
-  align-items: end;
-  border-bottom: 5px solid #ddd; /* Light border for separation */
-  border: 1px solid #333; /* Darker and thicker border for separation */
+button:hover {
+  background-color: #145db2;
 }
 
-th {
+.admin-loading,
+.admin-error {
   text-align: center;
-  background-color: #007bff; /* Header background color */
-  color: white; /* Header text color */
-  font-weight: bold; /* Bold header text */
-}
-
-/* Row Hover Effect */
-tbody tr:hover {
-  background-color: #f1f1f1; /* Light gray on row hover */
-}
-
-/* User and Donation Item Styles */
-.create-user-form,
-.create-donation-form,
-.create-category-form {
-  margin-bottom: 20px; /* Space below forms */
-}
-
-.admin-user-list,
-.admin-category-list {
-  list-style-type: none; /* Remove bullet points */
-  padding: 0; /* Remove padding */
-}
-
-.admin-user-item,
-.admin-category-item {
-  background-color: #fff; /* White background for each item */
-  padding: 15px; /* Padding around each item */
-  margin-bottom: 10px; /* Space between items */
-  border: 1px solid #ddd; /* Light border */
-  border-radius: 5px; /* Rounded corners */
-}
-
-/* User Details Styles */
-.admin-user-details,
-.admin-category-details {
-  display: flex;
-  flex-direction: row; /* Stack user details vertically */
-  justify-content: space-between; /* Space between details */
-  align-items: center; /* Center items vertically */
-  gap: 10px; /* Gap between details */
-}
-
-.admin-edit-user-form {
-  display: flex;
-  flex-direction: column; /* Stack edit fields vertically */
-}
-
-.admin-edit-user-form input {
-  margin-bottom: 10px; /* Space between edit fields */
+  font-size: 20px;
+  padding: 20px;
+  color: red;
 }

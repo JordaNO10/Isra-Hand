@@ -12,6 +12,7 @@ const Header = ({ onLogout }) => {
     loginMessage,
     logoutMessage,
     handleLogin,
+    handleLoginSuccess,
     handleLogout,
     setShowSigninDropdown,
   } = useHeaderLogic(onLogout);
@@ -38,7 +39,7 @@ const Header = ({ onLogout }) => {
       {/* Navigation Links */}
       <div className="header-links">
         <NavLink to="/" className="header-link">
-          דף הבית
+         בית
         </NavLink>
         <NavLink to="/About" className="header-link">
           אודות
@@ -83,7 +84,10 @@ const Header = ({ onLogout }) => {
 
       {/* Signin Dropdown */}
       {showSigninDropdown && (
-        <DropdownSignin setShowForm={setShowSigninDropdown} />
+        <DropdownSignin
+          setShowForm={setShowSigninDropdown}
+          handleLoginSuccess={handleLoginSuccess}
+        />
       )}
 
       {/* Toast Messages */}
