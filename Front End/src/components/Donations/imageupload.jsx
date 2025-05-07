@@ -7,38 +7,33 @@ const Uploadimage = ({ onUploadImage }) => {
     useImageUpload(onUploadImage);
 
   return (
-    <div>
-      <input type="file" accept="image/*" onChange={handleFileChange} />
-      {error && <p className="error-message">{error}</p>}
+    <div className="uploadimage-container">
+      <input
+        type="file"
+        accept="image/*"
+        onChange={handleFileChange}
+        className="uploadimage-input"
+      />
+      {error && <p className="uploadimage-error">שגיאה: {error}</p>}
 
       {selectedFile && (
-        <div className="imageupload-image">
-          <h3>Image Preview:</h3>
+        <div className="uploadimage-preview" onClick={toggleModal}>
+          <p>תצוגה מקדימה של התמונה (לחץ להגדלה):</p>
           <img
             src={URL.createObjectURL(selectedFile)}
-            alt="Preview"
-            onClick={toggleModal}
-            style={{ cursor: "pointer" }}
+            alt="preview"
+            className="uploadimage-thumbnail"
           />
         </div>
       )}
 
       {isModalOpen && selectedFile && (
-        <div className="image-modal" onClick={toggleModal}>
-          <div
-            className="image-modal-content"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <span
-              className="close"
-              onClick={toggleModal}
-              aria-label="Close modal"
-            >
-              &times;
-            </span>
+        <div className="uploadimage-modal" onClick={toggleModal}>
+          <div className="uploadimage-modal-content">
             <img
               src={URL.createObjectURL(selectedFile)}
-              alt="Enlarged Preview"
+              alt="full preview"
+              className="uploadimage-full"
             />
           </div>
         </div>

@@ -1,91 +1,103 @@
-// src/helpers/useSinglePage.js
+// FILE: useSinglePage.js (🔒 Lock only after valid access + clearer logic)
 import { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
 import {
   getDonationById,
-  updateDonation,
   deleteDonation,
+  updateDonation,
 } from "./donationService";
-import { useNavigate, useParams } from "react-router-dom";
+import {
+  isDonor,
+  isRequestor,
+  isDonationOwner,
+  isDonationLocked,
+  lockDonation,
+} from "./donationAccessControl";
 
 export const useSinglePage = () => {
   const { id } = useParams();
-  const navigate = useNavigate();
-
   const [donationData, setDonationData] = useState(null);
-  const [editedData, setEditedData] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editedData, setEditedData] = useState({});
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [accessDenied, setAccessDenied] = useState(false);
 
   useEffect(() => {
-    const fetchDonation = async () => {
+    const fetchData = async () => {
       try {
-        const data = await getDonationById(id);
-        setDonationData(data);
-        setEditedData(data);
+        const donation = await getDonationById(id);
+        setDonationData(donation);
+
+        const isOwner = isDonationOwner(donation.user_id);
+        const isReq = isRequestor();
+
+        const locked = isDonationLocked(id);
+        const allowedToView = isOwner || isReq;
+
+        if (!allowedToView) {
+          setAccessDenied(true);
+          return;
+        }
+
+        if (locked && !isOwner) {
+          setAccessDenied(true);
+          return;
+        }
+
+        // Lock it only after granting access
+        lockDonation(id);
       } catch (err) {
-        setError(err.response?.data?.error || err.message);
+        setError("Failed to load donation");
       } finally {
         setLoading(false);
       }
     };
 
-    fetchDonation();
+    fetchData();
   }, [id]);
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
-  const handleEdit = () => setIsEditing(true);
 
-  const handleSave = async (data) => {
-    const formData = new FormData();
-    formData.append("donation_name", data.donation_name);
-    formData.append("description", data.description);
-    formData.append("email", data.email);
+  const handleEdit = () => {
+    setEditedData(donationData);
+    setIsEditing(true);
+  };
 
-    if (data.image instanceof File) {
-      formData.append("image", data.image);
-    }
-
+  const handleSave = async (updatedData) => {
     try {
-      const updated = await updateDonation(id, formData);
+      const updated = await updateDonation(id, updatedData);
       setDonationData(updated);
-      setEditedData(updated);
       setIsEditing(false);
     } catch (err) {
-      setError(err.response?.data?.error || err.message);
+      setError("Failed to save changes");
     }
-    window.location.reload();
   };
 
   const handleDelete = async () => {
-    if (window.confirm("Are you sure you want to delete this donation?")) {
-      try {
-        await deleteDonation(id);
-        alert("Donation deleted successfully!");
-        navigate("/Donations");
-      } catch (err) {
-        console.error("Error deleting donation:", err);
-        setError(err.response?.data?.error || err.message);
-      }
+    try {
+      await deleteDonation(id);
+      window.location.href = "/donations";
+    } catch (err) {
+      setError("Failed to delete donation");
     }
   };
 
-  const handleDropdownChange = (selectedId) => {
-    if (selectedId) {
-      navigate(`/donations/${selectedId}`);
-    }
+  const handleDropdownChange = (newId) => {
+    window.location.href = `/donations/${newId}`;
   };
 
   return {
     id,
     donationData,
     editedData,
-    isModalOpen,
     isEditing,
     loading,
     error,
+    accessDenied,
+    isModalOpen,
     openModal,
     closeModal,
     handleEdit,

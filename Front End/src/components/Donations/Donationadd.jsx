@@ -1,13 +1,14 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import Uploadimage from "./imageupload";
 import { useDonationAddForm } from "./Helpers/useDonationForm";
+import UploadImage from "./imageupload";
 import "./css/donationadd.css";
 
-const Donationadd = () => {
+function DonationAdd() {
   const navigate = useNavigate();
   const {
     formData,
+    setFormData,
     categories,
     handleInputChange,
     handleImageUpload,
@@ -15,25 +16,19 @@ const Donationadd = () => {
   } = useDonationAddForm(navigate);
 
   return (
-    <div className="donation-container">
-      <form className="donation-addForm" onSubmit={handleSubmit}>
-        <label>: שם התרומה</label>
+    <section className="donationadd-section">
+      <form className="donationadd-form" onSubmit={handleSubmit}>
+        <h2>הוספת תרומה חדשה</h2>
+
+        <label htmlFor="donation_name">שם התרומה:</label>
         <input
           type="text"
-          name="donationname"
-          value={formData.donationname}
+          name="donation_name"
+          value={formData.donation_name}
           onChange={handleInputChange}
         />
 
-        <label>: תיאור התרומה</label>
-        <input
-          type="text"
-          name="description"
-          value={formData.description}
-          onChange={handleInputChange}
-        />
-
-        <label>: אימייל</label>
+        <label htmlFor="email">אימייל:</label>
         <input
           type="email"
           name="email"
@@ -41,34 +36,38 @@ const Donationadd = () => {
           onChange={handleInputChange}
         />
 
-        <label>: קטגוריה</label>
-        <select
-          name="categoryId"
-          value={formData.categoryId}
+        <label htmlFor="description">תיאור התרומה:</label>
+        <textarea
+          name="description"
+          value={formData.description}
           onChange={handleInputChange}
-          required
+        ></textarea>
+
+        <label htmlFor="category_id">בחר קטגוריה:</label>
+        <select
+          name="category_id"
+          value={formData.category_id}
+          onChange={handleInputChange}
         >
           <option value="" disabled>
-            Select a category
+            בחר קטגוריה
           </option>
-          {categories.map((category) => (
-            <option key={category.category_id} value={category.category_id}>
-              {category.category_name}
+          {categories.map((cat) => (
+            <option key={cat.category_id} value={cat.category_id}>
+              {cat.category_name}
             </option>
           ))}
         </select>
 
-        <label>Donation Image Upload:</label>
-        <div className="image-upload">
-          <Uploadimage onUploadImage={handleImageUpload} />
-        </div>
+        <label>העלה תמונה:</label>
+        <UploadImage onUploadImage={handleImageUpload} />
 
-        <button className="submit-btn" type="submit">
-          Submit
+        <button type="submit" className="donationadd-submit">
+          הוסף תרומה
         </button>
       </form>
-    </div>
+    </section>
   );
-};
+}
 
-export default Donationadd;
+export default DonationAdd;

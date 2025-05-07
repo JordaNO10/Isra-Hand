@@ -1,4 +1,3 @@
-// src/Helpers/useAccessibility.js
 import { useState } from "react";
 
 export const useAccessibility = () => {

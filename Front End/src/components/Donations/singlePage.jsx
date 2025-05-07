@@ -5,6 +5,7 @@ import DonationForm from "./Donationform";
 import DonationImageModal from "./donationimage";
 import DonationDropdown from "./DonationDropdown";
 import { useSinglePage } from "./Helpers/useSinglePage";
+import { isDonor, isDonationOwner } from "./Helpers/donationAccessControl";
 
 function Singlepage() {
   const {
@@ -15,6 +16,7 @@ function Singlepage() {
     isEditing,
     loading,
     error,
+    accessDenied,
     openModal,
     closeModal,
     handleEdit,
@@ -26,18 +28,22 @@ function Singlepage() {
 
   if (loading) return <div>Loading donation...</div>;
   if (error) return <div>Error: {error}</div>;
+  if (accessDenied)
+    return <div>⛔ Access denied or donation is temporarily locked.</div>;
   if (!donationData) return <div>Donation not found.</div>;
+
+  const canEdit = isDonor() && isDonationOwner(donationData.user_id);
 
   return (
     <section className="singlepage-container">
       <div className="singlepage-content">
         {!isEditing && (
           <DonationDropdown
-            donations={[]} // Could later pass donations here if needed
             currentId={id}
             onSelectDonation={handleDropdownChange}
           />
         )}
+
         <div className="singlepage-post">
           {isEditing ? (
             <DonationForm
@@ -61,7 +67,7 @@ function Singlepage() {
                 <div className="singlepage-image">
                   <h3>: תמונת התרומה</h3>
                   <img
-                    src={`${donationData.donat_photo}`}
+                    src={donationData.donat_photo}
                     alt="Donation"
                     className="singlepage-image-preview"
                     onClick={openModal}
@@ -83,23 +89,29 @@ function Singlepage() {
                 >
                   חזור אחורה
                 </button>
-                <button
-                  onClick={handleEdit}
-                  className="singlepage-button edit-button"
-                >
-                  ערוך
-                </button>
-                <button
-                  onClick={handleDelete}
-                  className="singlepage-button delete-button"
-                  aria-label="Delete donation"
-                >
-                  מחק תרומה
-                </button>
+
+                {canEdit && (
+                  <>
+                    <button
+                      onClick={handleEdit}
+                      className="singlepage-button edit-button"
+                    >
+                      ערוך
+                    </button>
+                    <button
+                      onClick={handleDelete}
+                      className="singlepage-button delete-button"
+                      aria-label="Delete donation"
+                    >
+                      מחק תרומה
+                    </button>
+                  </>
+                )}
               </div>
             </>
           )}
         </div>
+
         <DonationImageModal
           isOpen={isModalOpen}
           onClose={closeModal}

@@ -1,37 +1,79 @@
+// FILE: RequestorDashboard.jsx (🔄 Connected to useRequestorDashboard)
 import React from "react";
-import { useDashboardDataHelpers } from "./Helpers/useDashboardDataHelpers";
+import { useRequestorDashboard } from "./Helpers/useRequestorDashboard";
+import Cookies from "js-cookie";
 import "./css/RequestorDashboard.css";
 
 const RequestorDashboard = () => {
-  const { userData, donations, loading, error } = useDashboardDataHelpers();
+  const {
+    availableDonations,
+    myRequests,
+    loading,
+    error,
+    requestDonation,
+    cancelRequest,
+  } = useRequestorDashboard();
+
+  const userEmail = Cookies.get("userEmail");
+  const userName = Cookies.get("userName");
 
   if (loading) return <div className="dashboard">טוען נתונים...</div>;
   if (error) return <div className="dashboard error">{error}</div>;
-  if (!userData) return <div className="dashboard error">משתמש לא נמצא</div>;
 
   return (
     <div className="dashboard-container">
-      <h1 className="welcome-message">ברוך הבא, {userData.username}!</h1>
-
-      <div className="profile-info-box">
-        <h2>פרטים אישיים:</h2>
-        <p>
-          <strong>שם מלא :</strong> {userData.full_name}
-        </p>
-        <p>
-          <strong>אימייל :</strong> {userData.email}
-        </p>
+      <div className="dashboard-header">
+        <div className="profile-info-box">
+          <h2>פרטים אישיים:</h2>
+          <p>
+            <strong>אימייל:</strong> {userEmail}
+          </p>
+          <p>
+            <strong>סוג משתמש:</strong> Requestor
+          </p>
+        </div>
       </div>
 
-      <h2 className="section-title">פריטים שהתעניינתי בהם:</h2>
+      <h1 className="welcome-message">ברוך הבא, {userName} 👋</h1>
 
+      <h2 className="section-title">תרומות זמינות לבקשה:</h2>
       <div className="items-grid">
-        {donations.map((donation) => (
+        {availableDonations.map((donation) => (
           <div key={donation.donation_id} className="item-card">
-            <div className="item-image-placeholder">תמונה</div>
+            {donation.donat_photo && (
+              <img
+                src={donation.donat_photo}
+                alt="Donation"
+                className="item-image-placeholder"
+              />
+            )}
             <h3>{donation.donation_name}</h3>
-            <p>תיאור: {donation.description}</p>
-            <p>אימייל: {donation.email}</p>
+            <p>{donation.description}</p>
+            <p>{donation.email}</p>
+            <button onClick={() => requestDonation(donation.donation_id)}>
+              בקש תרומה זו
+            </button>
+          </div>
+        ))}
+      </div>
+
+      <h2 className="section-title">הבקשות שלי:</h2>
+      <div className="items-grid">
+        {myRequests.map((donation) => (
+          <div key={donation.donation_id} className="item-card">
+            {donation.donat_photo && (
+              <img
+                src={donation.donat_photo}
+                alt="Donation"
+                className="item-image-placeholder"
+              />
+            )}
+            <h3>{donation.donation_name}</h3>
+            <p>{donation.description}</p>
+            <p>{donation.email}</p>
+            <button onClick={() => cancelRequest(donation.donation_id)}>
+              בטל בקשה
+            </button>
           </div>
         ))}
       </div>

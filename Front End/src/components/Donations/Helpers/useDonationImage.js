@@ -1,7 +1,8 @@
-// src/helpers/useDonationImage.js
 import { useState, useEffect } from "react";
 
-// Hook for Image Upload (for Uploadimage component)
+/**
+ * Hook for handling image uploads (validation + preview)
+ */
 export const useImageUpload = (onUploadImage) => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -36,7 +37,9 @@ export const useImageUpload = (onUploadImage) => {
   };
 };
 
-// Hook for Modal Image Handling (for DonationImageModal component)
+/**
+ * Hook for image preview modal state (SinglePage preview)
+ */
 export const useDonationImageModal = (isOpen, image, onClose) => {
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);

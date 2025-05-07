@@ -1,9 +1,10 @@
-// src/helpers/useDonationDropdown.js
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { fetchDonationsForDropdown } from "./donationFormHelpers";
 
-// Hook for Donation Dropdown (Selection)
+/**
+ * Dropdown logic: fetches and groups donations by category name
+ */
 export const useDonationDropdown = (currentId) => {
   const [donations, setDonations] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -16,10 +17,9 @@ export const useDonationDropdown = (currentId) => {
   const groupedDonations = donations.reduce((acc, donation) => {
     if (donation.donation_id.toString() === currentId.toString()) return acc;
 
-    if (!acc[donation.category_name]) {
-      acc[donation.category_name] = [];
-    }
-    acc[donation.category_name].push(donation);
+    const group = donation.category_name || "Uncategorized";
+    if (!acc[group]) acc[group] = [];
+    acc[group].push(donation);
     return acc;
   }, {});
 
@@ -30,7 +30,9 @@ export const useDonationDropdown = (currentId) => {
   };
 };
 
-// Hook for Donation Navigation (Dropdown Navigation + Back)
+/**
+ * Navigation logic for dropdown switch + back
+ */
 export const useDonationNavigation = (onSelectDonation) => {
   const navigate = useNavigate();
   const [selectedId, setSelectedId] = useState("");
@@ -41,7 +43,7 @@ export const useDonationNavigation = (onSelectDonation) => {
 
     if (value) {
       onSelectDonation(value);
-      setSelectedId(""); // Reset after selection
+      setSelectedId(""); // Reset
     }
   };
 

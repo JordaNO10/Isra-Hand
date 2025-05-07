@@ -1,15 +1,14 @@
-// src/helpers/useDonationForm.js
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { fetchCategories, submitDonationForm } from "./donationFormHelpers";
 
-// Hook for "Add Donation" Page
+// Hook for Add Donation Page
 export const useDonationAddForm = (navigate) => {
   const [formData, setFormData] = useState({
-    donationname: "",
+    donation_name: "",
     description: "",
     email: "",
-    categoryId: "",
+    category_id: "",
   });
 
   const [selectedFile, setSelectedFile] = useState(null);
@@ -52,7 +51,7 @@ export const useDonationAddForm = (navigate) => {
   };
 };
 
-// Hook for "Edit Donation" Page
+// Hook for Edit Donation Page
 export const useDonationEditForm = (editedData, onSave, onChange) => {
   const navigate = useNavigate();
   const [temporaryImage, setTemporaryImage] = useState(null);

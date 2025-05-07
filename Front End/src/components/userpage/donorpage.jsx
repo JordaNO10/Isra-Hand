@@ -42,8 +42,21 @@ const DonorDashboard = () => {
       <h2 className="section-title">התרומות שלי:</h2>
       <div className="items-grid">
         {donations.map((donation) => (
-          <div key={donation.donation_id} className="item-card">
-            <div className="item-image-placeholder">תמונה</div>
+          <div
+            key={donation.donation_id}
+            className="item-card"
+            onClick={() => navigate(`/donations/${donation.donation_id}`)}
+            style={{ cursor: "pointer" }}
+          >
+            {donation.donat_photo ? (
+              <img
+                src={donation.donat_photo}
+                alt="Donation"
+                className="item-image-placeholder"
+              />
+            ) : (
+              <div className="item-image-placeholder">אין תמונה</div>
+            )}
             <h3>{donation.donation_name}</h3>
             <p>{donation.description}</p>
             <p>{donation.email}</p>

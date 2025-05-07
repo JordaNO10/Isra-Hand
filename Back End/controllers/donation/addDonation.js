@@ -2,20 +2,21 @@ const db = require("../../utils/db");
 const { buildImageUrl } = require("../../utils/helpers");
 
 const addDonation = (req, res) => {
-  const { donationname, description, categoryId, email } = req.body;
+  const { donationname, description, categoryId, email, user_id } = req.body;
   const imageUrl = req.file ? buildImageUrl(req, req.file.filename) : null;
 
-  if (!donationname || !description || !categoryId) {
+  // Validation
+  if (!donationname || !description || !categoryId || !user_id) {
     return res.status(400).json({ error: "Missing required fields" });
   }
 
   const sql = `
-    INSERT INTO donations (donation_name, description, category_id, donat_photo, email)
-    VALUES (?, ?, ?, ?, ?)`;
+    INSERT INTO donations (donation_name, description, category_id, donat_photo, email, user_id)
+    VALUES (?, ?, ?, ?, ?, ?)`;
 
   db.query(
     sql,
-    [donationname, description, categoryId, imageUrl, email],
+    [donationname, description, categoryId, imageUrl, email, user_id],
     (error, results) => {
       if (error) {
         console.error("Database error during donation add:", error);

@@ -1,7 +1,10 @@
-// src/helpers/donationFormHelpers.js
+// FILE 1: donationFormHelpers.js (✅ Includes user_id in form submission)
 import axios from "axios";
+import Cookies from "js-cookie";
 
-// Fetch categories for the form
+/**
+ * Fetch all categories for the dropdown
+ */
 export const fetchCategories = async (setCategories) => {
   try {
     const response = await axios.get("/categories");
@@ -11,7 +14,9 @@ export const fetchCategories = async (setCategories) => {
   }
 };
 
-// Submit donation form (with validation inside)
+/**
+ * Create and validate donation form submission
+ */
 export const submitDonationForm = async (
   formData,
   selectedFile,
@@ -19,36 +24,38 @@ export const submitDonationForm = async (
   setFormData,
   setSelectedFile
 ) => {
+  // Validation check
   if (
-    !formData.donationname ||
+    !formData.donation_name ||
     !formData.description ||
     !formData.email ||
-    !formData.categoryId ||
+    !formData.category_id ||
     !selectedFile
   ) {
     alert("Please fill in all fields, including uploading an image.");
     return;
   }
 
+  // Build the FormData object to match backend expectations
   const formDataToSend = new FormData();
-  Object.entries(formData).forEach(([key, value]) => {
-    formDataToSend.append(key, value);
-  });
+  formDataToSend.append("donationname", formData.donation_name);
+  formDataToSend.append("description", formData.description);
+  formDataToSend.append("email", formData.email);
+  formDataToSend.append("categoryId", formData.category_id);
+  formDataToSend.append("user_id", Cookies.get("userId"));
   formDataToSend.append("image", selectedFile);
 
   try {
-    await axios.post("/donationadd", formDataToSend, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
+    await axios.post("/donations", formDataToSend, {
+      headers: { "Content-Type": "multipart/form-data" },
     });
 
     alert("Donation added successfully!");
     setFormData({
-      donationname: "",
+      donation_name: "",
       description: "",
       email: "",
-      categoryId: "",
+      category_id: "",
     });
     setSelectedFile(null);
     navigate("/Donations");
@@ -58,7 +65,9 @@ export const submitDonationForm = async (
   }
 };
 
-// Fetch donations for dropdowns
+/**
+ * Fetch all donations (for dropdown use)
+ */
 export const fetchDonationsForDropdown = async (
   setDonations,
   setError,

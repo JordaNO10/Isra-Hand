@@ -1,4 +1,3 @@
-// src/Helpers/useHeaderLogic.js
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
@@ -24,7 +23,7 @@ export const useHeaderLogic = (onLogout) => {
     setShowSigninDropdown(false);
     setTimeout(() => {
       setLoginMessage("");
-    }, 4000);
+    }, 1000);
   };
   const handleLogout = async () => {
     try {
@@ -41,7 +40,7 @@ export const useHeaderLogic = (onLogout) => {
           onLogout();
           navigate("/");
           window.location.reload();
-        }, 2000);
+        }, 1000);
       }
     } catch (error) {
       console.error("Logout error:", error);

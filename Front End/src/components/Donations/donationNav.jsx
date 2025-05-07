@@ -1,30 +1,27 @@
 import React from "react";
-import { useDonationNavigation } from "./Helpers/useDonationNavigation";
+import { useNavigate } from "react-router-dom";
+import "./css/donationnav.css";
 
-function DonationNavigation({ donations, currentId, onSelectDonation }) {
-  const { selectedId, handleSelectChange, handleBackClick } =
-    useDonationNavigation(onSelectDonation);
+const DonationNav = () => {
+  const navigate = useNavigate();
 
   return (
-    <div className="navigation">
-      <button onClick={handleBackClick}>Back To Donations</button>
-      {donations.length > 0 && (
-        <select value={selectedId} onChange={handleSelectChange}>
-          <option value="" disabled>
-            Select Another Donation
-          </option>
-          {donations.map(
-            (donation) =>
-              donation.id.toString() !== currentId && (
-                <option key={donation.id} value={donation.id}>
-                  {donation.name}
-                </option>
-              )
-          )}
-        </select>
-      )}
+    <div className="donationnav-container">
+      <button
+        className="donationnav-button"
+        onClick={() => navigate("/donations")}
+      >
+        חזרה לרשימת תרומות
+      </button>
+
+      <button
+        className="donationnav-button"
+        onClick={() => navigate("/adddonation")}
+      >
+        הוסף תרומה חדשה
+      </button>
     </div>
   );
-}
+};
 
-export default DonationNavigation;
+export default DonationNav;

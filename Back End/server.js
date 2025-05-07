@@ -58,7 +58,6 @@ app.use(
 app.use("/users", userRoutes); // login, register, logout
 app.use("/donations", donationRoutes); // add, get, update, delete donations
 app.use("/categories", categoryRoutes);
-
 // Error handler
 app.use((err, req, res, next) => {
   console.error(err.stack);
