@@ -1,11 +1,11 @@
 import React from "react";
 import { Route, Routes } from "react-router-dom";
-import HomePage from "../Page layout/Home";
+import HomePage from "./Home";
 import About from "../About us/about";
 import Contact from "../Contact us/contact";
-import Footer from "../Page layout/Footer";
+import Footer from "./Footer";
 import Singlepage from "../Donations/singlePage";
-import Header from "../Page layout/Header";
+import Header from "./Header";
 import Donation from "../Donations/donations";
 import ForgotPassword from "../Register & Login/ForgotPassword";
 import Donationadd from "../Donations/Donationadd";
