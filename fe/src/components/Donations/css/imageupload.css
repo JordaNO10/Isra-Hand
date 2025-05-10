@@ -1,48 +1,58 @@
-/* imageupload.css */
-
-.imageupload-image {
-  margin-top: 10px;
-  max-width: 100%; /* Ensure it doesn't exceed the width of the parent */
-  overflow: hidden; /* Hide overflow if the image is too big */
-}
-
-.imageupload-image img {
-  max-width: 100px; /* Set a reasonable max width for the preview */
-  height: auto; /* Maintain aspect ratio */
-  cursor: pointer; /* Indicate that the image can be clicked */
-}
-
-input[type="file"] {
-  display: inline-block; /* Prevent it from stretching full width */
-  margin-right: 10px; /* Add space between the input and the image */
-}
-
-.image-modal {
+.uploadimage-modal {
   position: fixed;
   top: 0;
   left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.7);
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.8);
   display: flex;
   justify-content: center;
   align-items: center;
+  z-index: 9999;
 }
 
-.image-modal-content {
-  position: relative;
+.uploadimage-modal-content {
+  max-width: 90%;
+  max-height: 90%;
+  overflow: auto;
+  background: #fff;
+  border-radius: 8px;
+  padding: 1rem;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.4);
 }
 
-.image-modal img {
-  max-width: 90%; /* Responsive image size in modal */
+.uploadimage-full {
+  max-width: 100%;
+  max-height: 80vh;
+  object-fit: contain;
+}
+
+/* Thumbnail preview */
+.uploadimage-thumbnail {
+  max-width: 100px;
   height: auto;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-top: 8px;
 }
 
-.close {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  color: white;
-  font-size: 30px;
+/* Error and file input styling */
+.uploadimage-error {
+  color: red;
+  font-size: 14px;
+}
+
+.uploadimage-input {
+  margin-top: 10px;
+}
+.email-choice {
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.email-choice label {
+  font-weight: normal;
   cursor: pointer;
 }

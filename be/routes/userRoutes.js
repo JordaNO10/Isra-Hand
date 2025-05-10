@@ -1,6 +1,8 @@
 const express = require("express");
 const router = express.Router();
 
+const upload = require("../config/multer");
+
 // Import User Controllers
 const registerUser = require("../controllers/user/registerUser");
 const loginUser = require("../controllers/user/loginUser");
@@ -11,7 +13,7 @@ const updateUser = require("../controllers/user/updateUser");
 const deleteUser = require("../controllers/user/deleteUser");
 
 // User Routes
-router.post("/register", registerUser);
+router.post("/register", upload.none(), registerUser);
 router.post("/login", loginUser);
 router.post("/logout", logoutUser);
 

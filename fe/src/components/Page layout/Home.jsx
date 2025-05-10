@@ -5,7 +5,7 @@ const Home = () => {
   return (
     <div className="home-page">
       <header className="home-header">
-        <h1 className="home-quote">"תן לי בני אדם, והנה אני נותן לך נפש"</h1>
+        <h1 className="home-quote">"קַח מָה שֶׁאַתָּה צָרִיךְ, תְּרוֹם מָה שֶׁאַתָּה יָכוֹל."</h1>
       </header>
 
       <section className="home-banner">

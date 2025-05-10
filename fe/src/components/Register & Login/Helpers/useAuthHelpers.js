@@ -21,7 +21,7 @@ export const useAuthHelpers = (navigate) => {
         },
         {
           withCredentials: true,
-        },
+        }
       );
       if (response.status === 200) {
         Cookies.set("userId", response.data.userId);
@@ -40,15 +40,26 @@ export const useAuthHelpers = (navigate) => {
       return;
     }
 
+    // Create FormData
+    const formDataToSend = new FormData();
+    for (const key in formData) {
+      formDataToSend.append(key, formData[key]);
+    }
+
     try {
-      const response = await axios.post("/users/signup", formData, {
+      const response = await axios.post("/users/register", formDataToSend, {
         withCredentials: true,
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
       });
-      if (response.status === 200) {
+
+      if (response.status === 201) {
         Cookies.set("userId", response.data.userId);
         Cookies.set("userRole", response.data.roleId);
         setErrorMessage("");
         navigate("/");
+        window.location.reload();
       }
     } catch (error) {
       setErrorMessage(error.response?.data?.message || "שגיאה בהרשמה");

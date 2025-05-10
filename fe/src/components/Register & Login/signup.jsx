@@ -37,7 +37,17 @@ const Signup = () => {
       return;
     }
 
-    await handleSignup(formData, isPasswordValid);
+    const fullFormData = {
+      username: formData.username,
+      name: `${formData.firstName} ${formData.lastName}`,
+      email: formData.email,
+      password: formData.password,
+      birthdate: formData.birthday,
+      role: formData.roleId,
+    };
+    console.log(fullFormData);
+
+    await handleSignup(fullFormData, isPasswordValid);
   };
 
   return (

@@ -1,8 +1,11 @@
-const db = require('../../utils/db');
-const bcrypt = require('bcrypt');
+const db = require("../../utils/db");
+const bcrypt = require("bcrypt");
 
 const registerUser = (req, res) => {
-  const { username, name, email, password, role, birthdate } = req.body;
+  console.log(req.body);
+  let { username, name, email, password, role, birthdate } = req.body;
+  role = parseInt(role);
+  console.log(role);
 
   const checkRoleSql = "SELECT role_id FROM roles WHERE role_name = ?";
   db.query(checkRoleSql, [role], (error, results) => {
@@ -18,18 +21,29 @@ const registerUser = (req, res) => {
       if (error) return res.status(500).json({ error: "Database error" });
 
       if (results.length > 0) {
-        return res.status(400).json({ error: "Email or username already exists." });
+        return res
+          .status(400)
+          .json({ error: "Email or username already exists." });
       }
 
       bcrypt.hash(password, 12, (err, hashedPassword) => {
         if (err) return res.status(500).json({ error: "Database error" });
 
-        const sql = "INSERT INTO users (username, full_name, email, password, role_id, birth_date) VALUES (?, ?, ?, ?, ?, ?)";
-        db.query(sql, [username, name, email, hashedPassword, roleId, birthdate], (error, results) => {
-          if (error) return res.status(500).json({ error: "Database error" });
-
-          res.status(201).json({ message: "User created successfully", userId: results.insertId });
-        });
+        const sql =
+          "INSERT INTO users (username, full_name, email, password, role_id, birth_date) VALUES (?, ?, ?, ?, ?, ?)";
+        db.query(
+          sql,
+          [username, name, email, hashedPassword, roleId, birthdate],
+          (error, results) => {
+            if (error) return res.status(500).json({ error: "Database error" });
+            console.log("role id", roleId);
+            res.status(201).json({
+              message: "User created successfully",
+              userId: results.insertId,
+              roleId: roleId,
+            });
+          }
+        );
       });
     });
   });
