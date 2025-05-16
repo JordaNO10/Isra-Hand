@@ -10,6 +10,7 @@ const deleteDonation = require("../controllers/donation/deleteDonation");
 const getAvailableDonations = require("../controllers/donation/getAvailableDonations");
 const requestDonation = require("../controllers/donation/requestDonation");
 const cancelDonationRequest = require("../controllers/donation/cancelDonationRequest");
+const markDonationAsAccepted = require("../controllers/donation/markDonationAsAccepted");
 
 // Import image upload middleware
 const upload = require("../config/multer");
@@ -20,6 +21,7 @@ router.get("/:id", getDonationById); // Get one donation
 router.put("/:id", upload.single("image"), updateDonation); // Update donation with optional new image
 router.delete("/:id", deleteDonation); // Delete donation
 
+router.put("/:donationId/accept", markDonationAsAccepted);
 router.put("/:id/request", requestDonation);
 router.put("/:id/cancel", cancelDonationRequest);
 router.post("/", upload.single("image"), donationadd); // Add donation with image

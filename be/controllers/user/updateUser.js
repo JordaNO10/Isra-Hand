@@ -1,8 +1,17 @@
 const db = require("../../utils/db");
 
 const updateUser = (req, res) => {
+  
   const { id } = req.params;
-  const { username, full_name, role_id, email, birth_date } = req.body;
+  const {
+    username,
+    full_name,
+    role_id,
+    email,
+    birth_date,
+    address,
+    phone_number,
+  } = req.body;
 
   const updates = [];
   const values = [];
@@ -26,6 +35,18 @@ const updateUser = (req, res) => {
   if (birth_date !== undefined) {
     updates.push("birth_date = ?");
     values.push(birth_date);
+  }
+  if (address !== undefined) {
+    updates.push("address = ?");
+    values.push(address);
+  }
+  if (phone_number !== undefined) {
+    const isValidPhone = /^\d{10}$/.test(phone_number);
+    if (!isValidPhone) {
+      return res
+        .status(400)
+        .json({ error: "מספר טלפון חייב להכיל בדיוק 10 ספרות." });
+    }
   }
 
   if (updates.length === 0) {

@@ -39,10 +39,8 @@ const MyRouter = ({ onLogout }) => {
           }
         />
 
-        <Route
-          path="/Donations/:id"
-          element={<PrivateRoute element={<Singlepage />} roles={["1", "2"]} />}
-        />
+        <Route path="/Donations/:id" element={<Singlepage />} />
+
         <Route
           path="/requestorDashboard"
           element={

@@ -1,4 +1,4 @@
-const db = require('../../utils/db');
+const db = require("../../utils/db");
 
 const getUserById = (req, res) => {
   const { id } = req.params;
@@ -19,7 +19,17 @@ const getUserById = (req, res) => {
       return res.status(404).json({ error: "User not found." });
     }
 
-    res.status(200).json(results[0]);
+    const user = results[0];
+
+    //  fromat the birthdate to be Year-month-day
+    if (user.birth_date) {
+      user.birth_date = new Date(user.birth_date).toISOString().split("T")[0];
+    }
+    if (user.last_login) {
+      user.last_login = new Date(user.last_login).toISOString().split("T")[0];
+    }
+
+    res.status(200).json(user);
   });
 };
 

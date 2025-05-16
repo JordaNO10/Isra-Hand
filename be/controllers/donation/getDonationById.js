@@ -11,6 +11,13 @@ const getDonationById = async (req, res) => {
       return res.status(404).json({ error: "Donation not found" });
     }
 
+    const donation = results[0];
+
+    if (donation.donation_date) {
+      donation.donation_date = new Date(donation.donation_date)
+        .toISOString()
+        .split("T")[0];
+    }
     res.status(200).json(results[0]);
   } catch (error) {
     console.error("Error fetching donation:", error);

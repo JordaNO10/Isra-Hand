@@ -16,21 +16,30 @@ const loginUser = (req, res) => {
         .json({ error: "Invalid email/username or password." });
     }
 
-    bcrypt.compare(password, results[0].password, (err, isMatch) => {
+    const user = results[0];
+
+    bcrypt.compare(password, user.password, (err, isMatch) => {
       if (err) return res.status(500).json({ error: "Database error" });
 
       if (!isMatch) {
         return res.status(401).json({ error: "Invalid credentials." });
       }
 
-      // Save user ID and role into session
-      req.session.userId = results[0].user_id;
-      req.session.roleId = results[0].role_id;
+      const updateLoginTimeSql =
+        "UPDATE users SET last_login = NOW() WHERE user_id = ?";
+      db.query(updateLoginTimeSql, [user.user_id], (updateErr) => {
+        if (updateErr) {
+          return res.status(500).json({ error: "Failed to update last_login" });
+        }
 
-      res.status(200).json({
-        message: "Signin successful!",
-        userId: results[0].user_id,
-        roleId: results[0].role_id,
+        req.session.userId = user.user_id;
+        req.session.roleId = user.role_id;
+
+        res.status(200).json({
+          message: "Signin successful!",
+          userId: user.user_id,
+          roleId: user.role_id,
+        });
       });
     });
   });

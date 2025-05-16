@@ -12,7 +12,7 @@ const DonationDropdown = ({ currentId, onSelectDonation }) => {
 
   return (
     <div className="donationdropdown-container">
-      <label htmlFor="donation-switch">בחר תרומה אחרת:</label>
+      <label htmlFor="donation-switch"></label>
       {loading && <p>טוען תרומות...</p>}
       {error && <p>שגיאה: {error}</p>}
       {!loading && !error && (

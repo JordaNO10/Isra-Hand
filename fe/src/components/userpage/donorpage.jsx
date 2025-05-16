@@ -1,11 +1,15 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDashboardDataHelpers } from "./Helpers/useDashboardDataHelpers";
-import DonationAdd from "../Donations/Donationadd"; // Adjust path if needed
+import { useEditUser } from "./Helpers/userEditUser";
+import DonationAdd from "../Donations/Donationadd";
 import "./css/DonorDashboard.css";
 
 const DonorDashboard = () => {
-  const { userData, donations, loading, error } = useDashboardDataHelpers();
+  const { userData, setUserData, donations, loading, error } =
+    useDashboardDataHelpers();
+  const { editMode, editedUser, toggleEditMode, handleFieldChange, saveField } =
+    useEditUser(userData, setUserData);
   const [showModal, setShowModal] = useState(false);
   const navigate = useNavigate();
 
@@ -17,28 +21,79 @@ const DonorDashboard = () => {
     (donation) => donation.user_id === userData.user_id
   );
 
+  const formatPhoneForDisplay = (value) => {
+    const digits = value.replace(/\D/g, "");
+    if (digits.length <= 3) return digits;
+    return `${digits.slice(0, 3)}-${digits.slice(3)}`;
+  };
+
+  const renderEditableField = (label, fieldKey, type = "text") => (
+    <p>
+      <strong>{label}:</strong>{" "}
+      {editMode[fieldKey] ? (
+        <>
+          <input
+            type={type}
+            inputMode={fieldKey === "phone_number" ? "numeric" : "text"}
+            placeholder={fieldKey === "phone_number" ? "050-1234567" : ""}
+            value={
+              fieldKey === "phone_number"
+                ? formatPhoneForDisplay(
+                    editedUser[fieldKey] ?? userData?.[fieldKey] ?? ""
+                  )
+                : editedUser[fieldKey] ?? userData?.[fieldKey] ?? ""
+            }
+            onChange={(e) => {
+              let val = e.target.value;
+              if (fieldKey === "phone_number") {
+                val = val.replace(/\D/g, "");
+                if (val.length > 10) return;
+              }
+              handleFieldChange(fieldKey, val);
+            }}
+          />
+          <button className="save-button" onClick={() => saveField(fieldKey)}>
+            ✅
+          </button>
+        </>
+      ) : (
+        <>
+          {fieldKey === "phone_number"
+            ? (userData?.[fieldKey] || "").replace(/(\d{3})(\d{7})/, "$1-$2")
+            : userData?.[fieldKey] || "—"}{" "}
+          <button
+            className="edit-icon-button"
+            onClick={() => toggleEditMode(fieldKey, true)}
+            title="ערוך"
+          >
+            ✏️
+          </button>
+        </>
+      )}
+    </p>
+  );
+
   return (
     <div className="dashboard-container">
-      {/* Header */}
       <h1 className="welcome-message">ברוך הבא, {userData.full_name} 👋</h1>
 
-      {/* Content wrapper with 2 columns: Main + Sidebar */}
       <div className="dashboard-body">
-        {/* Main Content */}
         <div className="dashboard-main">
           <div className="dashboard-sidebar">
             <div className="profile-info-box">
               <h2>פרטים אישיים:</h2>
+              {renderEditableField("שם מלא", "full_name")}
+              {renderEditableField("אימייל", "email")}
+              {renderEditableField("תאריך לידה", "birth_date", "date")}
+              {renderEditableField("טלפון", "phone_number")}
+              {renderEditableField("כתובת", "address")}
               <p>
-                <strong>אימייל:</strong> {userData.email}
+                <strong>סוג משתמש:</strong> תורם
               </p>
-              <p>
-                <strong>סוג משתמש:</strong> Donor
-              </p>
+              <p> התחברות אחרונה : {userData.last_login}</p>
             </div>
           </div>
 
-          {/* Title + Upload Button if there are donations */}
           {myDonations.length > 0 && (
             <div className="donations-header">
               <h2 className="section-title">התרומות שלי:</h2>
@@ -51,7 +106,6 @@ const DonorDashboard = () => {
             </div>
           )}
 
-          {/* No Donations Message */}
           {myDonations.length === 0 ? (
             <div className="no-donations-message">
               <p>עדיין לא העלית תרומות. התחל לעזור לאחרים כבר עכשיו!</p>
@@ -90,7 +144,6 @@ const DonorDashboard = () => {
         </div>
       </div>
 
-      {/* Modal */}
       {showModal && (
         <DonationAdd onClose={() => setShowModal(false)} userData={userData} />
       )}

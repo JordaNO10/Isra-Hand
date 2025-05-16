@@ -1,4 +1,4 @@
-const db = require('../../utils/db');
+const db = require("../../utils/db");
 
 const getAllDonations = async (req, res) => {
   const sql = `
@@ -9,6 +9,13 @@ const getAllDonations = async (req, res) => {
 
   try {
     const [results] = await db.promise().query(sql);
+    const donation = results[0];
+
+    if (donation.donation_date) {
+      donation.donation_date = new Date(donation.donation_date)
+        .toISOString()
+        .split("T")[0];
+    }
     res.status(200).json(results);
   } catch (error) {
     console.error("Error fetching donations:", error);

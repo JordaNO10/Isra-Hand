@@ -1,5 +1,5 @@
-// FILE: useSinglePage.js (🔒 Lock only after valid access + clearer logic)
 import { useState, useEffect } from "react";
+import Cookies from "js-cookie";
 import { useParams } from "react-router-dom";
 import {
   getDonationById,
@@ -13,6 +13,7 @@ import {
   isDonationLocked,
   lockDonation,
 } from "./donationAccessControl";
+import axios from "axios";
 
 export const useSinglePage = () => {
   const { id } = useParams();
@@ -24,6 +25,8 @@ export const useSinglePage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [accessDenied, setAccessDenied] = useState(false);
 
+  const currentUserId = Cookies.get("userId");
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -32,21 +35,23 @@ export const useSinglePage = () => {
 
         const isOwner = isDonationOwner(donation.user_id);
         const isReq = isRequestor();
+        const isGuest = !Cookies.get("userRole");
 
         const locked = isDonationLocked(id);
-        const allowedToView = isOwner || isReq;
+        const allowedToView = isOwner || isReq || isGuest;
 
         if (!allowedToView) {
           setAccessDenied(true);
           return;
         }
 
-        if (locked && !isOwner) {
-          setAccessDenied(true);
-          return;
+        if (!isGuest) {
+          if (locked && !isOwner && !isReq) {
+            setAccessDenied(true);
+            return;
+          }
         }
 
-        // Lock it only after granting access
         lockDonation(id);
       } catch (err) {
         setError("Failed to load donation");
@@ -89,6 +94,26 @@ export const useSinglePage = () => {
     window.location.href = `/donations/${newId}`;
   };
 
+  const requestDonation = async (donationId) => {
+    try {
+      await axios.put(`/donations/${donationId}/request`, {
+        requestor_id: currentUserId,
+      });
+    } catch (err) {
+      alert("שגיאה בבקשת תרומה: " + err.response?.data?.error);
+    }
+  };
+
+  const cancelRequest = async (donationId) => {
+    try {
+      await axios.put(`/donations/${donationId}/cancel`, {
+        requestor_id: currentUserId,
+      });
+    } catch (err) {
+      alert("שגיאה בביטול תרומה: " + err.response?.data?.error);
+    }
+  };
+
   return {
     id,
     donationData,
@@ -105,5 +130,7 @@ export const useSinglePage = () => {
     handleDelete,
     setEditedData,
     handleDropdownChange,
+    requestDonation,
+    cancelRequest,
   };
 };

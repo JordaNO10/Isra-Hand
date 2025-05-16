@@ -1,105 +1,170 @@
-/* Singlepage Component Styles */
+/* Layout container */
 .singlepage-container {
-  padding: 2rem;
-  background-color: #f8f9fa; /* Light background for better contrast */
-  border-radius: 8px; /* Rounded corners for the container */
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
-}
-
-.singlepage-content {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 1.5rem;
-  background-color: white; /* White background for content area */
-  border-radius: 8px; /* Rounded corners for content area */
-}
-
-.singlepage-post {
+  padding: 3rem 1rem;
+  background: linear-gradient(to right, #e0eafc, #cfdef3);
+  min-height: 100vh;
   display: flex;
-  align-items: center;
-  flex-direction: column;
-  gap: 1.5rem; /* Increased gap for better spacing */
+  justify-content: center;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
 
-.singlepage-title {
-  font-size: 2.5rem; /* Slightly larger title */
-  color: #007bff;
-  margin-bottom: 0.5rem; /* Margin for spacing */
-  text-align: center; /* Center the title */
-}
-
+/* Card content */
 .singlepage-content {
-  color: #333;
-  font-size: 1.1rem; /* Slightly larger font size */
+  max-width: 950px;
+  width: 35%;
+  background-color: #ffffff;
+  padding: 2.5rem;
+  border-radius: 18px;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
+  display: flex;
+  flex-direction: column;
+  animation: fadeIn 0.6s ease-in-out;
 }
 
+/* Fade-in animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Title */
+.singlepage-title {
+  font-size: 1.8rem;
+  color: #2c3e50;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+/* Info blocks */
+.donation-info {
+  direction: rtl;
+  font-size: 1.1rem;
+  color: #444;
+  background: #f3f7fa;
+  padding: 0.75rem 1rem;
+  border-radius: 10px;
+  border: 1px solid #d9e2ec;
+  margin-bottom: 1rem;
+}
+
+/* Dropdown */
+.donationdropdown-container {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 1.5rem;
+}
+
+.donationdropdown-container select {
+  padding: 0.6rem 1rem;
+  font-size: 1rem;
+  direction: ltr;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  background-color: #f9f9f9;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  transition: border-color 0.3s ease;
+}
+
+.donationdropdown-container select:focus {
+  border-color: #3498db;
+  outline: none;
+}
+
+/* Image block */
 .singlepage-image {
-  align-items: center;
-  margin: 1.5rem 0; /* Increased margin for spacing */
-  text-align: center; /* Center the image */
+  text-align: center;
+  margin-top: 2rem;
+}
+
+.singlepage-image h3 {
+  color: #2c3e50;
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
 }
 
 .singlepage-image-preview {
-  max-width: 50%; /* Full width for image previews */
-  height: auto; /* Maintain aspect ratio */
-  border-radius: 4px;
+  width: 60%;
+  max-width: 400px;
+  border-radius: 14px;
   cursor: pointer;
+  transition: transform 0.3s ease;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
 }
 
+.singlepage-image-preview:hover {
+  transform: scale(1.04);
+}
+
+/* Buttons */
 .singlepage-button {
   display: flex;
-  flex-direction: row;
-  margin-right: 1%; /* Margin to the right */
-  padding: 0.8rem 1.5rem; /* Adjusted padding for better button size */
-  font-size: 1.1rem; /* Slightly larger font size */
-  background-color: #0056b3; /* Default background for buttons */
-  color: white; /* Text color */
-  border: none; /* Remove border */
-  border-radius: 10px; /* Rounded corners */
-  justify-content: space-between; /* Space between buttons */
-
-  cursor: pointer; /* Pointer cursor on hover */
-  transition: background-color 0.3s ease, transform 0.2s ease; /* Transition effects */
-  box-shadow: 0 10px 5px rgba(0, 0, 0, 0.2); /* Subtle shadow for depth */
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 2rem;
 }
 
-.singlepage-button:hover {
-  transform: translateY(-2px); /* Hover effect */
-}
-
-/* Specific Button Colors */
+.edit-button,
+.delete-button,
 .back-button {
-  background-color: #040296; /* Red background for back button */
-}
-
-.back-button:hover {
-  background-color: darkred; /* Darker red on hover */
+  padding: 0.9rem 1.8rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 12px;
+  color: white;
+  cursor: pointer;
+  min-width: 140px;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .edit-button {
-  background-color: green; /* Green background for edit button */
+  background-color: #28a745;
 }
 
 .edit-button:hover {
-  background-color: darkgreen; /* Darker green on hover */
+  background-color: #218838;
 }
 
 .delete-button {
-  background-color: darkred; /* Dark red background for delete button */
+  background-color: #dc3545;
 }
 
 .delete-button:hover {
-  background-color: crimson; /* Brighter red on hover */
+  background-color: #c82333;
 }
 
-/* Modal Styles */
+.back-button {
+  background-color: #007bff;
+}
+
+.back-button:hover {
+  background-color: #0056b3;
+}
+
+/* Back button wrapper */
+.singlepage-back-button-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-top: 2.5rem;
+}
+
+/* Modal styles */
 .singlepage-modal {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.8);
+  background-color: rgba(0, 0, 0, 0.85);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -110,20 +175,94 @@
   position: relative;
   max-width: 90%;
   max-height: 90%;
-  border-radius: 8px;
+  border-radius: 12px;
   overflow: hidden;
+  animation: fadeIn 0.3s ease;
 }
 
 .singlepage-modal-image {
-  width: 100%; /* Set width to 100% to fill the modal */
-  height: auto; /* Maintain aspect ratio */
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
 }
 
 .singlepage-close {
   position: absolute;
-  top: 10px;
-  right: 10px;
+  top: 12px;
+  right: 18px;
   font-size: 30px;
   color: white;
   cursor: pointer;
+}
+
+/* Popup confirmation */
+.popup-confirm {
+  margin-top: 1rem;
+  padding: 1rem;
+  background-color: #fff3cd;
+  border: 1px solid #ffeeba;
+  border-radius: 8px;
+  text-align: center;
+  color: #856404;
+}
+
+.popup-confirm p {
+  margin-bottom: 0.8rem;
+  font-weight: 600;
+}
+
+.popup-confirm button {
+  margin: 0 0.5rem;
+  padding: 0.5rem 1.2rem;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.popup-confirm button:first-child {
+  background-color: #dc3545;
+  color: white;
+}
+
+.popup-confirm button:first-child:hover {
+  background-color: #c82333;
+}
+
+.popup-confirm button:last-child {
+  background-color: #6c757d;
+  color: white;
+}
+
+.popup-confirm button:last-child:hover {
+  background-color: #5a6268;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .singlepage-content {
+    width: 90%;
+    padding: 1.5rem;
+  }
+
+  .singlepage-title {
+    font-size: 1.5rem;
+  }
+
+  .singlepage-image-preview {
+    width: 85%;
+  }
+
+  .singlepage-button,
+  .singlepage-back-button-wrapper {
+    flex-direction: column;
+    gap: 0.8rem;
+  }
+
+  .edit-button,
+  .delete-button,
+  .back-button {
+    width: 100%;
+  }
 }

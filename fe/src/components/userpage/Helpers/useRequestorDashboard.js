@@ -1,38 +1,52 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import Cookies from "js-cookie";
+import { useEditUser } from "./userEditUser";
+
 
 export const useRequestorDashboard = () => {
+  const [userData, setUserData] = useState(null);
   const [availableDonations, setAvailableDonations] = useState([]);
-  const [myRequests, setMyRequests] = useState([]);
+  const [unacceptedRequests, setUnacceptedRequests] = useState([]);
+  const [acceptedDonations, setAcceptedDonations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   const currentUserId = Cookies.get("userId");
+  const editUserHook = useEditUser(userData, setUserData);
 
   useEffect(() => {
     const fetchDonations = async () => {
       setLoading(true);
       try {
-        const [availableRes, allRes] = await Promise.all([
+        const [userRes, availableRes, allRes] = await Promise.all([
+          axios.get(`/users/${currentUserId}`, { withCredentials: true }),
           axios.get("/donations/available"),
           axios.get("/donations"),
         ]);
 
+        setUserData(userRes.data);
         setAvailableDonations(availableRes.data);
 
-        const userRequested = allRes.data.filter(
-          (d) => d.requestor_id === Number(currentUserId)
+        const unaccepted = allRes.data.filter(
+          (d) => d.requestor_id === Number(currentUserId) && d.accepted === 0
         );
-        setMyRequests(userRequested);
+        setUnacceptedRequests(unaccepted);
+
+        const accepted = allRes.data.filter(
+          (d) => d.requestor_id === Number(currentUserId) && d.accepted === 1
+        );
+        setAcceptedDonations(accepted);
       } catch (err) {
-        setError("Failed to load donation data.");
+        setError("Failed to load dashboard data.");
       } finally {
         setLoading(false);
       }
     };
 
-    fetchDonations();
+    if (currentUserId) {
+      fetchDonations();
+    }
   }, [currentUserId]);
 
   const requestDonation = async (donationId) => {
@@ -40,7 +54,6 @@ export const useRequestorDashboard = () => {
       await axios.put(`/donations/${donationId}/request`, {
         requestor_id: currentUserId,
       });
-      // Refresh
       await refreshData();
     } catch (err) {
       alert("Failed to request donation: " + err.response?.data?.error);
@@ -52,10 +65,20 @@ export const useRequestorDashboard = () => {
       await axios.put(`/donations/${donationId}/cancel`, {
         requestor_id: currentUserId,
       });
-      // Refresh
       await refreshData();
     } catch (err) {
       alert("Failed to cancel request: " + err.response?.data?.error);
+    }
+  };
+
+  const markAsAccepted = async (donationId) => {
+    try {
+      await axios.put(`/donations/${donationId}/accept`, {
+        requestor_id: currentUserId,
+      });
+      await refreshData();
+    } catch (err) {
+      alert("Failed to mark donation as accepted.");
     }
   };
 
@@ -66,21 +89,32 @@ export const useRequestorDashboard = () => {
         axios.get("/donations"),
       ]);
       setAvailableDonations(availableRes.data);
-      const userRequested = allRes.data.filter(
-        (d) => d.requestor_id === Number(currentUserId)
+
+      const unaccepted = allRes.data.filter(
+        (d) => d.requestor_id === Number(currentUserId) && d.accepted === 0
       );
-      setMyRequests(userRequested);
+      setUnacceptedRequests(unaccepted);
+
+      const accepted = allRes.data.filter(
+        (d) => d.requestor_id === Number(currentUserId) && d.accepted === 1
+      );
+      setAcceptedDonations(accepted);
     } catch (err) {
       setError("Failed to refresh donation data.");
     }
   };
 
   return {
+    userData,
+    setUserData,
     availableDonations,
-    myRequests,
+    unacceptedRequests,
+    acceptedDonations,
     loading,
     error,
     requestDonation,
     cancelRequest,
+    markAsAccepted,
+    ...editUserHook,
   };
 };
