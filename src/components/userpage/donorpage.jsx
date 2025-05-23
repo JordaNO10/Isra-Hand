@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState,useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useDashboardDataHelpers } from "./Helpers/useDashboardDataHelpers";
 import { useEditUser } from "./Helpers/userEditUser";
 import DonationAdd from "../Donations/Donationadd";
@@ -12,6 +12,13 @@ const DonorDashboard = () => {
     useEditUser(userData, setUserData);
   const [showModal, setShowModal] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+  useEffect(() => {
+    if (location.state?.setShowModal) {
+      setShowModal(true);
+       window.history.replaceState({}, document.title);
+    }
+  }, [location.state]);
 
   if (loading) return <div className="dashboard">טוען נתונים...</div>;
   if (error) return <div className="dashboard error">{error}</div>;

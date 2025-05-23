@@ -4,6 +4,7 @@ import { useEditUser } from "./Helpers/userEditUser";
 import RatingModal from "./RatingModal";
 import "./css/RequestorDashboard.css";
 import Cookies from "js-cookie";
+import { useNavigate } from "react-router-dom";
 const userId = Cookies.get("userId");
 const RequestorDashboard = () => {
   const {
@@ -109,6 +110,7 @@ const RequestorDashboard = () => {
           <div key={donation.donation_id} className="item-card">
             {donation.donat_photo && (
               <img
+                onClick={() => useNavigate(`/donations/${donation.donation_id}`)}
                 src={donation.donat_photo}
                 alt="Donation"
                 className="item-image-placeholder"

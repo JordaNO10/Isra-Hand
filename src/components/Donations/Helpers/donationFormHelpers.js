@@ -45,6 +45,7 @@ export const submitDonationForm = async (
   formDataToSend.append("user_id", Cookies.get("userId"));
   formDataToSend.append("image", selectedFile);
 
+
   try {
     await axios.post("/donations", formDataToSend, {
       headers: { "Content-Type": "multipart/form-data" },

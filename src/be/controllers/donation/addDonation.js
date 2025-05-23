@@ -4,6 +4,7 @@ const { buildImageUrl } = require("../../utils/helpers");
 const addDonation = (req, res) => {
   const { donationname, description, categoryId, email, user_id } = req.body;
   const imageUrl = req.file ? buildImageUrl(req, req.file.filename) : null;
+  const date = new Date().toISOString().split("T")[0];
 
   // Validation
   if (!donationname || !description || !categoryId || !user_id) {
@@ -11,12 +12,12 @@ const addDonation = (req, res) => {
   }
 
   const sql = `
-    INSERT INTO donations (donation_name, description, category_id, donat_photo, email, user_id)
-    VALUES (?, ?, ?, ?, ?, ?)`;
+    INSERT INTO donations (donation_name, description, category_id ,donat_photo, email, user_id,donation_date)
+    VALUES (?, ?, ?, ?, ?, ?, ?)`;
 
   db.query(
     sql,
-    [donationname, description, categoryId, imageUrl, email, user_id],
+    [donationname, description, categoryId, imageUrl, email, user_id, date],
     (error, results) => {
       if (error) {
         console.error("Database error during donation add:", error);
