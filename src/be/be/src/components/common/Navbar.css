@@ -1,0 +1,45 @@
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #1877f2; /* Facebook Blue */
+  padding: 10px 20px;
+}
+
+.navbar-logo span {
+  font-size: 24px;
+  font-weight: bold;
+  color: white; /* Logo text white */
+}
+
+.navbar-links {
+  list-style: none;
+  display: flex;
+  gap: 20px;
+}
+
+.navbar-links li a {
+  font-size: 18px;
+  color: white;
+  text-decoration: none;
+}
+
+.navbar-links li a:hover {
+  color: #4d9de0; /* Light Israeli Blue on hover */
+}
+
+.navbar-auth-buttons .btn {
+  margin-left: 10px;
+  padding: 5px 10px;
+  background-color: white;
+  color: #1877f2;
+  border: 1px solid #1877f2;
+  border-radius: 4px;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.navbar-auth-buttons .btn:hover {
+  background-color: #4d9de0;
+  color: white;
+}

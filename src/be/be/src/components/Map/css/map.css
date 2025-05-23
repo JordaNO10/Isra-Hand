@@ -1,0 +1,35 @@
+.map-container {
+  margin-bottom: 20px;
+  width: 100%;
+}
+
+.map-input {
+  margin-bottom: 10px;
+  padding: 8px;
+  width: 25vh;
+}
+
+.map-button {
+  margin-left: 10px;
+  padding: 8px 16px;
+  background: blue;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.error-message {
+  color: red;
+  margin-top: 10px;
+}
+
+.description-input {
+  margin-bottom: 10px;
+  padding: 8px;
+  width: 25%;
+}
+
+#map {
+  height: 40vh;
+  width: 100%;
+}

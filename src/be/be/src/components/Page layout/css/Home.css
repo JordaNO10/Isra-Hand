@@ -1,0 +1,133 @@
+/* src/Layout/css/Home.css */
+
+.home-page {
+  background-color: #ffffff;
+  color: #333;
+  font-family: "Arial", sans-serif;
+  padding: 2rem;
+  text-align: center;
+  direction: rtl;
+}
+
+.home-header {
+  margin-bottom: 2rem;
+}
+
+.home-quote {
+  font-size: 1.8rem;
+  color: #1877f2;
+  font-weight: bold;
+}
+
+.home-banner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.banner-placeholder {
+  width: 80%;
+  height: 250px;
+  border: 2px dashed #4d9de0;
+  border-radius: 12px;
+  background-color: #e8f1fb;
+}
+
+.home-cta {
+  margin-bottom: 2rem;
+}
+
+.cta-text {
+  font-size: 1.4rem;
+  margin-bottom: 1.5rem;
+  color: #1877f2;
+}
+
+.cta-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.cta-button {
+  background-color: #1877f2;
+  color: white;
+  border: none;
+  padding: 0.7rem 1.5rem;
+  font-size: 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.cta-button:hover {
+  background-color: #4d9de0;
+}
+
+.cta-button.secondary {
+  background-color: #4d9de0;
+}
+
+.cta-button.secondary:hover {
+  background-color: #1877f2;
+}
+
+.home-stats {
+  margin-top: 3rem;
+  background-color: #f0f2f5;
+  display: flex;
+  justify-content: space-around;
+  padding: 2rem 0;
+  border-radius: 12px;
+  flex-wrap: wrap;
+}
+
+.stat {
+  text-align: center;
+  margin: 1rem;
+}
+
+.stat h3 {
+  font-size: 2rem;
+  color: #1877f2;
+
+  margin-bottom: 0.5rem;
+}
+
+.stat p {
+  font-size: 1.2rem;
+}
+.latest-donations {
+  padding: 2rem;
+  background-color: #f9f9f9;
+  direction: rtl;
+  text-align: right;
+}
+
+.latest-title {
+  font-size: 1.6rem;
+  margin-bottom: 1.5rem;
+}
+
+.latest-list {
+  display: flex;
+  direction: rtl;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+}
+
+.donation-card-home {
+  background-color: #ffffff;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  text-align: right;
+  padding: 1rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease-in-out;
+}
+
+.donation-card-home:hover {
+  transform: translateY(-4px);
+}
