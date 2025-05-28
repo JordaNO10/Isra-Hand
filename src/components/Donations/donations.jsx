@@ -1,14 +1,21 @@
 import React from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import "./css/donations.css";
 import { useDonationsPage } from "./Helpers/useDonationsPage";
 
 const Donations = () => {
-  const { donations, loading, hasMore, loadMore, filters, setFilters } =
-    useDonationsPage();
+  const {
+    donations,
+    loading,
+    hasMore,
+    loadMore,
+    filters,
+    setFilters,
+    formatDateForDisplay,
+  } = useDonationsPage();
 
+  const navigate = useNavigate();
   const location = useLocation();
-
   // Get unique categories and subcategories
   const categories = [...new Set(donations.map((d) => d.category_name))];
   const subCategories = filters.category
@@ -82,7 +89,10 @@ const Donations = () => {
               <strong>כתובת:</strong> {donation.address}
             </p>
             <p>
-              <strong>תאריך העלאה : {donation.donation_date}</strong>
+              <strong>תאריך העלאה : </strong>
+              {donation.donation_date
+                ? formatDateForDisplay(donation.donation_date)
+                : "לא זמין"}{" "}
             </p>
           </div>
         ))}
