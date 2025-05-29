@@ -41,6 +41,7 @@ export const useHeaderLogic = (onLogout) => {
       );
       if (response.status === 200) {
         Cookies.remove("userId");
+        Cookies.remove('fullName')
         Cookies.remove("userRole");
         Cookies.remove("userName"); // ✅ Optional, clear name too
         setLogoutMessage("התנתקת בהצלחה!");

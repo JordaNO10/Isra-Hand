@@ -41,6 +41,8 @@ const registerUser = (req, res) => {
               message: "User created successfully",
               userId: results.insertId,
               roleId: roleId,
+              user_name: username,
+              full_name: name,
             });
           }
         );
