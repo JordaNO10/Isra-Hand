@@ -6,17 +6,13 @@ import { fetchCategories, submitDonationForm } from "./donationFormHelpers";
 export const useDonationAddForm = (navigate) => {
   const [formData, setFormData] = useState({
     donation_name: "",
+    Phonenumber: "",
     description: "",
     email: "",
     category_id: "",
   });
 
   const [selectedFile, setSelectedFile] = useState(null);
-  const [categories, setCategories] = useState([]);
-
-  useEffect(() => {
-    fetchCategories(setCategories);
-  }, []);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -32,6 +28,7 @@ export const useDonationAddForm = (navigate) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
     await submitDonationForm(
       formData,
       selectedFile,
@@ -44,7 +41,6 @@ export const useDonationAddForm = (navigate) => {
   return {
     formData,
     setFormData,
-    categories,
     handleInputChange,
     handleImageUpload,
     handleSubmit,

@@ -1,11 +1,16 @@
 const db = require("../../utils/db");
 
 const getAvailableDonations = (req, res) => {
-    console.log("sdsf");
-    
   const sql = `
-    SELECT * FROM donations
-    WHERE requestor_id IS NULL
+    SELECT 
+  d.*, 
+  c.category_name 
+FROM 
+  donations d
+JOIN 
+  categories c ON d.category_id = c.category_id
+WHERE 
+  d.requestor_id IS NULL;
   `;
 
   db.query(sql, (err, results) => {

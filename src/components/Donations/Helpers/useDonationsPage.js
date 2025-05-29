@@ -1,46 +1,67 @@
-import { useState, useEffect } from "react";
-import { getAllDonations, getUserRole } from "./donationService";
-import { isDonor, isDonationOwner } from "./donationAccessControl";
-import Cookies from "js-cookie";
+import { useState, useEffect, useCallback } from "react";
+import axios from "axios";
 
-/**
- * Hook for managing donations listing + role check
- */
 export const useDonationsPage = () => {
   const [donations, setDonations] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [userRole, setUserRole] = useState(null);
-
-  useEffect(() => {
-    const fetchDonationsAndUser = async () => {
+  const [offset, setOffset] = useState(0);
+  const [hasMore, setHasMore] = useState(true);
+  const [filters, setFilters] = useState({ category: "", subCategory: "" });
+  const LIMIT = 8;
+  const fetchDonations = useCallback(
+    async (append = false, currentOffset = 0) => {
       try {
-        const donationsData = await getAllDonations();
-        const role = await getUserRole();
-        const currentUserId = Cookies.get("userId");
+        setLoading(true);
+        const res = await axios.get("/donations", {
+          params: { limit: LIMIT, offset: currentOffset },
+          withCredentials: true,
+        });
 
-        // If donor, show only own donations
-        const filtered =
-          role === 2
-            ? donationsData.filter(
-                (don) => String(don.user_id) === String(currentUserId)
-              )
-            : donationsData;
+        const filtered = filters.category
+          ? res.data.filter(
+              (d) =>
+                d.category_name === filters.category &&
+                (!filters.subCategory || d.sub_category === filters.subCategory)
+            )
+          : res.data;
 
-        setDonations(filtered);
-        setUserRole(role);
-      } catch (error) {
-        console.error("Error fetching data:", error);
+        setDonations((prev) => (append ? [...prev, ...filtered] : filtered));
+        setHasMore(res.data.length === LIMIT);
+      } catch (err) {
+        console.error("❌ Failed to fetch donations:", err);
       } finally {
         setLoading(false);
       }
-    };
+    },
+    [filters]
+  );
 
-    fetchDonationsAndUser();
-  }, []);
+  useEffect(() => {
+    setOffset(0); // reset offset on filters change
+    fetchDonations(false, 0);
+  }, [filters, fetchDonations]);
+
+  const loadMore = () => {
+    const newOffset = offset + LIMIT;
+    setOffset(newOffset);
+    fetchDonations(true, newOffset);
+  };
+
+  const formatDateForDisplay = (isoDateString) => {
+    const date = new Date(isoDateString);
+    const day = date.getDate().toString().padStart(2, "0");
+    const month = (date.getMonth() + 1).toString().padStart(2, "0");
+    const year = date.getFullYear();
+    return `${day}-${month}-${year}`;
+  };
 
   return {
     donations,
+    formatDateForDisplay,
     loading,
-    userRole,
+    hasMore,
+    loadMore,
+    setFilters,
+    filters,
   };
 };

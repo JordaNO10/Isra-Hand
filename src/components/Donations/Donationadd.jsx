@@ -1,29 +1,28 @@
-import React, { useState, useEffect } from "react";
+import  { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDonationAddForm } from "./Helpers/useDonationForm";
 import UploadImage from "./imageupload";
 import "./css/donationadd.css";
+import { useCategories } from "./Helpers/useCategories";
 
 function DonationAdd({ onClose, userData }) {
   const navigate = useNavigate();
+  const { categories, loading: loadingCategories } = useCategories();
+
   const {
     formData,
     setFormData,
-    categories,
     handleInputChange,
     handleImageUpload,
     handleSubmit,
   } = useDonationAddForm(navigate);
 
   const [useUserEmail, setUseUserEmail] = useState(true);
-
-  // Autofill if using current email
   useEffect(() => {
     if (useUserEmail && userData?.email) {
       setFormData((prev) => ({ ...prev, email: userData.email }));
     }
   }, [useUserEmail, userData, setFormData]);
-
   return (
     <div className="donationadd-overlay">
       <div className="donationadd-modal">
@@ -33,7 +32,6 @@ function DonationAdd({ onClose, userData }) {
 
         <form className="donationadd-form" onSubmit={handleSubmit}>
           <h2>העלאת תרומה</h2>
-
           <label htmlFor="donation_name">שם התרומה:</label>
           <input
             type="text"
@@ -55,7 +53,6 @@ function DonationAdd({ onClose, userData }) {
             value={formData.description}
             onChange={handleInputChange}
           />
-
           <div className="email-choice">
             <label>
               <input
@@ -79,7 +76,6 @@ function DonationAdd({ onClose, userData }) {
               הזן אימייל חדש
             </label>
           </div>
-
           {!useUserEmail && (
             <>
               <label htmlFor="email">אימייל:</label>
@@ -91,7 +87,6 @@ function DonationAdd({ onClose, userData }) {
               />
             </>
           )}
-
           <label htmlFor="category_id">קטגוריה:</label>
           <select
             name="category_id"
@@ -108,9 +103,26 @@ function DonationAdd({ onClose, userData }) {
             ))}
           </select>
 
+          {/* Optional: Subcategory if categories include subCategories array */}
+
+          <label htmlFor="sub_category_name">קטגוריה משנית :</label>
+          <select name="sub_category_name" onChange={handleInputChange}>
+            <option value="" disabled>
+              בחר קטגוריה משנית
+            </option>
+            {(
+              categories.find(
+                (cat) =>
+                  String(cat.category_id) === String(formData.category_id)
+              )?.subCategories || []
+            ).map((sub, index) => (
+              <option key={`${sub}-${index}`} value={sub}>
+                {sub}
+              </option>
+            ))}
+          </select>
           <label>תמונת התרומה:</label>
           <UploadImage onUploadImage={handleImageUpload} />
-
           <button type="submit" className="donationadd-submit">
             העלאה
           </button>

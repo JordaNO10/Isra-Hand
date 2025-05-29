@@ -30,16 +30,25 @@ export const useDonationDropdown = (currentId) => {
   }, []);
 
   const groupedDonations = donations.reduce((acc, donation) => {
-    if (!donation || !donation.donation_id || !donation.donation_name)
-      return acc;
-    if (currentId && donation.donation_id.toString() === currentId.toString())
-      return acc;
+  const categoryId = donation.category_id;
+  const categoryName = donation.category_name || "ללא שם";
+  const subCategory = donation.sub_category_name;
 
-    const group = donation.donation_name?.trim() || "ללא קטגוריה";
-    if (!acc[group]) acc[group] = [];
-    acc[group].push(donation);
-    return acc;
-  }, {});
+  if (!categoryId) return acc;
+
+  if (!acc[categoryId]) {
+    acc[categoryId] = {
+      category_name: categoryName,
+      subCategories: [],
+    };
+  }
+
+  if (subCategory && !acc[categoryId].subCategories.includes(subCategory)) {
+    acc[categoryId].subCategories.push(subCategory);
+  }
+
+  return acc;
+}, {});
 
   return {
     loading,

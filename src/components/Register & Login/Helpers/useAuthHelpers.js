@@ -35,6 +35,7 @@ export const useAuthHelpers = (navigate) => {
         Cookies.set("userId", response.data.userId);
         Cookies.set("userRole", response.data.roleId);
         Cookies.set("userName", response.data.user_name);
+        Cookies.set("fullName", response.data.full_name);
         setErrorMessage("");
         navigate("/");
         window.location.reload();
@@ -59,7 +60,6 @@ export const useAuthHelpers = (navigate) => {
     errorMessage,
     setErrorMessage,
     handleInputChange,
-    handleSignin,
     handleSignup,
     handleForgotPassword,
   };

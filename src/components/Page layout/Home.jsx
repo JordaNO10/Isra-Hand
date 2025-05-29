@@ -51,8 +51,20 @@ const Home = () => {
         </p>
 
         <div className="cta-buttons">
-          <button className="cta-button">אני רוצה לתרום</button>
-          <button className="cta-button secondary">אני זקוק לתרומה</button>
+          <button
+            className="cta-button"
+            onClick={() =>
+              navigate("/donorpage", { state: { setShowModal: true } })
+            }
+          >
+            אני רוצה לתרום
+          </button>
+          <button
+            className="cta-button secondary"
+            onClick={() => navigate(`/donations`)}
+          >
+            אני זקוק לתרומה
+          </button>
         </div>
       </section>
 
@@ -67,8 +79,9 @@ const Home = () => {
               style={{ cursor: "pointer" }}
             >
               <h3>{donation.donation_name}</h3>
-              <p>תאריך העלאה : {donation.donation_date}</p>
-              <p>{donation.description}</p>
+              <p>
+                תאריך העלאה<br></br> {donation.donation_date_formatted}
+              </p>
               <p>קטגוריה : {donation.category_name}</p>
               <p>
                 <img

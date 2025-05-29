@@ -2,18 +2,17 @@ const session = require("express-session");
 const MySQLStore = require("express-mysql-session")(session);
 const cookieParser = require("cookie-parser");
 
-// MySQL session storage options
 const options = {
-  host: "localhost", // Database host
-  user: "root", // Database user
-  password: "", // Database password (leave blank if none)
-  database: "israhand", // Database name
+  host: "localhost",
+  user: "root",
+  password: "",
+  database: "israhand",
   clearExpired: true,
+  rolling: true,
   checkExpirationInterval: 900000, // 15 minutes
-  expiration: 86400000, // 1 day (24 hours)
+  expiration: 3600000, // ✅ 1 hour (used for server-side session expiration)
 };
 
-// Create session store
 const sessionStore = new MySQLStore(options);
 
 const sessionMiddleware = (app) => {
@@ -22,14 +21,14 @@ const sessionMiddleware = (app) => {
   app.use(
     session({
       key: "session_id",
-      secret: "yourSuperSecretKey", // Set your session secret directly here
+      secret: "yourSuperSecretKey",
       store: sessionStore,
       resave: false,
       saveUninitialized: false,
       cookie: {
         httpOnly: true,
-        secure: false, // Set to true if using HTTPS in production
-        maxAge: 86400000, // 1 day
+        secure: false,
+        maxAge: 3600000, // ✅ 1 hour (used for client-side cookie expiration)
       },
     })
   );

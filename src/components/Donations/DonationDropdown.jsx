@@ -35,11 +35,11 @@ const DonationDropdown = ({ currentId, onSelectDonation }) => {
           <option value="" disabled>
             בחר תרומה
           </option>
-          {Object.entries(groupedDonations).map(([category, items]) => (
-            <optgroup key={category} label={category}>
-              {items.map((donation) => (
-                <option key={donation.donation_id} value={donation.donation_id}>
-                  {donation.donation_name}
+          {Object.entries(groupedDonations).map(([categoryId, data]) => (
+            <optgroup key={categoryId} label={data.category_name}>
+              {data.subCategories.map((sub, index) => (
+                <option key={`${categoryId}-${index}`} value={sub}>
+                  {sub}
                 </option>
               ))}
             </optgroup>
