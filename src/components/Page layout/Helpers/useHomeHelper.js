@@ -18,7 +18,7 @@ const formatDateForDisplay = (isoDateString) => {
  */
 export const fetchHomepageDonations = async () => {
   const allDonations = await getAllDonations();
-  console.log(allDonations);
+  // console.log(allDonations);
 
   // Sort by most recent donation_date
   const sorted = [...allDonations].sort(

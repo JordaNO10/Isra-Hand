@@ -1,72 +1,93 @@
-.image-modal {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.8); /* Semi-transparent background */
-  z-index: 1000; /* Ensure it's above other content */
-}
-
-.image-modal-content {
-  position: relative;
-  max-width: 80%;
-  max-height: 80%;
-}
-
-.image-modal-content img {
-  width: 100%;
-  height: auto;
-  border-radius: 8px; /* Optional styling */
-}
-
-.close {
-  position: absolute;
-  top: 10px;
-  right: 20px;
-  font-size: 24px;
-  color: white;
-  cursor: pointer;
-}
-
-.singlepage-form {
+.donationform-container {
+  background-color: #ffffff;
+  padding: 2rem;
+  border-radius: 18px;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.08);
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 1.5rem; /* Increased gap for better spacing */
-}
-.singlepage-button-group {
-  display: flex;
-  flex-direction: row;
-}
-.singlepage-form button {
-  height: auto;
-  margin: 2%;
-  width: 10vh;
-}
-textarea {
-  width: 300px; /* Set a fixed width */
-  height: 100px; /* Set a fixed height */
-  resize: none; /* Prevent resizing */
-  padding: 10px; /* Optional: for better appearance */
-  border: 1px solid #ccc; /* Optional: border styling */
-  border-radius: 4px; /* Optional: rounded corners */
-  overflow-y: auto; /* Allow vertical scrolling */
-  box-sizing: border-box; /* Ensure padding is included in width/height */
-}
-.singlepage-delete-btn {
-  background-color: red;
-  color: white;
-  border: none;
-  padding: 10px;
-  cursor: pointer;
-  border-radius: 4px;
-  transition: 0.3s;
+  gap: 1.2rem;
+  animation: fadeIn 0.6s ease-in-out;
+  width: 100%;
+  box-sizing: border-box;
 }
 
-.singlepage-delete-btn:hover {
-  background-color: darkred;
+/* Headline */
+.donationform-container h2 {
+  text-align: center;
+  font-size: 1.6rem;
+  color: #2c3e50;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+/* Label styling */
+.donationform-container label {
+  font-weight: 600;
+  color: #333;
+  font-size: 1rem;
+}
+
+/* Input + textarea */
+.donationform-container input,
+.donationform-container textarea {
+  padding: 0.8rem 1rem;
+  border: 1px solid #d9e2ec;
+  border-radius: 12px;
+  font-size: 1rem;
+  background-color: #f3f7fa;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.donationform-container input:focus,
+.donationform-container textarea:focus {
+  border-color: #3498db;
+  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.15);
+  outline: none;
+}
+
+.donationform-container textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+/* Upload input */
+.donationform-container input[type="file"] {
+  background-color: #f9f9f9;
+  border: 1px solid #d9e2ec;
+  padding: 0.6rem;
+  border-radius: 12px;
+  font-size: 0.95rem;
+}
+
+/* Submit button */
+.donationform-submit {
+  background-color: #007bff;
+  color: white;
+  font-size: 1.05rem;
+  padding: 0.9rem 1.5rem;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  font-weight: bold;
+}
+
+.donationform-submit:hover {
+  background-color: #0056b3;
+}
+
+/* Responsive adjustments */
+@media screen and (max-width: 768px) {
+  .donationform-container {
+    padding: 1.5rem;
+    border-radius: 14px;
+  }
+
+  .donationform-container h2 {
+    font-size: 1.4rem;
+  }
+
+  .donationform-submit {
+    width: 100%;
+  }
 }

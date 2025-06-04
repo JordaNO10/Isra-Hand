@@ -1,23 +1,22 @@
-/* Layout container */
 .singlepage-container {
-  padding: 3rem 1rem;
-  background: linear-gradient(to right, #e0eafc, #cfdef3);
-  min-height: 100vh;
   display: flex;
   justify-content: center;
+  align-items: center;
+  padding: 0; /* No extra padding */
+  background: linear-gradient(to right, #e0eafc, #cfdef3);
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
 
-/* Card content */
+/* Card layout */
 .singlepage-content {
-  max-width: 950px;
-  width: 35%;
   background-color: #ffffff;
-  padding: 2.5rem;
   border-radius: 18px;
-  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
+  padding: 2rem;
+  box-shadow: 0 10px 30px rgba(0, 123, 255, 0.15);
   display: flex;
   flex-direction: column;
+  align-items: center;
+  text-align: center;
   animation: fadeIn 0.6s ease-in-out;
 }
 
@@ -25,7 +24,7 @@
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(15px);
+    transform: translateY(20px);
   }
   to {
     opacity: 1;
@@ -38,98 +37,71 @@
   font-size: 1.8rem;
   color: #2c3e50;
   font-weight: 700;
-  text-align: center;
-  margin-bottom: 1.5rem;
 }
 
-/* Info blocks */
+/* Info text */
 .donation-info {
   direction: rtl;
   font-size: 1.1rem;
-  color: #444;
-  background: #f3f7fa;
-  padding: 0.75rem 1rem;
-  border-radius: 10px;
-  border: 1px solid #d9e2ec;
-  margin-bottom: 1rem;
-}
-
-/* Dropdown */
-.donationdropdown-container {
-  display: flex;
-  justify-content: flex-end;
-  margin-bottom: 1.5rem;
-}
-
-.donationdropdown-container select {
-  padding: 0.6rem 1rem;
-  font-size: 1rem;
-  direction: ltr;
-  border: 1px solid #ccc;
-  border-radius: 10px;
-  background-color: #f9f9f9;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-  transition: border-color 0.3s ease;
-}
-
-.donationdropdown-container select:focus {
-  border-color: #3498db;
-  outline: none;
+  color: #333;
+  background: #f0f4ff;
+  padding: 0.9rem 1.2rem;
+  border-radius: 12px;
+  border: 1px solid #d6e4f0;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 /* Image block */
 .singlepage-image {
   text-align: center;
-  margin-top: 2rem;
 }
 
 .singlepage-image h3 {
   color: #2c3e50;
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   margin-bottom: 0.5rem;
 }
 
 .singlepage-image-preview {
-  width: 60%;
-  max-width: 400px;
-  border-radius: 14px;
+  width: 100%;
+  max-width: 300px;
+  border-radius: 12px;
   cursor: pointer;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
   transition: transform 0.3s ease;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
 }
 
 .singlepage-image-preview:hover {
-  transform: scale(1.04);
+  transform: scale(1.03);
 }
 
-/* Buttons */
+/* Buttons block */
 .singlepage-button {
   display: flex;
   justify-content: center;
-  flex-wrap: wrap;
   gap: 1rem;
-  margin-top: 2rem;
+  flex-wrap: wrap;
+  width: 100%;
 }
 
 .edit-button,
 .delete-button,
 .back-button {
-  padding: 0.9rem 1.8rem;
+  padding: 0.75rem 1.5rem;
   font-size: 1rem;
-  font-weight: 600;
   border: none;
-  border-radius: 12px;
+  border-radius: 10px;
+  font-weight: 600;
   color: white;
   cursor: pointer;
-  min-width: 140px;
-  transition: background-color 0.3s ease, transform 0.2s ease;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  min-width: 120px;
+  transition: background-color 0.3s ease;
 }
 
 .edit-button {
   background-color: #28a745;
 }
-
 .edit-button:hover {
   background-color: #218838;
 }
@@ -137,7 +109,6 @@
 .delete-button {
   background-color: #dc3545;
 }
-
 .delete-button:hover {
   background-color: #c82333;
 }
@@ -145,104 +116,104 @@
 .back-button {
   background-color: #007bff;
 }
-
 .back-button:hover {
   background-color: #0056b3;
 }
 
-/* Back button wrapper */
+/* Back section */
 .singlepage-back-button-wrapper {
   display: flex;
   justify-content: center;
-  margin-top: 2.5rem;
-}
-
-/* Modal styles */
-.singlepage-modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.85);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-}
-
-.singlepage-modal-content {
-  position: relative;
-  max-width: 90%;
-  max-height: 90%;
-  border-radius: 12px;
-  overflow: hidden;
-  animation: fadeIn 0.3s ease;
-}
-
-.singlepage-modal-image {
-  width: 100%;
-  height: auto;
-  border-radius: 8px;
-}
-
-.singlepage-close {
-  position: absolute;
-  top: 12px;
-  right: 18px;
-  font-size: 30px;
-  color: white;
-  cursor: pointer;
-}
-
-/* Popup confirmation */
-.popup-confirm {
   margin-top: 1rem;
+  width: 100%;
+}
+
+/* Popup confirm */
+.popup-confirm {
   padding: 1rem;
   background-color: #fff3cd;
   border: 1px solid #ffeeba;
-  border-radius: 8px;
+  border-radius: 10px;
   text-align: center;
   color: #856404;
 }
 
 .popup-confirm p {
-  margin-bottom: 0.8rem;
-  font-weight: 600;
+  font-weight: bold;
+  margin-bottom: 1rem;
 }
 
 .popup-confirm button {
-  margin: 0 0.5rem;
   padding: 0.5rem 1.2rem;
-  border: none;
+  margin: 0 0.5rem;
   border-radius: 8px;
-  font-weight: bold;
+  border: none;
   cursor: pointer;
-  transition: background-color 0.2s ease;
+  font-weight: 600;
 }
 
 .popup-confirm button:first-child {
   background-color: #dc3545;
   color: white;
 }
-
-.popup-confirm button:first-child:hover {
-  background-color: #c82333;
-}
-
 .popup-confirm button:last-child {
   background-color: #6c757d;
   color: white;
 }
 
+.popup-confirm button:first-child:hover {
+  background-color: #c82333;
+}
 .popup-confirm button:last-child:hover {
   background-color: #5a6268;
 }
 
-/* Responsive */
+.singlepage-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 9999;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.85);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.singlepage-modal-content {
+  position: relative;
+  max-width: 90%;
+  max-height: 90%;
+  overflow: hidden;
+  border-radius: 12px;
+  background: white;
+  padding: 0;
+}
+
+.singlepage-modal-image {
+  width: 100%;
+  height: auto;
+  max-height: 90vh;
+  object-fit: contain;
+  border-radius: 12px;
+}
+
+.singlepage-close {
+  position: absolute;
+  top: 12px;
+  right: 18px;
+  font-size: 32px;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  z-index: 10000;
+}
+
+/* Responsive tweaks */
 @media (max-width: 768px) {
   .singlepage-content {
-    width: 90%;
+    width: 95%;
     padding: 1.5rem;
   }
 
@@ -250,19 +221,26 @@
     font-size: 1.5rem;
   }
 
-  .singlepage-image-preview {
-    width: 85%;
+  .edit-button,
+  .delete-button,
+  .back-button {
+    width: 100%;
   }
 
   .singlepage-button,
   .singlepage-back-button-wrapper {
     flex-direction: column;
-    gap: 0.8rem;
+    gap: 0.75rem;
   }
 
-  .edit-button,
-  .delete-button,
-  .back-button {
+  .singlepage-image-preview {
     width: 100%;
+  }
+}
+
+@media (max-height: 750px) {
+  .singlepage-container {
+    align-items: flex-start;
+    padding-top: 1.5rem;
   }
 }

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import Cookies from "js-cookie";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import {
   getDonationById,
   deleteDonation,
@@ -16,6 +16,7 @@ import {
 import axios from "axios";
 
 export const useSinglePage = () => {
+  const navigate = useNavigate();
   const { id } = useParams();
   const [donationData, setDonationData] = useState(null);
   const [editedData, setEditedData] = useState({});
@@ -73,11 +74,28 @@ export const useSinglePage = () => {
 
   const handleSave = async (updatedData) => {
     try {
-      const updated = await updateDonation(id, updatedData);
-      setDonationData(updated);
+      console.log("⏳ Saving donation...", updatedData);
+
+      const formData = new FormData();
+      formData.append("donationname", updatedData.donation_name);
+      formData.append("email", updatedData.email);
+      formData.append("description", updatedData.description);
+      if (updatedData.image instanceof File) {
+        formData.append("image", updatedData.image);
+      }
+
+      await updateDonation(id, formData);
+
+      // 🔁 Soft reload: fetch updated data from backend
+      const refreshed = await getDonationById(id);
+      setDonationData(refreshed);
       setIsEditing(false);
+
+      alert("השינויים נשמרו בהצלחה!");
     } catch (err) {
+      console.error("❌ Save failed:", err);
       setError("Failed to save changes");
+      alert("⚠️ שמירת התרומה נכשלה");
     }
   };
 

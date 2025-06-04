@@ -3,7 +3,6 @@ import axios from "axios";
 import Cookies from "js-cookie";
 import { useEditUser } from "./userEditUser";
 
-
 export const useRequestorDashboard = () => {
   const [userData, setUserData] = useState(null);
   const [availableDonations, setAvailableDonations] = useState([]);
@@ -19,10 +18,11 @@ export const useRequestorDashboard = () => {
     const fetchDonations = async () => {
       setLoading(true);
       try {
-        const [userRes, availableRes, allRes] = await Promise.all([
+        const [userRes, availableRes, allRes, acceptedRes] = await Promise.all([
           axios.get(`/users/${currentUserId}`, { withCredentials: true }),
           axios.get("/donations/available"),
           axios.get("/donations"),
+          axios.get(`/donations/requestor-accepted/${currentUserId}`),
         ]);
 
         setUserData(userRes.data);
@@ -33,10 +33,8 @@ export const useRequestorDashboard = () => {
         );
         setUnacceptedRequests(unaccepted);
 
-        const accepted = allRes.data.filter(
-          (d) => d.requestor_id === Number(currentUserId) && d.accepted === 1
-        );
-        setAcceptedDonations(accepted);
+        // Use accepted donations from new endpoint (includes rating)
+        setAcceptedDonations(acceptedRes.data);
       } catch (err) {
         setError("Failed to load dashboard data.");
       } finally {
@@ -84,10 +82,12 @@ export const useRequestorDashboard = () => {
 
   const refreshData = async () => {
     try {
-      const [availableRes, allRes] = await Promise.all([
+      const [availableRes, allRes, acceptedRes] = await Promise.all([
         axios.get("/donations/available"),
         axios.get("/donations"),
+        axios.get(`/donations/requestor-accepted/${currentUserId}`),
       ]);
+
       setAvailableDonations(availableRes.data);
 
       const unaccepted = allRes.data.filter(
@@ -95,10 +95,7 @@ export const useRequestorDashboard = () => {
       );
       setUnacceptedRequests(unaccepted);
 
-      const accepted = allRes.data.filter(
-        (d) => d.requestor_id === Number(currentUserId) && d.accepted === 1
-      );
-      setAcceptedDonations(accepted);
+      setAcceptedDonations(acceptedRes.data);
     } catch (err) {
       setError("Failed to refresh donation data.");
     }

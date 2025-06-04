@@ -1,16 +1,9 @@
-import React from "react";
 import UploadImage from "./imageupload";
 import "./css/donationform.css";
 
 const DonationForm = ({ editedData, onSave, onChange, onImageUpload }) => {
   return (
-    <form
-      className="donationform-container"
-      onSubmit={(e) => {
-        e.preventDefault();
-        onSave(editedData);
-      }}
-    >
+    <form className="donationform-container" onSubmit={onSave}>
       <h2>עריכת תרומה</h2>
 
       <label htmlFor="donation_name">שם התרומה:</label>
@@ -38,7 +31,6 @@ const DonationForm = ({ editedData, onSave, onChange, onImageUpload }) => {
 
       <label>עדכן תמונה:</label>
       <UploadImage onUploadImage={onImageUpload} />
-
       <button type="submit" className="donationform-submit">
         שמור שינויים
       </button>

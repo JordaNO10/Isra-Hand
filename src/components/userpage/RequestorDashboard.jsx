@@ -5,7 +5,9 @@ import RatingModal from "./RatingModal";
 import "./css/RequestorDashboard.css";
 import Cookies from "js-cookie";
 import { useNavigate } from "react-router-dom";
+
 const userId = Cookies.get("userId");
+
 const RequestorDashboard = () => {
   const {
     userData,
@@ -20,8 +22,10 @@ const RequestorDashboard = () => {
     markAsAccepted,
   } = useRequestorDashboard();
 
+  const navigate = useNavigate();
   const [showRatingModal, setShowRatingModal] = useState(false);
   const [selectedDonation, setSelectedDonation] = useState(null);
+
   const { editMode, editedUser, toggleEditMode, handleFieldChange, saveField } =
     useEditUser(userData, setUserData);
 
@@ -110,10 +114,11 @@ const RequestorDashboard = () => {
           <div key={donation.donation_id} className="item-card">
             {donation.donat_photo && (
               <img
-                onClick={() => useNavigate(`/donations/${donation.donation_id}`)}
                 src={donation.donat_photo}
                 alt="Donation"
                 className="item-image-placeholder"
+                style={{ cursor: "pointer" }}
+                onClick={() => navigate(`/donations/${donation.donation_id}`)}
               />
             )}
             <h3>{donation.donation_name}</h3>
@@ -135,13 +140,13 @@ const RequestorDashboard = () => {
                 src={donation.donat_photo}
                 alt="Donation"
                 className="item-image-placeholder"
+                style={{ cursor: "pointer" }}
+                onClick={() => navigate(`/donations/${donation.donation_id}`)}
               />
             )}
             <h3>{donation.donation_name}</h3>
             <p>{donation.description}</p>
             <p>{donation.email}</p>
-
-            {/* ✅ Add this wrapper for both buttons */}
             <div className="request-buttons">
               <button onClick={() => cancelRequest(donation.donation_id)}>
                 בטל בקשה
@@ -163,14 +168,19 @@ const RequestorDashboard = () => {
                 src={donation.donat_photo}
                 alt="Donation"
                 className="item-image-placeholder"
+                style={{ cursor: "pointer" }}
+                onClick={() => navigate(`/donations/${donation.donation_id}`)}
               />
             )}
             <h3>{donation.donation_name}</h3>
             <p>{donation.description}</p>
             <p>{donation.email}</p>
-            <button onClick={() => handleAccept(donation)}>
-              דרג את התרומה
-            </button>
+
+            {donation.rating_user_id == null && (
+              <button onClick={() => handleAccept(donation)}>
+                דרג את התרומה
+              </button>
+            )}
           </div>
         ))}
       </div>

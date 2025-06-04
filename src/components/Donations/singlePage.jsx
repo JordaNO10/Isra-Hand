@@ -3,8 +3,12 @@ import Cookies from "js-cookie";
 import { useState } from "react";
 import DonationForm from "./Donationform";
 import DonationImageModal from "./donationimage";
-import DonationDropdown from "./DonationDropdown";
 
+import DonationDetails from "./DonationDetails";
+import RequestSection from "./RequestSection";
+import BackButton from "./BackButton";
+
+import { useDonationEditForm } from "./Helpers/useDonationForm";
 import { useSinglePage } from "./Helpers/useSinglePage";
 import { isDonor, isDonationOwner } from "./Helpers/donationAccessControl";
 
@@ -26,10 +30,12 @@ function Singlepage() {
     handleSave,
     handleDelete,
     setEditedData,
-    handleDropdownChange,
   } = useSinglePage();
 
-  const userRole = Cookies.get("userRole"); // "3" = Requestor
+  const { errorMessage, handleChange, handleImageUpload, handleSubmit } =
+    useDonationEditForm(editedData, handleSave, setEditedData);
+
+  const userRole = Cookies.get("userRole");
   const userId = Cookies.get("userId");
   const isLoggedIn = !!userRole;
   const canEdit = isDonor() && isDonationOwner(donationData?.user_id);
@@ -55,53 +61,28 @@ function Singlepage() {
     return <div>⛔ Access denied or donation is temporarily locked.</div>;
   if (!donationData) return <div>Donation not found.</div>;
 
+  console.log("🧾 donationData", donationData);
+  console.log("🔎 hasBeenRated", donationData?.rating_user_id != null);
   return (
     <section className="singlepage-container">
       <div className="singlepage-content">
-        {!isEditing && isLoggedIn && (
-          <div className="donationdropdown-container">
-            <DonationDropdown
-              currentId={id}
-              onSelectDonation={handleDropdownChange}
-            />
-          </div>
-        )}
-
         <div className="singlepage-post">
           {isEditing ? (
-            <DonationForm
-              editedData={editedData}
-              onSave={handleSave}
-              onChange={(data) => setEditedData(data)}
-              onImageUpload={(image) => setEditedData({ ...editedData, image })}
-            />
+            <>
+              <DonationForm
+                editedData={editedData}
+                onSave={handleSubmit}
+                onChange={handleChange}
+                onImageUpload={handleImageUpload}
+              />
+              {errorMessage && <p className="error-message">{errorMessage}</p>}
+            </>
           ) : (
             <>
-              <h1 className="singlepage-title">
-                {donationData.donation_name} : שם התרומה
-              </h1>
-
-              <p className="donation-info">
-                אימייל :<br />
-                {donationData.email}
-              </p>
-
-              <p className="donation-info">
-                תיאור התרומה :<br />
-                {donationData.description}
-              </p>
-
-              {donationData.donat_photo && (
-                <div className="singlepage-image">
-                  <h3>: תמונת התרומה</h3>
-                  <img
-                    src={donationData.donat_photo}
-                    alt="Donation"
-                    className="singlepage-image-preview"
-                    onClick={openModal}
-                  />
-                </div>
-              )}
+              <DonationDetails
+                donation={donationData}
+                onImageClick={openModal}
+              />
 
               {isLoggedIn && canEdit && (
                 <div className="singlepage-button">
@@ -114,48 +95,17 @@ function Singlepage() {
                 </div>
               )}
 
-              {isRequestor && (
-                <div className="singlepage-button">
-                  {hasRequested ? (
-                    <>
-                      <button
-                        className="delete-button"
-                        onClick={() => setShowConfirm(true)}
-                      >
-                        ?ביטול בקשת התרומה
-                      </button>
-                      {showConfirm && (
-                        <div className="popup-confirm">
-                          <p>האם אתה בטוח שברצונך לבטל?</p>
-                          <button onClick={handleCancel}>כן</button>
-                          <button onClick={() => setShowConfirm(false)}>
-                            לא
-                          </button>
-                        </div>
-                      )}
-                    </>
-                  ) : (
-                    <button className="edit-button" onClick={handleRequest}>
-                      בקש תרומה זו
-                    </button>
-                  )}
-                </div>
-              )}
+              <RequestSection
+                isRequestor={isRequestor}
+                hasRequested={hasRequested}
+                onRequest={handleRequest}
+                hasBeenRated={donationData?.rating_user_id != null}
+                onCancel={handleCancel}
+                showConfirm={showConfirm}
+                setShowConfirm={setShowConfirm}
+              />
 
-              <div className="singlepage-back-button-wrapper">
-                <button
-                  className="back-button"
-                  onClick={() => {
-                    if (userRole === "1") {
-                      window.location.href = "/admin";
-                    } else {
-                      window.location.href = "/";
-                    }
-                  }}
-                >
-                  חזור אחורה
-                </button>
-              </div>
+              <BackButton userRole={userRole} />
             </>
           )}
         </div>

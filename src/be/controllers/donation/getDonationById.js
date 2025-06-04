@@ -2,7 +2,15 @@ const db = require("../../utils/db");
 
 const getDonationById = async (req, res) => {
   const { id } = req.params;
-  const sql = "SELECT * FROM donations WHERE donation_id = ?";
+  const sql = `
+  SELECT 
+    donations.*, 
+    ratings.user_id AS rating_user_id
+  FROM donations
+  LEFT JOIN ratings ON ratings.donation_id = donations.donation_id
+  WHERE donations.donation_id = ?
+  LIMIT 1;
+`;
 
   try {
     const [results] = await db.promise().query(sql, [id]);
