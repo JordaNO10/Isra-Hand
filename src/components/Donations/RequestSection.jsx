@@ -2,8 +2,10 @@ function RequestSection({
   isRequestor,
   hasRequested,
   hasBeenRated,
+  hasReceived,      // ✅ new
   onRequest,
   onCancel,
+  onRate,           // ✅ new
   showConfirm,
   setShowConfirm,
 }) {
@@ -12,23 +14,31 @@ function RequestSection({
   return (
     <div className="singlepage-button">
       {hasRequested ? (
-        !hasBeenRated && (
-          <>
-            <button
-              className="delete-button"
-              onClick={() => setShowConfirm(true)}
-            >
-              ?ביטול בקשת התרומה
+        <>
+          {!hasBeenRated && !hasReceived && (
+            <>
+              <button
+                className="delete-button"
+                onClick={() => setShowConfirm(true)}
+              >
+                ?ביטול בקשת התרומה
+              </button>
+              {showConfirm && (
+                <div className="popup-confirm">
+                  <p>האם אתה בטוח שברצונך לבטל?</p>
+                  <button onClick={onCancel}>כן</button>
+                  <button onClick={() => setShowConfirm(false)}>לא</button>
+                </div>
+              )}
+            </>
+          )}
+
+          {!hasBeenRated && hasReceived && (
+            <button className="edit-button" onClick={onRate}>
+              דרג את התרומה
             </button>
-            {showConfirm && (
-              <div className="popup-confirm">
-                <p>האם אתה בטוח שברצונך לבטל?</p>
-                <button onClick={onCancel}>כן</button>
-                <button onClick={() => setShowConfirm(false)}>לא</button>
-              </div>
-            )}
-          </>
-        )
+          )}
+        </>
       ) : (
         <button className="edit-button" onClick={onRequest}>
           בקש תרומה זו

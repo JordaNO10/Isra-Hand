@@ -1,6 +1,7 @@
 import "./css/singlepage.css";
 import Cookies from "js-cookie";
 import { useState } from "react";
+
 import DonationForm from "./Donationform";
 import DonationImageModal from "./donationimage";
 
@@ -32,6 +33,9 @@ function Singlepage() {
     setEditedData,
   } = useSinglePage();
 
+  const [showRatingModal, setShowRatingModal] = useState(false);
+  const [selectedDonation, setSelectedDonation] = useState(null);
+
   const { errorMessage, handleChange, handleImageUpload, handleSubmit } =
     useDonationEditForm(editedData, handleSave, setEditedData);
 
@@ -41,6 +45,8 @@ function Singlepage() {
   const canEdit = isDonor() && isDonationOwner(donationData?.user_id);
   const isRequestor = userRole === "3";
   const hasRequested = donationData?.requestor_id === Number(userId);
+  const hasBeenRated = donationData?.rating_user_id != null;
+  const hasReceived = donationData?.accepted === 1;
 
   const [showConfirm, setShowConfirm] = useState(false);
 
@@ -54,6 +60,10 @@ function Singlepage() {
     setShowConfirm(false);
     window.location.reload();
   };
+  const handleRate = () => {
+    setSelectedDonation(donationData);
+    setShowRatingModal(true);
+  };
 
   if (loading) return <div>Loading donation...</div>;
   if (error) return <div>Error: {error}</div>;
@@ -61,8 +71,6 @@ function Singlepage() {
     return <div>⛔ Access denied or donation is temporarily locked.</div>;
   if (!donationData) return <div>Donation not found.</div>;
 
-  console.log("🧾 donationData", donationData);
-  console.log("🔎 hasBeenRated", donationData?.rating_user_id != null);
   return (
     <section className="singlepage-container">
       <div className="singlepage-content">
@@ -98,9 +106,11 @@ function Singlepage() {
               <RequestSection
                 isRequestor={isRequestor}
                 hasRequested={hasRequested}
+                hasBeenRated={hasBeenRated}
+                hasReceived={hasReceived}
                 onRequest={handleRequest}
-                hasBeenRated={donationData?.rating_user_id != null}
                 onCancel={handleCancel}
+                onRate={handleRate}
                 showConfirm={showConfirm}
                 setShowConfirm={setShowConfirm}
               />
