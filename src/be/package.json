@@ -12,8 +12,9 @@
     "helmet": "^8.1.0",
     "js-cookie": "^3.0.5",
     "morgan": "^1.10.0",
-    "multer": "^2.0.0",
+    "multer": "^2.0.1",
     "mysql2": "^3.14.1",
+    "node-cron": "^4.1.0",
     "nodemailer": "^7.0.3"
   }
 }

@@ -44,18 +44,22 @@ export const useAuthHelpers = (navigate) => {
       setErrorMessage(error.response?.data?.message || "שגיאה בהרשמה");
     }
   };
-
   const handleForgotPassword = async (email) => {
     try {
-      await axios.post("/users/forgot-password", { email });
+      const response = await axios.post(
+        "/email/forgot-password",
+        { to: email },
+        { withCredentials: true }
+      );
+      alert(response.data.message || "קישור איפוס נשלח למייל");
+      setErrorMessage("");
       navigate("/Signin");
     } catch (error) {
       setErrorMessage(
-        error.response?.data?.message || "שגיאה בשליחת קישור איפוס"
+        error.response?.data?.error || "שגיאה בשליחת קישור איפוס"
       );
     }
   };
-
   return {
     errorMessage,
     setErrorMessage,
