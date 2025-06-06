@@ -1,11 +1,19 @@
-import React, { useState,useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useDashboardDataHelpers } from "./Helpers/useDashboardDataHelpers";
 import { useEditUser } from "./Helpers/userEditUser";
+import { useDonorRating } from "./Helpers/useDonorRating";
 import DonationAdd from "../Donations/Donationadd";
+
 import "./css/DonorDashboard.css";
 
 const DonorDashboard = () => {
+  const {
+    rating,
+    loading: ratingLoading,
+    error: ratingError,
+  } = useDonorRating();
+
   const { userData, setUserData, donations, loading, error } =
     useDashboardDataHelpers();
   const { editMode, editedUser, toggleEditMode, handleFieldChange, saveField } =
@@ -13,10 +21,11 @@ const DonorDashboard = () => {
   const [showModal, setShowModal] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+
   useEffect(() => {
     if (location.state?.setShowModal) {
       setShowModal(true);
-       window.history.replaceState({}, document.title);
+      window.history.replaceState({}, document.title);
     }
   }, [location.state]);
 
@@ -89,6 +98,7 @@ const DonorDashboard = () => {
           <div className="dashboard-sidebar">
             <div className="profile-info-box">
               <h2>פרטים אישיים:</h2>
+
               {renderEditableField("שם מלא", "full_name")}
               {renderEditableField("אימייל", "email")}
               {renderEditableField("תאריך לידה", "birth_date", "date")}
@@ -98,6 +108,16 @@ const DonorDashboard = () => {
                 <strong>סוג משתמש:</strong> תורם
               </p>
               <p> התחברות אחרונה : {userData.last_login}</p>
+              {ratingLoading ? (
+                <p>טוען דירוג...</p>
+              ) : ratingError ? (
+                <p style={{ color: "red" }}>שגיאה בטעינת הדירוג</p>
+              ) : (
+                <p>
+                  <strong>דירוג:</strong> ⭐ {rating?.avg_rating ?? "—"} (
+                  {rating?.total_ratings} דירוגים)
+                </p>
+              )}
             </div>
           </div>
 

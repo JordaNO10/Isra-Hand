@@ -12,6 +12,7 @@ const getUserById = require("../controllers/user/getUserById");
 const updateUser = require("../controllers/user/updateUser");
 const deleteUser = require("../controllers/user/deleteUser");
 
+
 // User Routes
 router.post("/register", upload.none(), registerUser);
 router.post("/login", loginUser);

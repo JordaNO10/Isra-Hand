@@ -9,6 +9,14 @@ export const getAllDonations = async () => {
 };
 
 /**
+ * Fetch all donations (used in lists, admin, etc.)
+ */
+export const getAvailableDonations = async () => {
+  const res = await axios.get("/available");
+  return res.data;
+};
+
+/**
  * Fetch one donation by ID
  * @param {string|number} id
  */

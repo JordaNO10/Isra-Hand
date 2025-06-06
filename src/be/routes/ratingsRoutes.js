@@ -1,12 +1,13 @@
 const express = require("express");
 const router = express.Router();
 
-// Import Category Controllers
-// const getAllRatings = require("../controllers/ratings/addRating");
 const addRating = require("../controllers/ratings/addRating");
 const getAllRatings = require("../controllers/ratings/getAllRatings");
-// Category Routes
-router.get("/", getAllRatings); // Get all categories
-router.post("/", addRating); // Add new category
+const getUserRating = require("../controllers/ratings/getUserRating");
+
+// ✅ Order matters here!
+router.get("/", getAllRatings); // GET /ratings
+router.get("/:userId", getUserRating); // GET /ratings/:userId
+router.post("/", addRating); // POST /ratings
 
 module.exports = router;
