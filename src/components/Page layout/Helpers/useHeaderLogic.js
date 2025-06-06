@@ -17,7 +17,7 @@ export const useHeaderLogic = (onLogout) => {
     fullName: Cookies.get("fullName"),
   };
 
-  const isAdmin = roleId === "1"; // ✅ FIXED
+  const isAdmin = roleId === "1"; 
 
   const handleLogin = () => {
     setShowSigninDropdown((prev) => !prev);

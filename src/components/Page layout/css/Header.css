@@ -21,9 +21,33 @@ body {
 }
 
 /* Rest of your header style remains */
-.header-logo {
+.header-logo a {
   font-size: 24px;
   font-weight: bold;
+  color: white; /* Israeli blue */
+  text-decoration: none;
+  padding: 0.5rem;
+  border-radius: 50%;
+  transition: background-color 0.2s, color 0.2s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* remove purple visited effect */
+
+
+/* subtle hover like a leading home button */
+.header-logo a:hover {
+  background-color: rgba(24, 119, 242, 0.1); /* soft blue circle */
+  color: #81b1f3;
+  border: #f0f2f5;
+}
+
+/* optional: smooth focus ring */
+.header-logo a:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(24, 119, 242, 0.3);
 }
 
 .header-links {

@@ -1,3 +1,40 @@
 .Footer {
   text-align: center;
+  padding: 2rem 0;
+}
+
+.footer-links {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+}
+
+/* Individual footer buttons/links */
+.footer-links a,
+.footer-links button {
+  background-color: white;
+  color: #1877f2;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-weight: bold;
+  font-size: 16px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: 0.3s ease;
+  display: inline-block;
+}
+
+/* Hover only applies to the hovered item */
+.footer-links a:hover,
+.footer-links button:hover {
+  background-color: #f0f2f5;
+  color: #145bbd;
+  text-decoration: none;
+}
+
+/* Optional: active state for currently selected link */
+.footer-links .active {
+  background-color: #1877f2;
+  color: white;
 }
