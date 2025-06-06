@@ -3,6 +3,8 @@ import { useState, useEffect } from "react";
 import {
   fetchHomepageDonations,
   fetchUserRoleCounts,
+  isUserDonor,
+  isUserRequestor,
 } from "./Helpers/useHomeHelper";
 import { useNavigate } from "react-router-dom";
 
@@ -51,14 +53,21 @@ const Home = () => {
         </p>
 
         <div className="cta-buttons">
-          <button
-            className="cta-button"
-            onClick={() =>
-              navigate("/donorpage", { state: { setShowModal: true } })
-            }
-          >
-            אני רוצה לתרום
-          </button>
+          {!isUserRequestor() && (
+            <button
+              className="cta-button"
+              onClick={() => {
+                if (!isUserDonor()) {
+                  navigate("/signup");
+                } else {
+                  navigate("/donorpage", { state: { setShowModal: true } });
+                }
+              }}
+            >
+              אני רוצה לתרום
+            </button>
+          )}
+
           <button
             className="cta-button secondary"
             onClick={() => navigate(`/donations`)}

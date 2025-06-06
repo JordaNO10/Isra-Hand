@@ -1,9 +1,6 @@
 import axios from "axios";
 import { getAllDonations } from "../../Donations/Helpers/donationService";
-
-/**
- * Fetch latest 3 donations, and all donations for counting
- */
+import Cookies from "js-cookie";
 
 const formatDateForDisplay = (isoDateString) => {
   const date = new Date(isoDateString);
@@ -18,10 +15,17 @@ const formatDateForDisplay = (isoDateString) => {
  */
 export const fetchHomepageDonations = async () => {
   const allDonations = await getAllDonations();
-  // console.log(allDonations);
+  console.log(allDonations);
+
+  let updatedDonations = allDonations;
+
+  const target = allDonations.find((d) => d.requestor_id !== null);
+  if (target) {
+    updatedDonations = allDonations.filter((d) => d !== target);
+  }
 
   // Sort by most recent donation_date
-  const sorted = [...allDonations].sort(
+  const sorted = [...updatedDonations].sort(
     (a, b) => new Date(b.donation_date) - new Date(a.donation_date)
   );
 
@@ -33,7 +37,7 @@ export const fetchHomepageDonations = async () => {
 
   return {
     latest,
-    total: allDonations.length,
+    total: updatedDonations.length,
   };
 };
 
@@ -48,4 +52,22 @@ export const fetchUserRoleCounts = async () => {
   const requestors = users.filter((u) => u.role_id === 3).length;
 
   return { donors, requestors };
+};
+
+/**
+ * Checks if the current user is logged in and has the 'Donor' role
+ */
+export const isUserDonor = () => {
+  const role = Cookies.get("userRole");
+  const isLoggedIn = !!Cookies.get("accessToken");
+  return isLoggedIn && role === "Donor";
+};
+
+/**
+ * Checks if the current user is logged in and has the 'Requestor' role
+ */
+export const isUserRequestor = () => {
+  const role = Cookies.get("userRole");
+  const isLoggedIn = !!Cookies.get("accessToken");
+  return isLoggedIn && role === "Requestor";
 };

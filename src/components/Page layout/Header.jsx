@@ -1,4 +1,3 @@
-import React from "react";
 import { NavLink } from "react-router-dom";
 import { useHeaderLogic } from "./Helpers/useHeaderLogic";
 import DropdownSignin from "../Register & Login/DropdownSignin";
@@ -16,7 +15,7 @@ const Header = ({ onLogout }) => {
     handleLogout,
     setShowSigninDropdown,
     isAdmin,
-    user, 
+    user,
   } = useHeaderLogic(onLogout);
 
   const getDashboardPath = () => {
@@ -34,18 +33,12 @@ const Header = ({ onLogout }) => {
 
   return (
     <nav className="header-nav">
-      <div className="header-logo">IsraHand</div>
+      <div className="header-logo">
+        <NavLink to="/">IsraHand</NavLink>
+      </div>
 
       <div className="header-links">
-        <NavLink to="/" className="header-link">
-          בית
-        </NavLink>
-        <NavLink to="/About" className="header-link">
-          אודות
-        </NavLink>
-        <NavLink to="/Contact" className="header-link">
-          צור קשר
-        </NavLink>
+        
 
         {isAuthenticated && roleId ? (
           isAdmin ? (
