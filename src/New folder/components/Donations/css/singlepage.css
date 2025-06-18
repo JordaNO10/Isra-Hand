@@ -1,0 +1,246 @@
+.singlepage-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0; /* No extra padding */
+  background: linear-gradient(to right, #e0eafc, #cfdef3);
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Card layout */
+.singlepage-content {
+  background-color: #ffffff;
+  border-radius: 18px;
+  padding: 2rem;
+  box-shadow: 0 10px 30px rgba(0, 123, 255, 0.15);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  animation: fadeIn 0.6s ease-in-out;
+}
+
+/* Fade-in animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Title */
+.singlepage-title {
+  font-size: 1.8rem;
+  color: #2c3e50;
+  font-weight: 700;
+}
+
+/* Info text */
+.donation-info {
+  direction: rtl;
+  font-size: 1.1rem;
+  color: #333;
+  background: #f0f4ff;
+  padding: 0.9rem 1.2rem;
+  border-radius: 12px;
+  border: 1px solid #d6e4f0;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Image block */
+.singlepage-image {
+  text-align: center;
+}
+
+.singlepage-image h3 {
+  color: #2c3e50;
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+}
+
+.singlepage-image-preview {
+  width: 100%;
+  max-width: 300px;
+  border-radius: 12px;
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+  transition: transform 0.3s ease;
+}
+
+.singlepage-image-preview:hover {
+  transform: scale(1.03);
+}
+
+/* Buttons block */
+.singlepage-button {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+.edit-button,
+.delete-button,
+.back-button {
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  border: none;
+  border-radius: 10px;
+  font-weight: 600;
+  color: white;
+  cursor: pointer;
+  min-width: 120px;
+  transition: background-color 0.3s ease;
+}
+
+.edit-button {
+  background-color: #28a745;
+}
+.edit-button:hover {
+  background-color: #218838;
+}
+
+.delete-button {
+  background-color: #dc3545;
+}
+.delete-button:hover {
+  background-color: #c82333;
+}
+
+.back-button {
+  background-color: #007bff;
+}
+.back-button:hover {
+  background-color: #0056b3;
+}
+
+/* Back section */
+.singlepage-back-button-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-top: 1rem;
+  width: 100%;
+}
+
+/* Popup confirm */
+.popup-confirm {
+  padding: 1rem;
+  background-color: #fff3cd;
+  border: 1px solid #ffeeba;
+  border-radius: 10px;
+  text-align: center;
+  color: #856404;
+}
+
+.popup-confirm p {
+  font-weight: bold;
+  margin-bottom: 1rem;
+}
+
+.popup-confirm button {
+  padding: 0.5rem 1.2rem;
+  margin: 0 0.5rem;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.popup-confirm button:first-child {
+  background-color: #dc3545;
+  color: white;
+}
+.popup-confirm button:last-child {
+  background-color: #6c757d;
+  color: white;
+}
+
+.popup-confirm button:first-child:hover {
+  background-color: #c82333;
+}
+.popup-confirm button:last-child:hover {
+  background-color: #5a6268;
+}
+
+.singlepage-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 9999;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.85);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.singlepage-modal-content {
+  position: relative;
+  max-width: 90%;
+  max-height: 90%;
+  overflow: hidden;
+  border-radius: 12px;
+  background: white;
+  padding: 0;
+}
+
+.singlepage-modal-image {
+  width: 100%;
+  height: auto;
+  max-height: 90vh;
+  object-fit: contain;
+  border-radius: 12px;
+}
+
+.singlepage-close {
+  position: absolute;
+  top: 12px;
+  right: 18px;
+  font-size: 32px;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  z-index: 10000;
+}
+
+/* Responsive tweaks */
+@media (max-width: 768px) {
+  .singlepage-content {
+    width: 95%;
+    padding: 1.5rem;
+  }
+
+  .singlepage-title {
+    font-size: 1.5rem;
+  }
+
+  .edit-button,
+  .delete-button,
+  .back-button {
+    width: 100%;
+  }
+
+  .singlepage-button,
+  .singlepage-back-button-wrapper {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .singlepage-image-preview {
+    width: 100%;
+  }
+}
+
+@media (max-height: 750px) {
+  .singlepage-container {
+    align-items: flex-start;
+    padding-top: 1.5rem;
+  }
+}

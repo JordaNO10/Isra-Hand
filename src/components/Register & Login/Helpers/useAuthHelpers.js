@@ -1,7 +1,6 @@
 // src/Helpers/useAuthHelpers.js
 import { useState } from "react";
 import axios from "axios";
-import Cookies from "js-cookie";
 
 export const useAuthHelpers = (navigate) => {
   const [errorMessage, setErrorMessage] = useState("");
@@ -17,7 +16,6 @@ export const useAuthHelpers = (navigate) => {
       return;
     }
 
-    // Create FormData
     const formDataToSend = new FormData();
     for (const key in formData) {
       formDataToSend.append(key, formData[key]);
@@ -32,23 +30,20 @@ export const useAuthHelpers = (navigate) => {
       });
 
       if (response.status === 201) {
-        Cookies.set("userId", response.data.userId);
-        Cookies.set("userRole", response.data.roleId);
-        Cookies.set("userName", response.data.user_name);
-        Cookies.set("fullName", response.data.full_name);
         setErrorMessage("");
-        navigate("/");
-        window.location.reload();
+        alert("הרשמה בוצעה בהצלחה. אנא אמת את כתובת האימייל שלך כדי להתחבר.");
+        navigate("/Signin");
       }
     } catch (error) {
       setErrorMessage(error.response?.data?.message || "שגיאה בהרשמה");
     }
   };
+
   const handleForgotPassword = async (email) => {
     try {
       const response = await axios.post(
-        "/email/forgot-password",
-        { to: email },
+        "/users/forgot-password",
+        { email },
         { withCredentials: true }
       );
       alert(response.data.message || "קישור איפוס נשלח למייל");
@@ -60,6 +55,7 @@ export const useAuthHelpers = (navigate) => {
       );
     }
   };
+
   return {
     errorMessage,
     setErrorMessage,

@@ -24,6 +24,13 @@ const loginUser = (req, res) => {
         return res.status(401).json({ error: "Invalid credentials." });
       }
 
+      // ✅ Block login if user is not verified
+      if (!user.is_verified) {
+        return res
+          .status(401)
+          .json({ error: "Please verify your email before logging in." });
+      }
+
       const updateLoginTimeSql =
         "UPDATE users SET last_login = NOW() WHERE user_id = ?";
       db.query(updateLoginTimeSql, [user.user_id], (updateErr) => {
@@ -34,7 +41,6 @@ const loginUser = (req, res) => {
         req.session.userId = user.user_id;
         req.session.roleId = user.role_id;
         req.session.username = user.username;
-        console.log(res.data);
 
         res.status(200).json({
           message: "Signin successful!",

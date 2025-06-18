@@ -1,0 +1,244 @@
+/* Shared container style (for both dropdown and full-page) */
+.signin-container {
+  width: 100%;
+  max-width: 400px;
+  background: linear-gradient(180deg, rgb(0, 183, 255) 25%, white 20%);
+  padding: 24px;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  margin: 0 auto;
+}
+.signInForm {
+  color: rgb(0, 183, 255);
+}
+.signin-page {
+  display: flex;
+  margin-top: 50px;
+}
+/* New: header inside the dropdown */
+.signin-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.signin-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #333;
+}
+
+/* Used specifically for dropdown */
+.signin-dropdown {
+  width: 370px;
+}
+
+/* Header styling */
+.signin-container .text-xl {
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
+/* Close button for dropdown */
+.close-button-signin {
+  background: transparent;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: #333;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+}
+
+.close-button-signin:hover {
+  color: red;
+}
+
+/* Input fields */
+.signin-container .input {
+  padding: 12px;
+  margin-bottom: 12px;
+  border: none;
+  background-color: rgb(224, 231, 236);
+  border-radius: 6px;
+  font-size: 14px;
+  transition: border 0.3s ease;
+}
+
+.signin-container .input:focus {
+  outline: none;
+  border: 2px solid rgb(0, 183, 255);
+}
+
+/* Submit button */
+.signin-container .login-button {
+  padding: 12px;
+  background-color: rgb(0, 183, 255);
+  color: white;
+  font-size: 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: background-color 0.3s ease;
+}
+
+.signin-container .login-button:hover {
+  background-color: rgb(0, 150, 230);
+}
+
+/* Error messages */
+.signin-container .text-red-500 {
+  color: red;
+  font-size: 12px;
+  margin-top: -8px;
+  margin-bottom: 8px;
+}
+
+/* Link styles (like Forgot Password) */
+.signin-container .text-blue-500 {
+  color: blue;
+  font-size: 14px;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.signin-container .text-blue-500:hover {
+  text-decoration: none;
+}
+
+/* ===================== Animations ===================== */
+
+/* Bounce in when dropdown opens */
+.bounce-in {
+  animation: bounceIn 0.5s ease forwards;
+}
+
+@keyframes bounceIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.8) translateY(-20px);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(1.05) translateY(5px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* Fade out when dropdown closes */
+.fade-out {
+  animation: fadeOut 0.3s ease forwards;
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+}
+
+/* ================= Dropdown Signin Box ================= */
+
+.signin-dropdown {
+  background: #ffffff;
+  padding: 30px 25px;
+  border-radius: 12px;
+  box-shadow: 0px 10px 25px rgba(0, 0, 0, 0.2);
+  width: 100%;
+  max-width: 380px;
+  position: absolute;
+  top: 70px;
+  left: 30px;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Close Button */
+.close-button-signin {
+  background: none;
+  border: none;
+  font-size: 20px;
+  color: #888;
+  cursor: pointer;
+  margin-left: auto;
+  margin-bottom: 10px;
+  transition: color 0.3s;
+}
+
+.close-button-signin:hover {
+  color: #1877f2; /* Facebook Blue */
+}
+
+/* Input Styling inside Dropdown */
+.signin-dropdown input {
+  width: 100%;
+  padding: 12px 10px;
+  margin-bottom: 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.3s;
+}
+
+.signin-dropdown input:focus {
+  border-color: #1877f2;
+}
+
+/* Login Button Styling */
+.signin-dropdown button[type="submit"],
+.signin-btn {
+  background-color: #1877f2;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 12px;
+  width: 100%;
+  font-weight: bold;
+  font-size: 15px;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: background-color 0.3s;
+}
+
+.signin-dropdown button[type="submit"]:hover,
+.signin-btn:hover {
+  background-color: #0a64c4;
+}
+
+/* Error Message */
+.error-message {
+  background-color: #ffe0e0;
+  color: #d40000;
+  padding: 10px;
+  border-radius: 6px;
+  width: 100%;
+  text-align: center;
+  margin-bottom: 12px;
+  font-size: 0.9rem;
+}
+.forgot-password-link {
+  color: #1877f2;
+  font-size: 14px;
+}
+
+.reset-form input {
+  margin-top: 8px;
+  padding: 6px;
+}

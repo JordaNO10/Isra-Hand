@@ -1,8 +1,11 @@
 const db = require("../../utils/db");
 const { buildImageUrl } = require("../../utils/helpers");
+const sendMail = require("../../utils/mailer");
+const { donationThankYou } = require("../../templates/emailTemplates");
 
 const addDonation = (req, res) => {
-  const { donationname, description, categoryId, email, user_id } = req.body;
+  const { donationname, description, categoryId, email, user_id, full_name } =
+    req.body;
   const imageUrl = req.file ? buildImageUrl(req, req.file.filename) : null;
   const date = new Date().toISOString().split("T")[0];
 
@@ -12,16 +15,32 @@ const addDonation = (req, res) => {
   }
 
   const sql = `
-    INSERT INTO donations (donation_name, description, category_id ,donat_photo, email, user_id,donation_date)
-    VALUES (?, ?, ?, ?, ?, ?, ?)`;
+    INSERT INTO donations (donation_name, description, category_id, donat_photo, email, user_id, donation_date)
+    VALUES (?, ?, ?, ?, ?, ?, ?)
+  `;
 
   db.query(
     sql,
     [donationname, description, categoryId, imageUrl, email, user_id, date],
-    (error, results) => {
+    async (error, results) => {
       if (error) {
         console.error("Database error during donation add:", error);
         return res.status(500).json({ error: "Database error" });
+      }
+
+      const message = donationThankYou(
+        full_name || "תורם/ת יקר/ה",
+        donationname
+      );
+
+      try {
+        await sendMail(email, "תודה על תרומתך - Isra-Hand", message);
+        console.log("📧 Thank-you email sent to:", email);
+      } catch (emailErr) {
+        console.error(
+          "❌ Failed to send donation thank-you email:",
+          emailErr.message
+        );
       }
 
       res.status(201).json({

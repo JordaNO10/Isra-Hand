@@ -1,0 +1,31 @@
+.donation-dropdown-container {
+  display: flex; /* Use flexbox for alignment */
+  justify-content: start; /* Align items to the left */
+  margin: 1rem 0; /* Add some margin */
+}
+
+.donation-dropdown {
+  text-align: end;
+  padding: 0.625rem; /* Padding for better touch targets */
+  font-size: 1rem; /* Set font size */
+  border: 1px solid #007bff; /* Border color */
+  border-radius: 4px; /* Rounded corners */
+  background-color: #ffffff; /* Background color */
+  color: #333; /* Text color */
+  transition: border-color 0.3s ease; /* Smooth transition for border color */
+}
+
+.donation-dropdown:hover {
+  border-color: #0056b3; /* Darker border color on hover */
+}
+
+.donation-dropdown:focus {
+  outline: none; /* Remove default outline */
+  border-color: #0056b3; /* Highlight border on focus */
+}
+
+/* Optional styles for the select element to adjust width */
+.donation-dropdown {
+  width: 100%; /* Full width */
+  max-width: 300px; /* Maximum width for the dropdown */
+}

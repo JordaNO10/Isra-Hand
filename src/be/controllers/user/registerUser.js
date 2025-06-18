@@ -1,11 +1,16 @@
 const db = require("../../utils/db");
 const bcrypt = require("bcrypt");
+const crypto = require("crypto");
+const sendMail = require("../../utils/mailer");
+
+const {
+  adminNotification,
+  registrationThankYou,
+} = require("../../templates/emailTemplates");
 
 const registerUser = (req, res) => {
-  console.log(req.body);
   let { username, name, email, password, role, birthdate } = req.body;
   role = parseInt(role);
-  console.log(role);
 
   const checkRoleSql = "SELECT role_id FROM roles WHERE role_name = ?";
   db.query(checkRoleSql, [role], (error, results) => {
@@ -29,18 +34,73 @@ const registerUser = (req, res) => {
       bcrypt.hash(password, 12, (err, hashedPassword) => {
         if (err) return res.status(500).json({ error: "Database error" });
 
-        const sql =
-          "INSERT INTO users (username, full_name, email, password, role_id, birth_date) VALUES (?, ?, ?, ?, ?, ?)";
+        const verificationToken = crypto.randomBytes(32).toString("hex");
+        const insertSql = `
+          INSERT INTO users (username, full_name, email, password, role_id, birth_date, verification_token)
+          VALUES (?, ?, ?, ?, ?, ?, ?)
+        `;
+
         db.query(
-          sql,
-          [username, name, email, hashedPassword, roleId, birthdate],
-          (error, results) => {
+          insertSql,
+          [
+            username,
+            name,
+            email,
+            hashedPassword,
+            roleId,
+            birthdate,
+            verificationToken,
+          ],
+          async (error, results) => {
             if (error) return res.status(500).json({ error: "Database error" });
-            console.log("role id", roleId);
+
+            const userId = results.insertId;
+
+            // ✉️ Send email verification to user
+            const frontendURL =
+              process.env.FRONTEND_BASE_URL || "http://localhost:3000";
+            const verifyLink = `${frontendURL}/verify?token=${verificationToken}`;
+            const verificationMessage = `
+              <h3>ברוך הבא ל־IsraHand, ${name}!</h3>
+              <p>אנא אמת את כתובת האימייל שלך על ידי לחיצה על הקישור הבא:</p>
+              <a href="${verifyLink}">אמת את האימייל שלך</a>
+            `;
+
+            try {
+              await sendMail(
+                email,
+                "אימות כתובת אימייל - IsraHand",
+                verificationMessage
+              );
+              console.log("📧 Verification email sent to", email);
+            } catch (err) {
+              console.error(
+                "❌ Failed to send verification email:",
+                err.message
+              );
+            }
+
+            // ✅ Send admin notification
+            const adminEmail = process.env.EMAIL_USER;
+            const roleText =
+              typeof role === "string" ? role : `Role ID: ${role}`;
+            const adminMessage = adminNotification(name, roleText);
+
+            try {
+              await sendMail(
+                adminEmail,
+                "רישום משתמש חדש - Isra-Hand",
+                adminMessage
+              );
+              console.log("📩 Admin notified about new registration");
+            } catch (adminErr) {
+              console.error("❌ Failed to notify admin:", adminErr.message);
+            }
+
             res.status(201).json({
-              message: "User created successfully",
-              userId: results.insertId,
-              roleId: roleId,
+              message: "User registered. Please verify your email.",
+              userId,
+              roleId,
               user_name: username,
               full_name: name,
             });

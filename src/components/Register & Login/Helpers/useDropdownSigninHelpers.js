@@ -20,7 +20,20 @@ export const useDropdownSigninHelpers = (setShowForm, handleLoginSuccess) => {
       [name]: value,
     }));
   };
-
+  const resendVerificationEmail = async () => {
+    try {
+      const res = await axios.post(
+        "/users/resend-verification",
+        { email: formData.email },
+        { withCredentials: true }
+      );
+      console.log("✅ Resend response:", res.data);
+      return res.data;
+    } catch (error) {
+      console.error("❌ Failed to resend verification:", error);
+      throw error;
+    }
+  };
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -38,6 +51,7 @@ export const useDropdownSigninHelpers = (setShowForm, handleLoginSuccess) => {
         },
         { withCredentials: true }
       );
+
       if (response.status === 200) {
         console.log(response.data);
 
@@ -51,16 +65,25 @@ export const useDropdownSigninHelpers = (setShowForm, handleLoginSuccess) => {
       }
     } catch (error) {
       console.error("Login error:", error);
-      if (error.response && error.response.status !== 200) {
-        setErrorMessage(error.response?.data?.error || "שגיאה בהתחברות");
+
+      const serverMsg =
+        error.response?.data?.error || error.response?.data?.message;
+
+      if (serverMsg === "Email not verified") {
+        setErrorMessage("Email not verified");
+      } else {
+        setErrorMessage(serverMsg || "שגיאה בהתחברות");
       }
     }
   };
 
   return {
     formData,
+    setFormData,
     errorMessage,
+    setErrorMessage,
     handleInputChange,
     handleSubmit,
+    resendVerificationEmail,
   };
 };

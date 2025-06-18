@@ -12,7 +12,7 @@ export const getAllDonations = async () => {
  * Fetch all donations (used in lists, admin, etc.)
  */
 export const getAvailableDonations = async () => {
-  const res = await axios.get("/available");
+  const res = await axios.get("/donations/available");
   return res.data;
 };
 

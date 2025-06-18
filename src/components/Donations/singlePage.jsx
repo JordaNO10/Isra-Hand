@@ -104,6 +104,7 @@ function Singlepage() {
               )}
 
               <RequestSection
+                isLoggedIn={isLoggedIn}
                 isRequestor={isRequestor}
                 hasRequested={hasRequested}
                 hasBeenRated={hasBeenRated}

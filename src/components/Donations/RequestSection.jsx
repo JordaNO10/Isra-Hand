@@ -1,14 +1,31 @@
+import { useNavigate } from "react-router-dom";
+import Cookies from "js-cookie";
+
 function RequestSection({
   isRequestor,
+  isLoggedIn,
   hasRequested,
   hasBeenRated,
-  hasReceived,      // ✅ new
+  hasReceived,
   onRequest,
   onCancel,
-  onRate,           // ✅ new
+  onRate,
   showConfirm,
   setShowConfirm,
 }) {
+  const navigate = useNavigate();
+
+  if (!isLoggedIn) {
+    return (
+      <div className="singlepage-button">
+        <p>כדי לבקש תרומה, יש להתחבר או להירשם</p>
+        <button className="edit-button" onClick={() => navigate("/signin")}>
+          התחבר / הרשם
+        </button>
+      </div>
+    );
+  }
+
   if (!isRequestor) return null;
 
   return (

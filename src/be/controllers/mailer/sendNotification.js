@@ -1,6 +1,6 @@
 // controllers/mailer/sendNotification.js
 const db = require("../../utils/db");
-const sendMail = require("../../utils/sendMail");
+const sendMail = require("../../utils/mailer");
 const dayjs = require("dayjs");
 
 const sendNotification = async (req, res) => {

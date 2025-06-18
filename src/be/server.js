@@ -6,18 +6,23 @@ const fs = require("fs");
 const sessionMiddleware = require("./config/session");
 const dotenv = require("dotenv");
 const cors = require("cors");
+require("./controllers/schedule/cron");
 
 //  Route imports
 const userRoutes = require("./routes/userRoutes");
 const donationRoutes = require("./routes/donationRoutes");
 const categoryRoutes = require("./routes/categoryRoutes");
 const ratingRoutes = require("./routes/ratingsRoutes");
-const { router: forgotPasswordRouter } = require("./routes/forgotPassword");
 const testMailerRoutes = require("./utils/testmailer");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
-
+app.use(
+  cors({
+    origin: "http://localhost:3000",
+    credentials: true,
+  })
+);
 // Ensure the uploads directory exists
 const uploadDirectory = path.join(__dirname, "uploads");
 if (!fs.existsSync(uploadDirectory)) {
@@ -25,23 +30,16 @@ if (!fs.existsSync(uploadDirectory)) {
 }
 
 // Load environment variables
-dotenv.config({ path: "../config/session.env" });
+dotenv.config();
 
 //  Security & Logging
 app.use(helmet());
 app.use(morgan("combined"));
-app.use("/users", forgotPasswordRouter);
 
 //  JSON parsing
 app.use(express.json());
 
 //  CORS setup
-app.use(
-  cors({
-    origin: "http://localhost:3000",
-    credentials: true,
-  })
-);
 
 //  Session middleware
 sessionMiddleware(app);

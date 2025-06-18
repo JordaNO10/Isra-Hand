@@ -1,4 +1,4 @@
-const sendMail = require("../../utils/sendMail");
+const sendMail = require("../../utils/mailer");
 
 const sendAlert = async (req, res) => {
   const { to, alertMessage } = req.body;

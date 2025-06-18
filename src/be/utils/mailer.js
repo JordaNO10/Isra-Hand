@@ -9,13 +9,16 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-const sendMail = async (to, subject, text) => {
+const sendMail = async ({ to, subject, text, html }) => {
   const mailOptions = {
     from: `"Isra-Hand" <${process.env.EMAIL_USER}>`,
-    to,
+    to, 
     subject,
     text,
+    html,
   };
+
+  console.log("[DEBUG] Mail Options:", mailOptions); 
 
   return transporter.sendMail(mailOptions);
 };

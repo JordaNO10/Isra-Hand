@@ -1,7 +1,7 @@
 function DonationDetails({ donation, onImageClick }) {
   return (
     <>
-      <h1 className="singlepage-title">{donation.donation_name} : שם התרומה</h1>
+      <h1 className="singlepage-title">שם התרומה : {donation.donation_name} </h1>
 
       <p className="donation-info">
         אימייל :<br />

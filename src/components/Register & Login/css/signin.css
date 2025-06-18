@@ -233,3 +233,12 @@
   margin-bottom: 12px;
   font-size: 0.9rem;
 }
+.forgot-password-link {
+  color: #1877f2;
+  font-size: 14px;
+}
+
+.reset-form input {
+  margin-top: 8px;
+  padding: 6px;
+}

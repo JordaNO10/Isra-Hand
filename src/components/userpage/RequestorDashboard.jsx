@@ -9,6 +9,7 @@ import { useNavigate } from "react-router-dom";
 const userId = Cookies.get("userId");
 
 const RequestorDashboard = () => {
+  const [isRequesting, setIsRequesting] = useState(false);
   const {
     userData,
     setUserData,
@@ -25,7 +26,9 @@ const RequestorDashboard = () => {
   const navigate = useNavigate();
   const [showRatingModal, setShowRatingModal] = useState(false);
   const [selectedDonation, setSelectedDonation] = useState(null);
-
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const [visibleCount, setVisibleCount] = useState(3);
   const { editMode, editedUser, toggleEditMode, handleFieldChange, saveField } =
     useEditUser(userData, setUserData);
 
@@ -90,8 +93,29 @@ const RequestorDashboard = () => {
     </p>
   );
 
+  const filteredDonations = availableDonations.filter((donation) => {
+    const matchesSearch =
+      donation.donation_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      donation.description.toLowerCase().includes(searchTerm.toLowerCase());
+
+    const matchesCategory =
+      selectedCategory === "" ||
+      donation.category_id === Number(selectedCategory);
+
+    return matchesSearch && matchesCategory;
+  });
+
+  const visibleDonations = filteredDonations.slice(0, visibleCount);
+
   return (
     <div className="dashboard-container">
+      {isRequesting && (
+        <div className="loading-overlay">
+          <div className="spinner" />
+          <p>שולח בקשה...</p>
+        </div>
+      )}
+
       <div className="dashboard-header">
         <div className="profile-info-box">
           <h2>פרטים אישיים:</h2>
@@ -108,28 +132,77 @@ const RequestorDashboard = () => {
 
       <h1 className="welcome-message">ברוך הבא, {userData?.full_name} 👋</h1>
 
-      <h2 className="section-title">תרומות זמינות לבקשה:</h2>
-      <div className="items-grid">
-        {availableDonations.map((donation) => (
-          <div key={donation.donation_id} className="item-card">
-            {donation.donat_photo && (
-              <img
-                src={donation.donat_photo}
-                alt="Donation"
-                className="item-image-placeholder"
-                style={{ cursor: "pointer" }}
-                onClick={() => navigate(`/donations/${donation.donation_id}`)}
-              />
-            )}
-            <h3>{donation.donation_name}</h3>
-            <p>{donation.description}</p>
-            <p>{donation.email}</p>
-            <button onClick={() => requestDonation(donation.donation_id)}>
-              בקש תרומה זו
-            </button>
-          </div>
-        ))}
+      <h2 className="section-title">מצא תרומות זמינות:</h2>
+
+      <div className="filter-section">
+        <select
+          value={selectedCategory}
+          onChange={(e) => setSelectedCategory(e.target.value)}
+          className="category-select"
+        >
+          <option value="">כל הקטגוריות</option>
+          {Array.from(
+            new Map(
+              availableDonations.map((d) => [d.category_id, d.category_name])
+            )
+          )
+            .sort((a, b) => a[1].localeCompare(b[1], "he")) // Sort by name, Hebrew-aware
+            .map(([id, name]) => (
+              <option key={id} value={id}>
+                {name}
+              </option>
+            ))}
+        </select>
+        <input
+          type="text"
+          placeholder="חפש לפי שם או תיאור..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="search-input"
+        />
       </div>
+
+      <div className="items-grid">
+        {visibleDonations.length === 0 ? (
+          <p>אין תרומות תואמות</p>
+        ) : (
+          visibleDonations.map((donation) => (
+            <div key={donation.donation_id} className="item-card compact">
+              {donation.donat_photo && (
+                <img
+                  src={donation.donat_photo}
+                  alt="תמונה"
+                  className="item-image-preview"
+                  onClick={() => navigate(`/donations/${donation.donation_id}`)}
+                />
+              )}
+              <h3>{donation.donation_name}</h3>
+              <p>{donation.category}</p>
+              <p>{donation.city}</p>
+              <button
+                onClick={async () => {
+                  setIsRequesting(true);
+                  await requestDonation(donation.donation_id);
+                  setIsRequesting(false);
+                }}
+                disabled={isRequesting}
+              >
+                בקש תרומה זו
+              </button>
+            </div>
+          ))
+        )}
+      </div>
+      {filteredDonations.length > visibleCount && (
+        <div style={{ textAlign: "center", marginTop: "1rem" }}>
+          <button
+            className="show-more-btn"
+            onClick={() => setVisibleCount(visibleCount + 3)}
+          >
+            הצג עוד תרומות
+          </button>
+        </div>
+      )}
 
       <h2 className="section-title">הבקשות שלי:</h2>
       <div className="items-grid">

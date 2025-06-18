@@ -4,7 +4,11 @@ const sendMail = require("./mailer");
 
 router.get("/test-email", async (req, res) => {
   try {
-    await sendMail("test@example.com", "Testing", "This is a test message.");
+    await sendMail(
+      "jordanhalely@gmail.com",
+      "Testing",
+      "This is a test message."
+    );
     res.send("Email sent!");
   } catch (error) {
     console.error(error);

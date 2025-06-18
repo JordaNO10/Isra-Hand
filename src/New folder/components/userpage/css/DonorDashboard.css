@@ -1,0 +1,61 @@
+.dashboard-container {
+  padding: 2rem;
+  background-color: #f4f7fb;
+  min-height: 100vh;
+}
+
+/* Header */
+.welcome-message {
+  font-size: 28px;
+  text-align: right;
+  color: #1877f2;
+  margin-top: 1rem;
+}
+
+/* Profile Info Box alignment */
+.profile-info-wrapper {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1rem;
+}
+
+.profile-info-box {
+  background: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  width: 300px;
+}
+
+/* Section Title */
+.section-title {
+  font-size: 22px;
+  color: #1877f2;
+  text-align: center;
+  margin: 2rem 0 1rem;
+}
+
+/* No donations yet */
+.no-donations-message {
+  text-align: center;
+  padding: 2rem;
+  background-color: #efefef;
+  border-radius: 12px;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.upload-donation-btn {
+  background-color: #1877f2;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  font-size: 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-top: 1rem;
+}
+
+.upload-donation-btn:hover {
+  background-color: #145db2;
+}

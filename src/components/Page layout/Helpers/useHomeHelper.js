@@ -1,5 +1,5 @@
 import axios from "axios";
-import { getAllDonations } from "../../Donations/Helpers/donationService";
+import { getAllDonations, getAvailableDonations} from "../../Donations/Helpers/donationService";
 import Cookies from "js-cookie";
 
 const formatDateForDisplay = (isoDateString) => {
@@ -14,7 +14,7 @@ const formatDateForDisplay = (isoDateString) => {
  * Fetch latest 8 donations, formatted for homepage display
  */
 export const fetchHomepageDonations = async () => {
-  const allDonations = await getAllDonations();
+  const allDonations = await getAvailableDonations();
   console.log(allDonations);
 
   let updatedDonations = allDonations;

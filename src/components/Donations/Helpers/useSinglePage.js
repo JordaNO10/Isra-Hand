@@ -39,7 +39,8 @@ export const useSinglePage = () => {
         const isGuest = !Cookies.get("userRole");
 
         const locked = isDonationLocked(id);
-        const allowedToView = isOwner || isReq || isGuest;
+        const isDonorUser = isDonor();
+        const allowedToView = isOwner || isReq || isGuest || isDonorUser;
 
         if (!allowedToView) {
           setAccessDenied(true);
@@ -47,7 +48,7 @@ export const useSinglePage = () => {
         }
 
         if (!isGuest) {
-          if (locked && !isOwner && !isReq) {
+          if (locked && !isOwner && !isReq && !isDonorUser) {
             setAccessDenied(true);
             return;
           }
