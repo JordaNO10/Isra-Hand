@@ -1,7 +1,7 @@
 // src/Helpers/useAuthHelpers.js
 import { useState } from "react";
 import axios from "axios";
-
+import Cookies from "js-cookie";
 export const useAuthHelpers = (navigate) => {
   const [errorMessage, setErrorMessage] = useState("");
 

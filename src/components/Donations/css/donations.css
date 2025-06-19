@@ -17,6 +17,7 @@
   margin-bottom: 2rem;
   justify-content: center;
   flex-wrap: wrap;
+  direction: rtl;
 }
 
 .filters select {
@@ -81,4 +82,11 @@
   text-align: center;
   font-size: 1.1rem;
   color: #666;
+}
+.donation-search-input {
+  padding: 0.5rem;
+  font-size: 1rem;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  min-width: 220px;
 }

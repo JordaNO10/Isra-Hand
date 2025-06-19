@@ -7,12 +7,12 @@ export const useDonationsPage = () => {
   const [offset, setOffset] = useState(0);
   const [hasMore, setHasMore] = useState(true);
   const [filters, setFilters] = useState({ category: "", subCategory: "" });
-  const LIMIT = 8;
+  const LIMIT = 3;
   const fetchDonations = useCallback(
     async (append = false, currentOffset = 0) => {
       try {
         setLoading(true);
-        const res = await axios.get("/donations", {
+        const res = await axios.get("/donations/available", {
           params: { limit: LIMIT, offset: currentOffset },
           withCredentials: true,
         });

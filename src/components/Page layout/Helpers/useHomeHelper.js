@@ -1,5 +1,8 @@
 import axios from "axios";
-import { getAllDonations, getAvailableDonations} from "../../Donations/Helpers/donationService";
+import {
+  getAllDonations,
+  getAvailableDonations,
+} from "../../Donations/Helpers/donationService";
 import Cookies from "js-cookie";
 
 const formatDateForDisplay = (isoDateString) => {
@@ -59,8 +62,7 @@ export const fetchUserRoleCounts = async () => {
  */
 export const isUserDonor = () => {
   const role = Cookies.get("userRole");
-  const isLoggedIn = !!Cookies.get("accessToken");
-  return isLoggedIn && role === "Donor";
+  return role === "2";
 };
 
 /**
@@ -68,6 +70,5 @@ export const isUserDonor = () => {
  */
 export const isUserRequestor = () => {
   const role = Cookies.get("userRole");
-  const isLoggedIn = !!Cookies.get("accessToken");
-  return isLoggedIn && role === "Requestor";
+  return role === "3";
 };

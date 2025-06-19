@@ -1,37 +1,37 @@
 // src/Register & Login/Signin.jsx
-import React, { useState } from "react";
+import React from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { useAuthHelpers } from "./Helpers/useAuthHelpers";
+import { useDropdownSigninHelpers } from "./Helpers/useDropdownSigninHelpers";
 import "./css/signin.css";
 
 const Signin = () => {
   const navigate = useNavigate();
-  const { errorMessage, setErrorMessage, handleInputChange, handleSignin } =
-    useAuthHelpers(navigate);
 
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-  });
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    await handleSignin(formData);
-  };
+  const {
+    formData,
+    setFormData,
+    errorMessage,
+    setErrorMessage,
+    handleInputChange,
+    handleSubmit,
+  } = useDropdownSigninHelpers(
+    () => {}, // Dummy setShowForm
+    () => navigate("/") // Redirect after login
+  );
 
   return (
     <div className="signin-container">
-      <form className="signin-form" onSubmit={handleSubmit}>
+      <form className="signin-form standalone" onSubmit={handleSubmit}>
         <h2>ברוך הבא ל-IsraHand</h2>
 
         {errorMessage && <div className="error-message">{errorMessage}</div>}
 
         <input
-          type="email"
-          name="email"
-          placeholder="אימייל"
-          value={formData.email}
-          onChange={(e) => handleInputChange(e, formData, setFormData)}
+          type="text"
+          name="emailOrUsername"
+          placeholder="אימייל או שם משתמש"
+          value={formData.emailOrUsername}
+          onChange={handleInputChange}
           required
         />
 
@@ -40,7 +40,7 @@ const Signin = () => {
           name="password"
           placeholder="סיסמה"
           value={formData.password}
-          onChange={(e) => handleInputChange(e, formData, setFormData)}
+          onChange={handleInputChange}
           required
         />
 

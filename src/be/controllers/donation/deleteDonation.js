@@ -1,30 +1,38 @@
-const db = require('../../utils/db');
-const fs = require('fs');
-const path = require('path');
+const db = require("../../utils/db");
+const fs = require("fs");
+const path = require("path");
 
 const deleteDonation = async (req, res) => {
   const { id } = req.params;
 
   try {
-    // Check if donation exists and get image path
-    const [results] = await db.promise().query(
-      "SELECT donat_photo FROM donations WHERE donation_id = ?",
-      [id]
-    );
+    // Get image path and check if donation is already chosen
+    const [results] = await db
+      .promise()
+      .query(
+        "SELECT donat_photo, requestor_id FROM donations WHERE donation_id = ?",
+        [id]
+      );
 
     if (results.length === 0) {
       return res.status(404).json({ error: "Donation not found." });
     }
 
-    const imageUrl = results[0].donat_photo;
+    const { donat_photo: imageUrl, requestor_id } = results[0];
 
-    // Delete the donation record
-    await db.promise().query(
-      "DELETE FROM donations WHERE donation_id = ?",
-      [id]
-    );
+    // Prevent deleting if chosen
+    if (requestor_id) {
+      return res.status(403).json({
+        error: "Cannot delete a donation that has been chosen by a requestor.",
+      });
+    }
 
-    // If there was an image, delete it from uploads
+    // Delete the donation
+    await db
+      .promise()
+      .query("DELETE FROM donations WHERE donation_id = ?", [id]);
+
+    // Delete associated image if exists
     if (imageUrl) {
       const imagePath = path.join(
         __dirname,

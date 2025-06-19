@@ -29,7 +29,6 @@ const SigninForm = ({ setShowForm, handleLoginSuccess }) => {
   };
 
   return (
-    
     <form className="signin-form" onSubmit={handleSubmit}>
       <h2 className="signInForm">התחברות</h2>
       {errorMessage && <div className="error-message">{errorMessage}</div>}
@@ -74,10 +73,10 @@ const SigninForm = ({ setShowForm, handleLoginSuccess }) => {
         </>
       )}
       <input
-        type="email"
-        name="email"
-        placeholder="אימייל"
-        value={formData.email}
+        type="text"
+        name="emailOrUsername"
+        placeholder="אימייל או שם משתמש"
+        value={formData.emailOrUsername}
         onChange={handleInputChange}
         required
       />

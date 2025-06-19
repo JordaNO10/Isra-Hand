@@ -2,22 +2,22 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import axios from "axios";
+import { toast } from "react-toastify"; // ✅ import toast
 
 export const useHeaderLogic = (onLogout) => {
   const [isAuthenticated, setIsAuthenticated] = useState(
     !!Cookies.get("userRole")
   );
   const [showSigninDropdown, setShowSigninDropdown] = useState(false);
-  const [logoutMessage, setLogoutMessage] = useState("");
-  const [loginMessage, setLoginMessage] = useState("");
-  const navigate = useNavigate();
 
+  const navigate = useNavigate();
   const roleId = Cookies.get("userRole");
+
   const user = {
     fullName: Cookies.get("fullName"),
   };
 
-  const isAdmin = roleId === "1"; 
+  const isAdmin = roleId === "1";
 
   const handleLogin = () => {
     setShowSigninDropdown((prev) => !prev);
@@ -25,11 +25,15 @@ export const useHeaderLogic = (onLogout) => {
 
   const handleLoginSuccess = () => {
     setIsAuthenticated(true);
-    setLoginMessage("ברוך הבא ל-IsraHand!");
+    toast.success("ברוך הבא ל-IsraHand!", {
+      position: "top-center",
+      autoClose: 1500,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: false,
+      draggable: false,
+    });
     setShowSigninDropdown(false);
-    setTimeout(() => {
-      setLoginMessage("");
-    }, 1000);
   };
 
   const handleLogout = async () => {
@@ -39,21 +43,31 @@ export const useHeaderLogic = (onLogout) => {
         {},
         { withCredentials: true }
       );
+
       if (response.status === 200) {
         Cookies.remove("userId");
-        Cookies.remove('fullName')
+        Cookies.remove("fullName");
         Cookies.remove("userRole");
-        Cookies.remove("userName"); // ✅ Optional, clear name too
-        setLogoutMessage("התנתקת בהצלחה!");
+        Cookies.remove("userName");
+
+        toast.info("התנתקת בהצלחה!", {
+          position: "top-center",
+          autoClose: 1500,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: false,
+          draggable: false,
+        });
+
         setTimeout(() => {
-          onLogout();
+          onLogout?.();
           navigate("/");
           window.location.reload();
-        }, 1000);
+        }, 1500); // Match autoClose timing
       }
     } catch (error) {
       console.error("Logout error:", error);
-      alert("נכשל ביציאה מהמערכת, נסה שוב.");
+      toast.error("נכשל ביציאה מהמערכת, נסה שוב.");
     }
   };
 
@@ -63,8 +77,6 @@ export const useHeaderLogic = (onLogout) => {
     isAdmin,
     user,
     showSigninDropdown,
-    loginMessage,
-    logoutMessage,
     handleLogin,
     handleLoginSuccess,
     handleLogout,

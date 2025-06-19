@@ -3,10 +3,11 @@ import { useState } from "react";
 import axios from "axios";
 import Cookies from "js-cookie";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 export const useDropdownSigninHelpers = (setShowForm, handleLoginSuccess) => {
   const [formData, setFormData] = useState({
-    email: "",
+    emailOrUsername: "",
     password: "",
   });
 
@@ -15,16 +16,17 @@ export const useDropdownSigninHelpers = (setShowForm, handleLoginSuccess) => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
+    setFormData((prevData) => ({
+      ...prevData,
       [name]: value,
     }));
   };
+
   const resendVerificationEmail = async () => {
     try {
       const res = await axios.post(
         "/users/resend-verification",
-        { email: formData.email },
+        { email: formData.emailOrUsername }, // 👈 Changed
         { withCredentials: true }
       );
       console.log("✅ Resend response:", res.data);
@@ -34,10 +36,11 @@ export const useDropdownSigninHelpers = (setShowForm, handleLoginSuccess) => {
       throw error;
     }
   };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!formData.email || !formData.password) {
+    if (!formData.emailOrUsername || !formData.password) {
       setErrorMessage("אנא מלא את כל השדות");
       return;
     }
@@ -46,26 +49,37 @@ export const useDropdownSigninHelpers = (setShowForm, handleLoginSuccess) => {
       const response = await axios.post(
         "/users/login",
         {
-          emailOrUsername: formData.email,
+          emailOrUsername: formData.emailOrUsername, // 👈 Changed
           password: formData.password,
         },
         { withCredentials: true }
       );
 
       if (response.status === 200) {
-        console.log(response.data);
-
         Cookies.set("userId", response.data.userId);
         Cookies.set("userRole", response.data.roleId);
         Cookies.set("fullName", response.data.fullName);
 
         setErrorMessage("");
-        setShowForm(false);
-        handleLoginSuccess();
+
+        if (setShowForm) setShowForm(false);
+
+        toast.success("מתחבר לחשבון...", {
+          position: "top-center",
+          autoClose: 1500,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: false,
+          draggable: false,
+          progress: undefined,
+        });
+
+        setTimeout(() => {
+          handleLoginSuccess();
+          window.location.reload();
+        }, 1500);
       }
     } catch (error) {
-      console.error("Login error:", error);
-
       const serverMsg =
         error.response?.data?.error || error.response?.data?.message;
 

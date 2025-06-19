@@ -42,7 +42,9 @@ function Singlepage() {
   const userRole = Cookies.get("userRole");
   const userId = Cookies.get("userId");
   const isLoggedIn = !!userRole;
-  const canEdit = isDonor() && isDonationOwner(donationData?.user_id);
+  const isChosen = !!donationData?.requestor_id;
+  const canEdit =
+    isDonor() && isDonationOwner(donationData?.user_id) && !isChosen;
   const isRequestor = userRole === "3";
   const hasRequested = donationData?.requestor_id === Number(userId);
   const hasBeenRated = donationData?.rating_user_id != null;
