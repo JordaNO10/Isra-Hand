@@ -1,4 +1,4 @@
-const sendMail = require("../../utils/mailer");
+const {sendMail} = require("../../utils/mailer");
 
 const sendApproval = async (req, res) => {
   const { to, donationName } = req.body;

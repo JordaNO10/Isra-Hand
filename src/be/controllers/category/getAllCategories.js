@@ -2,13 +2,12 @@ const db = require("../../utils/db");
 
 const getAllCategories = (req, res) => {
   const sql = `
-  SELECT 
-  MIN(category_id) AS category_id,
-  category_name, 
-  GROUP_CONCAT(DISTINCT TRIM(sub_category) SEPARATOR ',') AS subcategories 
-FROM categories 
-WHERE sub_category IS NOT NULL AND TRIM(sub_category) != '' 
-GROUP BY category_name;
+    SELECT 
+      category_id,
+      category_name,
+      sub_category
+    FROM categories
+    ORDER BY category_name, sub_category;
   `;
 
   db.query(sql, (error, results) => {
@@ -17,14 +16,30 @@ GROUP BY category_name;
       return res.status(500).json({ error: "Database error" });
     }
 
-    const formatted = results.map((row) => ({
-      category_id: row.category_id,
-      category_name: row.category_name,
-      subCategories: row.subcategories
-        ? row.subcategories.split(",").map((s) => s.trim())
-        : [],
-    }));
-    res.status(200).json(formatted);
+    // Group by category_name and keep full category_id per sub
+    const grouped = {};
+    let groupCounter = 1;
+
+    results.forEach((row) => {
+      const { category_name, sub_category, category_id } = row;
+
+      if (!grouped[category_name]) {
+        grouped[category_name] = {
+          group_id: groupCounter++,
+          category_name,
+          subCategories: [],
+        };
+      }
+
+      if (sub_category && sub_category.trim() !== "") {
+        grouped[category_name].subCategories.push({
+          sub_category,
+          category_id,
+        });
+      }
+    });
+
+    res.status(200).json(Object.values(grouped));
   });
 };
 

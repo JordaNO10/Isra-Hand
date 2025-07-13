@@ -39,13 +39,7 @@ function DonationAdd({ onClose, userData }) {
             value={formData.donation_name}
             onChange={handleInputChange}
           />
-          <label htmlFor="Phonenumber">מספר פלאפון :</label>
-          <input
-            type="text"
-            name="Phonenumber"
-            value={userData.phone_number}
-            onChange={handleInputChange}
-          />
+          
           <label htmlFor="description">תיאור התרומה:</label>
           <input
             type="text"

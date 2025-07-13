@@ -26,7 +26,7 @@ export const useDropdownSigninHelpers = (setShowForm, handleLoginSuccess) => {
     try {
       const res = await axios.post(
         "/users/resend-verification",
-        { email: formData.emailOrUsername }, // 👈 Changed
+        { emailOrUsername: formData.emailOrUsername }, // 👈 Changed
         { withCredentials: true }
       );
       console.log("✅ Resend response:", res.data);
@@ -75,9 +75,16 @@ export const useDropdownSigninHelpers = (setShowForm, handleLoginSuccess) => {
         });
 
         setTimeout(() => {
-          handleLoginSuccess();
-          window.location.reload();
-        }, 1500);
+  const roleId = response.data.roleId;
+
+  if (roleId == 1) {
+    navigate("/admin");
+  } else {
+    navigate("/");
+  }
+
+  handleLoginSuccess(); // optional, depends if you're doing something with it
+}, 1500);
       }
     } catch (error) {
       const serverMsg =

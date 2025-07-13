@@ -1,11 +1,12 @@
 const db = require("../../utils/db");
 const bcrypt = require("bcrypt");
 const crypto = require("crypto");
-const sendMail = require("../../utils/mailer");
+const { sendRegistration, sendMail } = require("../../utils/mailer");
 
 const {
   adminNotification,
   registrationThankYou,
+  registrationVerificationTemplate,
 } = require("../../templates/emailTemplates");
 
 const registerUser = (req, res) => {
@@ -57,21 +58,13 @@ const registerUser = (req, res) => {
             const userId = results.insertId;
 
             // ✉️ Send email verification to user
+            // ✉️ Send email verification to user
             const frontendURL =
               process.env.FRONTEND_BASE_URL || "http://localhost:3000";
             const verifyLink = `${frontendURL}/verify?token=${verificationToken}`;
-            const verificationMessage = `
-              <h3>ברוך הבא ל־IsraHand, ${name}!</h3>
-              <p>אנא אמת את כתובת האימייל שלך על ידי לחיצה על הקישור הבא:</p>
-              <a href="${verifyLink}">אמת את האימייל שלך</a>
-            `;
 
             try {
-              await sendMail(
-                email,
-                "אימות כתובת אימייל - IsraHand",
-                verificationMessage
-              );
+              await sendRegistration(email, name, verifyLink);
               console.log("📧 Verification email sent to", email);
             } catch (err) {
               console.error(
@@ -87,11 +80,11 @@ const registerUser = (req, res) => {
             const adminMessage = adminNotification(name, roleText);
 
             try {
-              await sendMail(
-                adminEmail,
-                "רישום משתמש חדש - Isra-Hand",
-                adminMessage
-              );
+              await sendMail({
+                to: adminEmail,
+                subject: "רישום משתמש חדש - Isra-Hand",
+                html: adminMessage,
+              });
               console.log("📩 Admin notified about new registration");
             } catch (adminErr) {
               console.error("❌ Failed to notify admin:", adminErr.message);

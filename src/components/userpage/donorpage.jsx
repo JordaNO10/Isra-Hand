@@ -5,7 +5,6 @@ import { useDashboardDataHelpers } from "./Helpers/useDashboardDataHelpers";
 import { useEditUser } from "./Helpers/userEditUser";
 import { useDonorRating } from "./Helpers/useDonorRating";
 import DonationAdd from "../Donations/Donationadd";
-
 import "./css/DonorDashboard.css";
 
 const DonorDashboard = () => {
@@ -15,7 +14,7 @@ const DonorDashboard = () => {
     error: ratingError,
   } = useDonorRating();
 
-  const { userData, setUserData, donations, loading, error } =
+  const { userData, setUserData, formatLastLogin, donations, loading, error } =
     useDashboardDataHelpers();
   const { editMode, editedUser, toggleEditMode, handleFieldChange, saveField } =
     useEditUser(userData, setUserData);
@@ -23,7 +22,6 @@ const DonorDashboard = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [requested, setRequested] = useState([]);
-
   useEffect(() => {
     if (location.state?.setShowModal) {
       setShowModal(true);
@@ -120,7 +118,8 @@ const DonorDashboard = () => {
               <p>
                 <strong>סוג משתמש:</strong> תורם
               </p>
-              <p> התחברות אחרונה : {userData.last_login}</p>
+
+              <p>התחברות אחרונה: {formatLastLogin(userData?.last_login)}</p>
               {ratingLoading ? (
                 <p>טוען דירוג...</p>
               ) : ratingError ? (

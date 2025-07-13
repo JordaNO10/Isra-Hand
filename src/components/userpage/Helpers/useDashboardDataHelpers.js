@@ -36,9 +36,24 @@ export const useDashboardDataHelpers = () => {
       setLoading(false);
     }
   };
+  const formatLastLogin = (isoString) => {
+    if (!isoString) return "לא התחבר עדיין";
+
+    const date = new Date(isoString);
+    return date.toLocaleString("he-IL", {
+      timeZone: "Asia/Jerusalem",
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
 
   return {
     userData,
+    formatLastLogin,
+    setUserData, // ✅ added for useEditUser
     donations,
     loading,
     error,

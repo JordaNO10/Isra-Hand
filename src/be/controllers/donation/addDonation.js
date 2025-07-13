@@ -1,6 +1,6 @@
 const db = require("../../utils/db");
 const { buildImageUrl } = require("../../utils/helpers");
-const sendMail = require("../../utils/mailer");
+const { sendMail } = require("../../utils/mailer");
 const { donationThankYou } = require("../../templates/emailTemplates");
 
 const addDonation = (req, res) => {
@@ -28,13 +28,20 @@ const addDonation = (req, res) => {
         return res.status(500).json({ error: "Database error" });
       }
 
+      const donationId = results.insertId;
+
       const message = donationThankYou(
         full_name || "תורם/ת יקר/ה",
-        donationname
+        donationname,
+        donationId
       );
 
       try {
-        await sendMail(email, "תודה על תרומתך - Isra-Hand", message);
+        await sendMail({
+          to: email,
+          subject: "תודה על תרומתך - Isra-Hand",
+          html: message,
+        });
         console.log("📧 Thank-you email sent to:", email);
       } catch (emailErr) {
         console.error(
@@ -45,7 +52,7 @@ const addDonation = (req, res) => {
 
       res.status(201).json({
         message: "Donation added successfully",
-        donationId: results.insertId,
+        donationId,
       });
     }
   );

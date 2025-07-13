@@ -35,6 +35,7 @@ function Singlepage() {
 
   const [showRatingModal, setShowRatingModal] = useState(false);
   const [selectedDonation, setSelectedDonation] = useState(null);
+  const [loadingRequest, setLoadingRequest] = useState(false);
 
   const { errorMessage, handleChange, handleImageUpload, handleSubmit } =
     useDonationEditForm(editedData, handleSave, setEditedData);
@@ -49,12 +50,18 @@ function Singlepage() {
   const hasRequested = donationData?.requestor_id === Number(userId);
   const hasBeenRated = donationData?.rating_user_id != null;
   const hasReceived = donationData?.accepted === 1;
-
   const [showConfirm, setShowConfirm] = useState(false);
-
   const handleRequest = async () => {
-    await requestDonation(donationData.donation_id);
-    window.location.reload();
+    setLoadingRequest(true); // ✅ Start loading
+    try {
+      await requestDonation(donationData.donation_id);
+      setTimeout(() => {
+        window.location.reload();
+      }, 500);
+    } catch (error) {
+      console.error("Error requesting donation:", error);
+      setLoadingRequest(false); // Stop loading on error
+    }
   };
 
   const handleCancel = async () => {
@@ -116,6 +123,7 @@ function Singlepage() {
                 onRate={handleRate}
                 showConfirm={showConfirm}
                 setShowConfirm={setShowConfirm}
+                loadingRequest={loadingRequest}
               />
 
               <BackButton userRole={userRole} />

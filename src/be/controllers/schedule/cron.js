@@ -1,6 +1,6 @@
 const cron = require("node-cron");
 const db = require("../../utils/dbPromise");
-const sendMail = require("../../utils/mailer");
+const {sendMail} = require("../../utils/mailer");
 
 // Test the cron is loading
 console.log("[Cron] Inactive notifier loaded");

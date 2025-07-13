@@ -1,5 +1,5 @@
 const db = require("../../utils/db");
-const sendMail = require("../../utils/mailer");
+const { sendMail } = require("../../utils/mailer");
 const {
   requestConfirmation,
   notifyDonor,

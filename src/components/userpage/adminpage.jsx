@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   fetchAdminData,
   deleteUser,
@@ -7,138 +7,146 @@ import {
   updateUser,
   updateDonation,
   updateCategory,
+  addNewCategory,
+  formatLastLogin,
+  deleteSubCategory,
 } from "./Helpers/useAdminDashboardHelpers";
+import UserEditModal from "./UserEditModal"; // Adjust path as needed
 import "./css/AdminPage.css";
 
 const AdminPage = () => {
+  const [showUserModal, setShowUserModal] = useState(false);
+  const [userToEdit, setUserToEdit] = useState(null);
   const [users, setUsers] = useState([]);
   const [donations, setDonations] = useState([]);
   const [categories, setCategories] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-
-  // Edit State
+  const [selectedGroupId, setSelectedGroupId] = useState(null);
+  const [newCategoryName, setNewCategoryName] = useState("");
+  const [newSubCategory, setNewSubCategory] = useState("");
+  const [editingSubIndex, setEditingSubIndex] = useState(null);
+  const [formValues, setFormValues] = useState({});
   const [editingUser, setEditingUser] = useState(null);
   const [editingDonation, setEditingDonation] = useState(null);
-  const [editingCategory, setEditingCategory] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const [formValues, setFormValues] = useState({});
-
-  useEffect(() => {
-    const loadData = async () => {
-      try {
-        const { usersData, donationsData, categoriesData } =
-          await fetchAdminData();
-        setUsers(usersData);
-        setDonations(donationsData);
-        setCategories(categoriesData);
-      } catch (err) {
-        console.error(err);
-        setError("נכשל בטעינת הנתונים");
-      } finally {
-        setLoading(false);
-      }
-    };
-    loadData();
-  }, []);
-
-  const handleFormChange = (e) => {
-    const { name, value } = e.target;
-    setFormValues((prev) => ({ ...prev, [name]: value }));
+  const refreshAdminData = async () => {
+    try {
+      setIsLoading(true);
+      const { usersData, donationsData, categoriesData } =
+        await fetchAdminData();
+      setUsers(usersData);
+      setDonations(donationsData);
+      setCategories(categoriesData);
+    } catch (err) {
+      console.error("שגיאה ברענון הנתונים", err);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  if (loading) return <div className="admin-loading">טוען...</div>;
-  if (error) return <div className="admin-error">{error}</div>;
+  useEffect(() => {
+    refreshAdminData();
+  }, []);
 
+  const handleInputChange = (e) => {
+    setFormValues({ ...formValues, [e.target.name]: e.target.value });
+  };
+
+  const handleUserUpdate = async (userId) => {
+    await updateUser(userId, formValues);
+    setEditingUser(null);
+    refreshAdminData();
+  };
+
+  const handleDonationUpdate = async (donationId) => {
+    await updateDonation(donationId, formValues.description);
+    setEditingDonation(null);
+    refreshAdminData();
+    await refreshAdminData();
+  };
+
+  const handleCategoryClick = (groupId) => {
+    setSelectedGroupId(groupId);
+    setFormValues({});
+  };
+
+  const handleDeleteCategory = async (categoryId) => {
+    await deleteCategory(categoryId, setCategories);
+    setSelectedGroupId(null);
+  };
+
+  const handleAddCategory = async () => {
+    if (!newCategoryName.trim()) return;
+
+    try {
+      await addNewCategory(newCategoryName.trim()); // ✅ ensure fully complete
+      setNewCategoryName("");
+      await refreshAdminData(); // ✅ force re-fetch
+    } catch (err) {
+      console.error("Add category failed", err);
+      alert("שגיאה בהוספת קטגוריה");
+    }
+  };
+
+  const updateSubCategory = async (id, name, sub, originalSub = null) => {
+    await updateCategory(id, name, sub, originalSub);
+    await refreshAdminData();
+  };
+
+  const selectedCategory = categories.find(
+    (cat) => cat.group_id === selectedGroupId
+  );
+
+  const roleMap = {
+    1: "Admin",
+    2: "Donor",
+    3: "Requestor",
+  };
   return (
     <div className="admin-page">
-      <h1>פרופיל אדמין:</h1>
-
-      <div className="admin-profile">
-        <h2>ברוך הבא, מנהל!</h2>
-        <div className="profile-box">
-          <p>
-            <strong>פרטים אישיים:</strong>
-          </p>
-          <p>אימייל: mail@gmail.com</p>
-          <p>סוג משתמש: Admin</p>
-        </div>
-      </div>
+      <h1>ניהול המערכת</h1>
 
       {/* Users */}
       <div className="admin-section">
-        <h2>משתמשים:</h2>
+        <h2>משתמשים</h2>
         <table>
           <thead>
             <tr>
               <th>שם משתמש</th>
-              <th>שם מלא</th>
               <th>אימייל</th>
-              <th>תאריך לידה</th>
+              <th>סוג</th>
+              <th>כניסה אחרונה</th>
               <th>פעולות</th>
             </tr>
           </thead>
           <tbody>
             {users.map((user) => (
-              <React.Fragment key={user.user_id}>
-                <tr>
-                  <td>{user.username}</td>
-                  <td>{user.full_name}</td>
-                  <td>{user.email}</td>
-                  <td>{user.birth_date}</td>
-                  <td>
-                    <button
-                      onClick={() => {
-                        setEditingUser(user);
-                        setFormValues(user);
-                      }}
-                    >
-                      עדכון
-                    </button>
-                    <button onClick={() => deleteUser(user.user_id, setUsers)}>
-                      מחיקה
-                    </button>
-                  </td>
-                </tr>
-                {editingUser?.user_id === user.user_id && (
-                  <tr>
-                    <td colSpan="5">
-                      <div className="edit-form">
-                        <input
-                          name="username"
-                          placeholder="שם משתמש"
-                          value={formValues.username || ""}
-                          onChange={handleFormChange}
-                        />
-                        <input
-                          name="full_name"
-                          placeholder="שם מלא"
-                          value={formValues.full_name || ""}
-                          onChange={handleFormChange}
-                        />
-                        <input
-                          name="email"
-                          placeholder="אימייל"
-                          value={formValues.email || ""}
-                          onChange={handleFormChange}
-                        />
-                        <button
-                          onClick={async () => {
-                            await updateUser(user.user_id, formValues);
-                            setEditingUser(null);
-                            window.location.reload();
-                          }}
-                        >
-                          שמירה
-                        </button>
-                        <button onClick={() => setEditingUser(null)}>
-                          ביטול
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                )}
-              </React.Fragment>
+              <tr key={user.user_id}>
+                <td>{user.username}</td>
+                <td>{user.email}</td>
+                <td>{roleMap[user.role_id] || "לא ידוע"}</td>{" "}
+                <td>{formatLastLogin(user.last_login)}</td>
+                <td>
+                  <button
+                    onClick={() => {
+                      setUserToEdit(user);
+                      setFormValues({
+                        full_name: user.full_name,
+                        email: user.email,
+                        phone_number: user.phone_number,
+                        address: user.address,
+                        role_id: user.role_id,
+                      });
+                      setShowUserModal(true);
+                    }}
+                  >
+                    ערוך
+                  </button>
+                  <button onClick={() => deleteUser(user.user_id, setUsers)}>
+                    מחק
+                  </button>
+                </td>
+              </tr>
             ))}
           </tbody>
         </table>
@@ -146,71 +154,51 @@ const AdminPage = () => {
 
       {/* Donations */}
       <div className="admin-section">
-        <h2>תרומות:</h2>
+        <h2>תרומות</h2>
         <table>
           <thead>
             <tr>
-              <th>קוד תרומה</th>
-              <th>שם התרומה</th>
+              <th>שם תרומה</th>
               <th>תיאור</th>
               <th>פעולות</th>
             </tr>
           </thead>
           <tbody>
             {donations.map((donation) => (
-              <React.Fragment key={donation.donation_id}>
-                <tr>
-                  <td>{donation.donation_id}</td>
-                  <td>{donation.donation_name}</td>
-                  <td>{donation.description}</td>
-                  <td>
+              <tr key={donation.donation_id}>
+                <td>{donation.donation_name}</td>
+                <td>
+                  {editingDonation === donation.donation_id ? (
+                    <input name="description" onChange={handleInputChange} />
+                  ) : (
+                    donation.description
+                  )}
+                </td>
+                <td>
+                  {editingDonation === donation.donation_id ? (
                     <button
-                      onClick={() => {
-                        setEditingDonation(donation);
-                        setFormValues({ description: donation.description });
-                      }}
+                      onClick={() => handleDonationUpdate(donation.donation_id)}
                     >
-                      עדכון
+                      שמור
                     </button>
-                    <button
-                      onClick={() =>
-                        deleteDonation(donation.donation_id, setDonations)
-                      }
-                    >
-                      מחיקה
-                    </button>
-                  </td>
-                </tr>
-                {editingDonation?.donation_id === donation.donation_id && (
-                  <tr>
-                    <td colSpan="4">
-                      <div className="edit-form">
-                        <input
-                          name="description"
-                          placeholder="תיאור תרומה"
-                          value={formValues.description || ""}
-                          onChange={handleFormChange}
-                        />
-                        <button
-                          onClick={async () => {
-                            await updateDonation(
-                              donation.donation_id,
-                              formValues.description
-                            );
-                            setEditingDonation(null);
-                            window.location.reload();
-                          }}
-                        >
-                          שמירה
-                        </button>
-                        <button onClick={() => setEditingDonation(null)}>
-                          ביטול
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                )}
-              </React.Fragment>
+                  ) : (
+                    <>
+                      <button
+                        onClick={() => setEditingDonation(donation.donation_id)}
+                      >
+                        ערוך
+                      </button>
+                      <button
+                        onClick={() =>
+                          deleteDonation(donation.donation_id, setDonations)
+                        }
+                      >
+                        מחק
+                      </button>
+                    </>
+                  )}
+                </td>
+              </tr>
             ))}
           </tbody>
         </table>
@@ -218,73 +206,171 @@ const AdminPage = () => {
 
       {/* Categories */}
       <div className="admin-section">
-        <h2>קטגוריות:</h2>
-        <table>
-          <thead>
-            <tr>
-              <th>שם קטגוריה</th>
-              <th>פעולות</th>
-            </tr>
-          </thead>
-          <tbody>
-            {categories.map((category) => (
-              <React.Fragment key={category.category_id}>
-                <tr>
-                  <td>{category.category_name}</td>
-                  <td>
+        <h2>קטגוריות</h2>
+
+        {/* Add Category */}
+        <div className="add-category-form">
+          <input
+            type="text"
+            value={newCategoryName}
+            onChange={(e) => setNewCategoryName(e.target.value)}
+            placeholder="הוסף קטגוריה חדשה..."
+          />
+          <button onClick={handleAddCategory}>הוסף</button>
+        </div>
+
+        {/* Category Grid */}
+        <div className="category-management">
+          <div className="category-grid">
+            {categories.map((cat) => (
+              <div
+                key={cat.group_id}
+                className={`category-tile ${
+                  selectedCategory?.group_id === cat.group_id ? "selected" : ""
+                }`}
+                onClick={() => handleCategoryClick(cat.group_id)}
+              >
+                <div className="category-name">{cat.category_name}</div>
+                <ul className="subcategory-list">
+                  {cat.subCategories?.map((sub, idx) => (
+                    <li key={idx}>{sub.sub_category}</li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+
+          {/* Subcategory Panel */}
+          {selectedCategory && (
+            <div className="subcategory-panel">
+              <h3>תתי קטגוריות: {selectedCategory.category_name}</h3>
+
+              {selectedCategory.subCategories.map((sub, index) => {
+                const isEditing = editingSubIndex === index;
+                return (
+                  <div key={index} className="subcategory-row">
+                    <input
+                      value={
+                        isEditing
+                          ? formValues.editedSub !== undefined
+                            ? formValues.editedSub
+                            : sub.sub_category
+                          : sub.sub_category
+                      }
+                      onChange={(e) =>
+                        setFormValues({
+                          ...formValues,
+                          editedSub: e.target.value,
+                        })
+                      }
+                      disabled={!isEditing}
+                    />
                     <button
                       onClick={() => {
-                        setEditingCategory(category);
-                        setFormValues({
-                          category_name: category.category_name,
+                        console.log("Editing subcategory:", {
+                          subcategory: sub.sub_category,
+                          index,
+                          category_id: sub.category_id,
+                          category_name: selectedCategory.category_name,
                         });
+
+                        if (isEditing) {
+                          updateSubCategory(
+                            sub.category_id,
+                            selectedCategory.category_name,
+                            formValues.editedSub,
+                            sub.sub_category
+                          );
+                          setEditingSubIndex(null);
+                        } else {
+                          setEditingSubIndex(index);
+                        }
                       }}
                     >
-                      עדכון
+                      {isEditing ? "שמור" : "ערוך"}
                     </button>
+                    {/* Delete subcategory button */}
                     <button
-                      onClick={() =>
-                        deleteCategory(category.category_id, setCategories)
-                      }
+                      className="delete-subcategory"
+                      onClick={async () => {
+                        await deleteSubCategory(
+                          sub.category_id,
+                          sub.sub_category
+                        );
+                        await refreshAdminData();
+                      }}
                     >
-                      מחיקה
+                      מחיקת תת קטגוריה
                     </button>
-                  </td>
-                </tr>
-                {editingCategory?.category_id === category.category_id && (
-                  <tr>
-                    <td colSpan="2">
-                      <div className="edit-form">
-                        <input
-                          name="category_name"
-                          placeholder="שם קטגוריה"
-                          value={formValues.category_name || ""}
-                          onChange={handleFormChange}
-                        />
-                        <button
-                          onClick={async () => {
-                            await updateCategory(
-                              category.category_id,
-                              formValues.category_name
-                            );
-                            setEditingCategory(null);
-                            window.location.reload();
-                          }}
-                        >
-                          שמירה
-                        </button>
-                        <button onClick={() => setEditingCategory(null)}>
-                          ביטול
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                )}
-              </React.Fragment>
-            ))}
-          </tbody>
-        </table>
+                  </div>
+                );
+              })}
+
+              <div className="add-subcategory-row">
+                <input
+                  placeholder="הוסף תת-קטגוריה חדשה..."
+                  value={newSubCategory}
+                  onChange={(e) => setNewSubCategory(e.target.value)}
+                />
+                <button
+                  onClick={async () => {
+                    if (!newSubCategory.trim()) return;
+                    try {
+                      await addNewCategory(
+                        selectedCategory.category_name,
+                        newSubCategory
+                      );
+                      setNewSubCategory("");
+                      await refreshAdminData(); // ✅ Soft reload AFTER data added
+                    } catch (err) {
+                      console.error("Failed to add subcategory:", err);
+                      alert("שגיאה בהוספת תת-קטגוריה");
+                    }
+                  }}
+                >
+                  הוסף תת-קטגוריה
+                </button>
+              </div>
+
+              {/* Caution: this deletes only the FIRST sub */}
+              <button
+                className="delete-category"
+                onClick={() =>
+                  handleDeleteCategory(selectedCategory.category_name)
+                }
+              >
+                מחק קטגוריה
+              </button>
+            </div>
+          )}
+        </div>
       </div>
+      <UserEditModal
+        user={userToEdit}
+        formValues={formValues}
+        onChange={handleInputChange}
+        onSave={async () => {
+          await updateUser(userToEdit.user_id, formValues);
+
+          const currentUserId = document.cookie
+            .split("; ")
+            .find((row) => row.startsWith("userId="))
+            ?.split("=")[1];
+
+          if (userToEdit.user_id.toString() === currentUserId) {
+            document.cookie = `fullName=${formValues.full_name}; path=/`;
+            window.location.reload();
+          }
+
+          setShowUserModal(false);
+          setUserToEdit(null);
+          await refreshAdminData();
+        }}
+        onCancel={() => {
+          setShowUserModal(false);
+          setUserToEdit(null);
+        }}
+      />
     </div>
   );
 };

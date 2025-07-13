@@ -3,7 +3,7 @@ import axios from "axios";
 import Cookies from "js-cookie";
 
 export const useEditUser = (userData, setUserData) => {
-  const [editMode, setEditMode] = useState({ full_name: false, email: false });
+  const [editMode, setEditMode] = useState({});
   const [editedUser, setEditedUser] = useState({});
   const currentUserId = Cookies.get("userId");
 
@@ -17,15 +17,20 @@ export const useEditUser = (userData, setUserData) => {
 
   const saveField = async (field) => {
     try {
+      const value = editedUser[field];
+
+      // Send only the edited field
       await axios.put(`/users/${currentUserId}`, {
-        ...userData,
-        ...editedUser,
+        [field]: value,
       });
+
+      // Update local state
+      setUserData((prev) => ({ ...prev, [field]: value }));
       setEditMode((prev) => ({ ...prev, [field]: false }));
-      setUserData((prev) => ({ ...prev, ...editedUser }));
       setEditedUser({});
     } catch (err) {
-      alert("שגיאה בעדכון המשתמש");
+      console.error("❌ Error updating field:", field, err.response?.data || err.message);
+      alert("שגיאה בעדכון המשתמש: " + (err.response?.data?.error || err.message));
     }
   };
 

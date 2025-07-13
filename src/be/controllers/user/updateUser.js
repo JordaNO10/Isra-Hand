@@ -1,7 +1,6 @@
 const db = require("../../utils/db");
 
 const updateUser = (req, res) => {
-  
   const { id } = req.params;
   const {
     username,
@@ -47,6 +46,8 @@ const updateUser = (req, res) => {
         .status(400)
         .json({ error: "מספר טלפון חייב להכיל בדיוק 10 ספרות." });
     }
+    updates.push("phone_number = ?");
+    values.push(phone_number);
   }
 
   if (updates.length === 0) {
@@ -56,9 +57,11 @@ const updateUser = (req, res) => {
   const sql = `UPDATE users SET ${updates.join(", ")} WHERE user_id = ?`;
   values.push(id);
 
+  console.log("Executing SQL:", sql, "with values:", values);
+
   db.query(sql, values, (error, results) => {
     if (error) {
-      console.error("Database error while updating user:", error);
+      console.error("❌ Database error while updating user:", error);
       return res.status(500).json({ error: "Database error" });
     }
 

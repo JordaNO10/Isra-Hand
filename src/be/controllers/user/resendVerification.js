@@ -1,24 +1,25 @@
 const crypto = require("crypto");
-const db = require("../../utils/db");
-const sendMail = require("../../utils/mailer");
-require("dotenv").config(); // For FRONTEND_BASE_URL
+const db = require("../../utils/db"); // or your DB config
+const {sendMail} = require("../../utils/mailer");
+require("dotenv").config();
+const { emailVerificationTemplate } = require("../../templates/emailTemplates");
 
 const resendVerification = (req, res) => {
-  console.log(
-    "📨 Resend verification email request received for:",
-    req.body.email
-  );
+  const { emailOrUsername } = req.body;
 
-  const { email } = req.body;
-
-  if (!email) {
-    return res.status(400).json({ error: "Email is required" });
+  if (!emailOrUsername) {
+    return res.status(400).json({ error: "Email or Username is required" });
   }
 
-  const selectSql = "SELECT * FROM users WHERE email = ?";
-  db.query(selectSql, [email], (selectErr, results) => {
-    if (selectErr) {
-      console.error("❌ DB Error:", selectErr);
+  const selectSql = `
+    SELECT * FROM users 
+    WHERE email = ? OR username = ?
+    LIMIT 1
+  `;
+
+  db.query(selectSql, [emailOrUsername, emailOrUsername], (err, results) => {
+    if (err) {
+      console.error("❌ DB Error:", err);
       return res.status(500).json({ error: "Server error" });
     }
 
@@ -27,43 +28,46 @@ const resendVerification = (req, res) => {
     }
 
     const user = results[0];
-    console.log("🔎 Found user:", user);
-    console.log(
-      "🔐 is_verified:",
-      user.is_verified,
-      "| token:",
-      user.verification_token
-    );
 
     if (user.is_verified) {
-      return res.status(400).json({ error: "User already verified" });
+      return res.status(400).json({ error: "User is already verified" });
     }
 
-    const newToken = crypto.randomBytes(32).toString("hex");
-    const updateSql = "UPDATE users SET verification_token = ? WHERE email = ?";
+    const token = crypto.randomBytes(32).toString("hex");
 
-    db.query(updateSql, [newToken, email], async (updateErr) => {
+    const updateSql = `
+      UPDATE users 
+      SET verification_token = ? 
+      WHERE user_id = ?
+    `;
+
+    db.query(updateSql, [token, user.user_id], (updateErr) => {
       if (updateErr) {
-        console.error("❌ Token update error:", updateErr);
+        console.error("❌ Token Update Error:", updateErr);
         return res.status(500).json({ error: "Failed to update token" });
       }
 
-      const verifyLink = `${process.env.FRONTEND_BASE_URL}/verify?token=${newToken}`;
+      const verifyUrl = `${process.env.FRONTEND_BASE_URL}/verify?token=${token}`;
 
-      try {
-        await sendMail({
-          to: email,
-          subject: "Verify your email address",
-          html: `<p>Click <a href="${verifyLink}">here</a> to verify your email address.</p>`,
+      const mailOptions = {
+        to: user.email,
+        subject: 'אימות כתובת דוא"ל - Isra-Hand',
+        html: emailVerificationTemplate(
+          user.full_name || user.username,
+          verifyUrl
+        ),
+      };
+
+      sendMail(mailOptions)
+        .then(() =>
+          res.status(200).json({ message: "Verification email sent" })
+        )
+        .catch((mailErr) => {
+          console.error("❌ Mail Error:", mailErr);
+          res.status(500).json({ error: "Failed to send email" });
         });
-
-        res.json({ message: "Verification email sent" });
-      } catch (mailErr) {
-        console.error("❌ Mail sending failed:", mailErr);
-        res.status(500).json({ error: "Failed to send verification email" });
-      }
     });
   });
 };
 
-module.exports = resendVerification;
+module.exports = { resendVerification };

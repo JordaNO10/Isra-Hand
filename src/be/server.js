@@ -13,7 +13,6 @@ const userRoutes = require("./routes/userRoutes");
 const donationRoutes = require("./routes/donationRoutes");
 const categoryRoutes = require("./routes/categoryRoutes");
 const ratingRoutes = require("./routes/ratingsRoutes");
-const testMailerRoutes = require("./utils/testmailer");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -59,7 +58,6 @@ app.use("/users", userRoutes); // login, register, logout
 app.use("/donations", donationRoutes); // add, get, update, delete donations
 app.use("/categories", categoryRoutes);
 app.use("/ratings", ratingRoutes);
-app.use("/email", testMailerRoutes);
 
 // Error handler
 app.use((err, req, res, next) => {

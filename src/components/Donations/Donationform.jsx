@@ -34,6 +34,13 @@ const DonationForm = ({ editedData, onSave, onChange, onImageUpload }) => {
       <button type="submit" className="donationform-submit">
         שמור שינויים
       </button>
+      <label htmlFor="phone_number">מספר טלפון:</label>
+      <input
+        type="text"
+        name="phone_number"
+        value={editedData.phone_number || ""}
+        onChange={onChange}
+      />
     </form>
   );
 };

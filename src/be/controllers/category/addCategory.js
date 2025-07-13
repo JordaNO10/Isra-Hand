@@ -1,71 +1,55 @@
 const db = require("../../utils/db");
 
-// Helper function inside this file (you can later move it to helpers.js if you want)
-const getCurrentEnumValues = (callback) => {
-  const sql = "SHOW COLUMNS FROM categories LIKE 'category_name'";
-  db.query(sql, (error, results) => {
-    if (error) return callback(error, null);
-
-    if (results.length === 0) {
-      return callback(new Error("Category name column not found"), null);
-    }
-
-    const enumValues = results[0].Type.replace(/enum\((.*)\)/, "$1")
-      .split(",")
-      .map((value) => value.replace(/'/g, "").trim());
-
-    callback(null, enumValues);
-  });
-};
-
-const addEnumValue = (newValue, currentValues, callback) => {
-  const updatedEnum = [...currentValues, newValue]
-    .map((value) => `'${value}'`)
-    .join(", ");
-  const sql = `ALTER TABLE categories MODIFY category_name ENUM(${updatedEnum})`;
-
-  db.query(sql, (error) => {
-    if (error) return callback(error);
-    callback(null);
-  });
-};
-
 const addCategory = (req, res) => {
-  const { category_name } = req.body;
+  const { category_name, sub_category, catg_photo } = req.body;
 
   if (!category_name || !category_name.trim()) {
     return res.status(400).json({ error: "Category name is required" });
   }
 
-  getCurrentEnumValues((error, enumValues) => {
-    if (error) {
-      console.error("Error fetching enum values:", error);
-      return res.status(500).json({ error: "Failed to retrieve ENUM values" });
+  // ננקה ערכים
+  const name = category_name.trim();
+  const sub = sub_category?.trim() || null;
+  const photo = catg_photo?.trim() || null;
+
+  // בדיקה אם כבר קיימת אותה קטגוריה עם אותה תת-קטגוריה
+  const checkSql = `
+    SELECT * FROM categories 
+    WHERE category_name = ? AND 
+          (sub_category ${sub ? "= ?" : "IS NULL"})
+  `;
+
+  const params = sub ? [name, sub] : [name];
+
+  db.query(checkSql, params, (checkErr, results) => {
+    if (checkErr) {
+      console.error("Error checking existing category:", checkErr);
+      return res.status(500).json({ error: "Database error" });
     }
 
-    if (enumValues.includes(category_name)) {
-      return res.status(400).json({ error: "Category name already exists" });
+    if (results.length > 0) {
+      return res
+        .status(400)
+        .json({ error: "Category and sub-category already exist" });
     }
 
-    addEnumValue(category_name, enumValues, (error) => {
-      if (error) {
-        console.error("Error adding enum value:", error);
-        return res.status(500).json({ error: "Failed to add ENUM value" });
+    // הכנסת הקטגוריה
+    const insertSql = `
+      INSERT INTO categories (category_name, sub_category, catg_photo) 
+      VALUES (?, ?, ?)
+    `;
+
+    db.query(insertSql, [name, sub, photo], (insertErr, result) => {
+      if (insertErr) {
+        console.error("Error inserting category:", insertErr);
+        return res.status(500).json({ error: "Failed to add category" });
       }
 
-      const sql = "INSERT INTO categories (category_name) VALUES (?)";
-      db.query(sql, [category_name], (error, results) => {
-        if (error) {
-          console.error("Error inserting new category:", error);
-          return res.status(500).json({ error: "Database error" });
-        }
-
-        const newCategory = {
-          category_id: results.insertId,
-          category_name: category_name,
-        };
-
-        res.status(201).json(newCategory);
+      res.status(201).json({
+        category_id: result.insertId,
+        category_name: name,
+        sub_category: sub,
+        catg_photo: photo,
       });
     });
   });

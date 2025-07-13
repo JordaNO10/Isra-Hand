@@ -1,11 +1,11 @@
 const db = require("../../utils/db");
 
 const deleteCategory = (req, res) => {
-  const { id } = req.params;
+  const name = decodeURIComponent(req.params.name);
 
-  const sql = "DELETE FROM categories WHERE category_id = ?";
+  const sql = "DELETE FROM categories WHERE category_name = ?";
 
-  db.query(sql, [id], (error, results) => {
+  db.query(sql, [name], (error, results) => {
     if (error) {
       console.error("Database error while deleting category:", error);
       return res.status(500).json({ error: "Database error" });

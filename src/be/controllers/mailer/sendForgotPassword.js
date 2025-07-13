@@ -1,6 +1,6 @@
 // controllers/mailer/sendForgotPassword.js
 const db = require("../../utils/db");
-const sendMail = require("../../utils/mailer");
+const {sendMail} = require("../../utils/mailer");
 const crypto = require("crypto");
 const { passwordResetRequest } = require("../../templates/emailTemplates");
 

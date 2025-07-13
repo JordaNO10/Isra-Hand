@@ -14,7 +14,9 @@ const deleteUser = require("../controllers/user/deleteUser");
 const verifyUser = require("../controllers/user/verifyUser");
 const forgotPassword = require("../controllers/mailer/sendForgotPassword");
 const resetPassword = require("../controllers/mailer/resetPassword");
-const resendVerification = require("../controllers/user/resendVerification");
+const {
+  resendVerification,
+} = require("../controllers/user/resendVerification");
 
 // User Routes
 router.post("/register", upload.none(), registerUser);

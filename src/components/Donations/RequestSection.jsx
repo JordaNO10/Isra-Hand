@@ -12,6 +12,7 @@ function RequestSection({
   onRate,
   showConfirm,
   setShowConfirm,
+  loadingRequest,
 }) {
   const navigate = useNavigate();
 
@@ -56,6 +57,10 @@ function RequestSection({
             </button>
           )}
         </>
+      ) : loadingRequest ? (
+        <button className="edit-button" disabled>
+          ⏳ שולח בקשה...
+        </button>
       ) : (
         <button className="edit-button" onClick={onRequest}>
           בקש תרומה זו
