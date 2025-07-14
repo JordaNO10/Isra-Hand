@@ -12,16 +12,21 @@ export const useCategories = () => {
         const res = await axios.get("/categories", {
           withCredentials: true,
         });
-        const formatted = res.data.map((row) => ({
-          category_id: row.category_id,
-          category_name: row.category_name,
-          subCategories: row.subCategories // ✅ correct casing
-            ? row.subCategories.map((s) => s.trim())
-            : [],
+
+        console.log("✅ Grouped categories from backend:", res.data);
+
+        const formatted = res.data.map((group) => ({
+          category_name: group.category_name,
+          category_id: group.group_id,
+          subCategories: group.subCategories
+            .map((s) => s.sub_category?.trim())
+            .filter(Boolean),
         }));
+
+        console.log("✅ Final parsed categories:", formatted);
         setCategories(formatted);
       } catch (err) {
-        console.error("Failed to fetch categories:", err);
+        console.error("❌ Failed to fetch categories:", err);
         setError("בעיה בטעינת הקטגוריות");
       } finally {
         setLoading(false);

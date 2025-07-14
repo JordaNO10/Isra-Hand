@@ -1,4 +1,4 @@
-import  { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDonationAddForm } from "./Helpers/useDonationForm";
 import UploadImage from "./imageupload";
@@ -19,10 +19,17 @@ function DonationAdd({ onClose, userData }) {
 
   const [useUserEmail, setUseUserEmail] = useState(true);
   useEffect(() => {
-    if (useUserEmail && userData?.email) {
-      setFormData((prev) => ({ ...prev, email: userData.email }));
+    if (userData) {
+      setFormData((prev) => ({
+        ...prev,
+        email: useUserEmail ? userData.email : prev.email,
+        Phonenumber: userData.phone_number || "",
+      }));
     }
   }, [useUserEmail, userData, setFormData]);
+  useEffect(() => {
+    console.log("Loaded categories:", categories);
+  }, [categories]);
   return (
     <div className="donationadd-overlay">
       <div className="donationadd-modal">
@@ -39,7 +46,7 @@ function DonationAdd({ onClose, userData }) {
             value={formData.donation_name}
             onChange={handleInputChange}
           />
-          
+
           <label htmlFor="description">תיאור התרומה:</label>
           <input
             type="text"
@@ -81,17 +88,24 @@ function DonationAdd({ onClose, userData }) {
               />
             </>
           )}
-          <label htmlFor="category_id">קטגוריה:</label>
+          <label htmlFor="Phonenumber">מספר טלפון:</label>
+          <input
+            type="text"
+            name="Phonenumber"
+            value={formData.Phonenumber}
+            readOnly
+          />
+          <label htmlFor="category_name">קטגוריה:</label>
           <select
-            name="category_id"
-            value={formData.category_id}
+            name="category_name"
+            value={formData.category_name}
             onChange={handleInputChange}
           >
             <option value="" disabled>
               בחר קטגוריה
             </option>
             {categories.map((cat) => (
-              <option key={cat.category_id} value={cat.category_id}>
+              <option key={cat.category_name} value={cat.category_name}>
                 {cat.category_name}
               </option>
             ))}
@@ -99,15 +113,19 @@ function DonationAdd({ onClose, userData }) {
 
           {/* Optional: Subcategory if categories include subCategories array */}
 
-          <label htmlFor="sub_category_name">קטגוריה משנית :</label>
-          <select name="sub_category_name" onChange={handleInputChange}>
+          <label htmlFor="sub_category_name">קטגוריה משנית:</label>
+          <select
+            name="sub_category_name"
+            value={formData.sub_category_name}
+            onChange={handleInputChange}
+            disabled={!formData.category_name}
+          >
             <option value="" disabled>
               בחר קטגוריה משנית
             </option>
             {(
               categories.find(
-                (cat) =>
-                  String(cat.category_id) === String(formData.category_id)
+                (cat) => cat.category_name === formData.category_name
               )?.subCategories || []
             ).map((sub, index) => (
               <option key={`${sub}-${index}`} value={sub}>

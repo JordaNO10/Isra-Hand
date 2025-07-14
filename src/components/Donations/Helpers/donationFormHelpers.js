@@ -29,22 +29,24 @@ export const submitDonationForm = async (
     !formData.donation_name ||
     !formData.description ||
     !formData.email ||
-    !formData.category_id ||
+    !formData.category_name ||
+    !formData.sub_category_name ||
+    !formData.Phonenumber ||
     !selectedFile
   ) {
     alert("Please fill in all fields, including uploading an image.");
     return;
   }
 
-  // Build the FormData object to match backend expectations
   const formDataToSend = new FormData();
   formDataToSend.append("donationname", formData.donation_name);
   formDataToSend.append("description", formData.description);
   formDataToSend.append("email", formData.email);
-  formDataToSend.append("categoryId", formData.category_id);
+  formDataToSend.append("Phonenumber", formData.Phonenumber);
+  formDataToSend.append("categoryName", formData.category_name);
+  formDataToSend.append("subCategoryName", formData.sub_category_name);
   formDataToSend.append("user_id", Cookies.get("userId"));
   formDataToSend.append("image", selectedFile);
-
 
   try {
     await axios.post("/donations", formDataToSend, {
@@ -56,7 +58,9 @@ export const submitDonationForm = async (
       donation_name: "",
       description: "",
       email: "",
-      category_id: "",
+      category_name: "",
+      sub_category_name: "",
+      Phonenumber: "",
     });
     setSelectedFile(null);
     navigate("/Donations");

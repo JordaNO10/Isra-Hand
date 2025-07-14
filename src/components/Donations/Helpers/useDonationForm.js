@@ -9,7 +9,8 @@ export const useDonationAddForm = (navigate) => {
     Phonenumber: "",
     description: "",
     email: "",
-    category_id: "",
+    category_name: "",
+    sub_category_name: "",
   });
 
   const [selectedFile, setSelectedFile] = useState(null);
@@ -28,7 +29,7 @@ export const useDonationAddForm = (navigate) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     await submitDonationForm(
       formData,
       selectedFile,
