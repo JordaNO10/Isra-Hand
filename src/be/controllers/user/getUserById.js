@@ -26,7 +26,15 @@ const getUserById = (req, res) => {
       user.birth_date = new Date(user.birth_date).toISOString().split("T")[0];
     }
     if (user.last_login) {
-      user.last_login = new Date(user.last_login).toISOString().split("T")[0];
+      const date = new Date(user.last_login);
+      const yyyy = date.getFullYear();
+      const MM = String(date.getMonth() + 1).padStart(2, "0");
+      const dd = String(date.getDate()).padStart(2, "0");
+      const hh = String(date.getHours()).padStart(2, "0");
+      const mm = String(date.getMinutes()).padStart(2, "0");
+      const ss = String(date.getSeconds()).padStart(2, "0");
+
+      user.last_login = `${yyyy}-${MM}-${dd} ${hh}:${mm}:${ss}`;
     }
 
     res.status(200).json(user);

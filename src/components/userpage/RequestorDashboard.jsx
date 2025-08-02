@@ -5,6 +5,9 @@ import RatingModal from "./RatingModal";
 import "./css/RequestorDashboard.css";
 import Cookies from "js-cookie";
 import { useNavigate } from "react-router-dom";
+import UserEditModal from "./UserEditModal";
+import axios from "axios";
+import { useDashboardDataHelpers } from "./Helpers/useDashboardDataHelpers";
 
 const userId = Cookies.get("userId");
 
@@ -20,73 +23,22 @@ const RequestorDashboard = () => {
     cancelRequest,
     markAsAccepted,
   } = useRequestorDashboard();
+  const { formatLastLogin } = useDashboardDataHelpers();
 
   const navigate = useNavigate();
   const [showRatingModal, setShowRatingModal] = useState(false);
   const [selectedDonation, setSelectedDonation] = useState(null);
-  const { editMode, editedUser, toggleEditMode, handleFieldChange, saveField } =
-    useEditUser(userData, setUserData);
+  const { editedUser, handleFieldChange } = useEditUser(userData, setUserData);
+  const [editingUserModal, setEditingUserModal] = useState(false);
 
   if (loading) return <div className="dashboard">טוען נתונים...</div>;
   if (error) return <div className="dashboard error">{error}</div>;
-
-  const formatPhoneForDisplay = (value) => {
-    const digits = value.replace(/\D/g, "");
-    if (digits.length <= 3) return digits;
-    return `${digits.slice(0, 3)}-${digits.slice(3)}`;
-  };
 
   const handleAccept = async (donation) => {
     await markAsAccepted(donation.donation_id);
     setSelectedDonation(donation);
     setShowRatingModal(true);
   };
-
-  const renderEditableField = (label, fieldKey, type = "text") => (
-    <p>
-      <strong>{label}:</strong>{" "}
-      {editMode[fieldKey] ? (
-        <>
-          <input
-            type={type}
-            inputMode={fieldKey === "phone_number" ? "numeric" : "text"}
-            placeholder={fieldKey === "phone_number" ? "050-1234567" : ""}
-            value={
-              fieldKey === "phone_number"
-                ? formatPhoneForDisplay(
-                    editedUser[fieldKey] ?? userData?.[fieldKey] ?? ""
-                  )
-                : editedUser[fieldKey] ?? userData?.[fieldKey] ?? ""
-            }
-            onChange={(e) => {
-              let val = e.target.value;
-              if (fieldKey === "phone_number") {
-                val = val.replace(/\D/g, "");
-                if (val.length > 10) return;
-              }
-              handleFieldChange(fieldKey, val);
-            }}
-          />
-          <button className="save-button" onClick={() => saveField(fieldKey)}>
-            ✅
-          </button>
-        </>
-      ) : (
-        <>
-          {fieldKey === "phone_number"
-            ? (userData?.[fieldKey] || "").replace(/(\d{3})(\d{7})/, "$1-$2")
-            : userData?.[fieldKey] || "—"}{" "}
-          <button
-            className="edit-icon-button"
-            onClick={() => toggleEditMode(fieldKey, true)}
-            title="ערוך"
-          >
-            ✏️
-          </button>
-        </>
-      )}
-    </p>
-  );
 
   return (
     <div className="dashboard-container">
@@ -100,14 +52,29 @@ const RequestorDashboard = () => {
       <div className="dashboard-header">
         <div className="profile-info-box">
           <h2>פרטים אישיים:</h2>
-          {renderEditableField("שם מלא", "full_name")}
-          {renderEditableField("אימייל", "email")}
-          {renderEditableField("תאריך לידה", "birth_date", "date")}
-          {renderEditableField("טלפון", "phone_number")}
-          {renderEditableField("כתובת", "address")}
+          <p>
+            <strong>שם מלא:</strong> {userData.full_name}
+          </p>
+          <p>
+            <strong>אימייל:</strong> {userData.email}
+          </p>
+          <p>
+            <strong>תאריך לידה:</strong> {userData.birth_date}
+          </p>
+          <p>
+            <strong>טלפון:</strong> {userData.phone_number}
+          </p>
+          <p>
+            <strong>כתובת:</strong> {userData.address}
+          </p>
           <p>
             <strong>סוג משתמש:</strong> מבקש תרומה
           </p>
+          <p>התחברות אחרונה: {formatLastLogin(userData?.last_login)}</p>
+
+          <button onClick={() => setEditingUserModal(true)}>
+            ✏️ ערוך פרופיל
+          </button>
         </div>
       </div>
 
@@ -187,6 +154,34 @@ const RequestorDashboard = () => {
             setShowRatingModal(false);
             setSelectedDonation(null);
           }}
+        />
+      )}
+
+      {editingUserModal && (
+        <UserEditModal
+          user={userData}
+          formValues={{ ...userData, ...editedUser }}
+          onChange={(e) => handleFieldChange(e.target.name, e.target.value)}
+          onSave={async () => {
+            try {
+              const fields = Object.keys(editedUser);
+              for (let field of fields) {
+                await axios.put(`/users/${userData.user_id}`, {
+                  [field]: editedUser[field],
+                });
+                setUserData((prev) => ({
+                  ...prev,
+                  [field]: editedUser[field],
+                }));
+              }
+              setEditingUserModal(false);
+            } catch (err) {
+              alert(
+                "שגיאה בשמירה: " + (err.response?.data?.error || err.message)
+              );
+            }
+          }}
+          onCancel={() => setEditingUserModal(false)}
         />
       )}
     </div>

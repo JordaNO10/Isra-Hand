@@ -37,12 +37,20 @@ const UserEditModal = ({ user, formValues, onChange, onSave, onCancel }) => {
           onChange={onChange}
         />
 
-        <label>סוג משתמש:</label>
-        <select name="role_id" value={formValues.role_id} onChange={onChange}>
-          <option value={1}>Admin</option>
-          <option value={2}>Donor</option>
-          <option value={3}>Requestor</option>
-        </select>
+        {user.role_id === 1 && (
+          <>
+            <label>סוג משתמש:</label>
+            <select
+              name="role_id"
+              value={formValues.role_id}
+              onChange={onChange}
+            >
+              <option value={1}>Admin</option>
+              <option value={2}>Donor</option>
+              <option value={3}>Requestor</option>
+            </select>
+          </>
+        )}
         <div className="modal-buttons">
           <button onClick={onSave}>שמור</button>
           <button onClick={onCancel}>ביטול</button>

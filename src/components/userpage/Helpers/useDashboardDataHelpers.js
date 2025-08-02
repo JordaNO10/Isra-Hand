@@ -36,19 +36,27 @@ export const useDashboardDataHelpers = () => {
       setLoading(false);
     }
   };
-  const formatLastLogin = (isoString) => {
-    if (!isoString) return "לא התחבר עדיין";
+ const formatLastLogin = (datetimeString) => {
+  if (!datetimeString) return "לא התחבר עדיין";
 
-    const date = new Date(isoString);
-    return date.toLocaleString("he-IL", {
-      timeZone: "Asia/Jerusalem",
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  };
+  // Parse manually as local time
+  const [datePart, timePart] = datetimeString.split(" ");
+  const [year, month, day] = datePart.split("-").map(Number);
+  const [hour, minute, second] = timePart.split(":").map(Number);
+
+  // Construct Date as LOCAL TIME (no UTC shift!)
+  const localDate = new Date(year, month - 1, day, hour, minute, second);
+
+  return localDate.toLocaleString("he-IL", {
+    timeZone: "Asia/Jerusalem",
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+};
+
 
   return {
     userData,

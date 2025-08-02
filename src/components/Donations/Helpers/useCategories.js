@@ -13,7 +13,7 @@ export const useCategories = () => {
           withCredentials: true,
         });
 
-        console.log("✅ Grouped categories from backend:", res.data);
+        // console.log("✅ Grouped categories from backend:", res.data);
 
         const formatted = res.data.map((group) => ({
           category_name: group.category_name,
@@ -23,7 +23,7 @@ export const useCategories = () => {
             .filter(Boolean),
         }));
 
-        console.log("✅ Final parsed categories:", formatted);
+        //  console.log("✅ Final parsed categories:", formatted);
         setCategories(formatted);
       } catch (err) {
         console.error("❌ Failed to fetch categories:", err);

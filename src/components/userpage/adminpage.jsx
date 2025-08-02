@@ -124,7 +124,8 @@ const AdminPage = () => {
               <tr key={user.user_id}>
                 <td>{user.username}</td>
                 <td>{user.email}</td>
-                <td>{roleMap[user.role_id] || "לא ידוע"}</td>{" "}
+                <td>{roleMap[user.role_id] || "לא ידוע"}</td>
+                {""}
                 <td>{formatLastLogin(user.last_login)}</td>
                 <td>
                   <button

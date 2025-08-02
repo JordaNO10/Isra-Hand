@@ -7,7 +7,7 @@ const sendForgotPassword = require("../controllers/mailer/sendForgotPassword");
 const sendThankYou = require("../controllers/mailer/sendThankYou");
 const sendApproval = require("../controllers/mailer/sendApproval");
 const sendAlert = require("../controllers/mailer/sendAlert");
-
+const sendRated = require("../controllers/mailer/sendRated");
 // Routes
 
 // התראה כללית (POST)
@@ -24,6 +24,9 @@ router.post("/approval", sendApproval);
 
 // שליחת התראה כללית (POST)
 router.post("/alert", sendAlert);
+
+// תודה על דירוג (POST)
+router.post("/rated", sendRated);
 
 // בדיקה - זמני (GET)
 router.get("/test", (req, res) => {

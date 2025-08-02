@@ -5,6 +5,7 @@ import { useDashboardDataHelpers } from "./Helpers/useDashboardDataHelpers";
 import { useEditUser } from "./Helpers/userEditUser";
 import { useDonorRating } from "./Helpers/useDonorRating";
 import DonationAdd from "../Donations/Donationadd";
+import UserEditModal from "./UserEditModal";
 import "./css/DonorDashboard.css";
 
 const DonorDashboard = () => {
@@ -16,12 +17,14 @@ const DonorDashboard = () => {
 
   const { userData, setUserData, formatLastLogin, donations, loading, error } =
     useDashboardDataHelpers();
-  const { editMode, editedUser, toggleEditMode, handleFieldChange, saveField } =
-    useEditUser(userData, setUserData);
+  const { editedUser, handleFieldChange } = useEditUser(userData, setUserData);
+
   const [showModal, setShowModal] = useState(false);
+  const [editingUserModal, setEditingUserModal] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const [requested, setRequested] = useState([]);
+
   useEffect(() => {
     if (location.state?.setShowModal) {
       setShowModal(true);
@@ -31,7 +34,6 @@ const DonorDashboard = () => {
 
   useEffect(() => {
     if (!userData?.user_id) return;
-
     axios
       .get(`/donations/requested-by-requestors/${userData.user_id}`)
       .then((res) => setRequested(res.data))
@@ -48,58 +50,6 @@ const DonorDashboard = () => {
     (donation) => donation.user_id === userData.user_id
   );
 
-  const formatPhoneForDisplay = (value) => {
-    const digits = value.replace(/\D/g, "");
-    if (digits.length <= 3) return digits;
-    return `${digits.slice(0, 3)}-${digits.slice(3)}`;
-  };
-
-  const renderEditableField = (label, fieldKey, type = "text") => (
-    <p>
-      <strong>{label}:</strong>{" "}
-      {editMode[fieldKey] ? (
-        <>
-          <input
-            type={type}
-            inputMode={fieldKey === "phone_number" ? "numeric" : "text"}
-            placeholder={fieldKey === "phone_number" ? "050-1234567" : ""}
-            value={
-              fieldKey === "phone_number"
-                ? formatPhoneForDisplay(
-                    editedUser[fieldKey] ?? userData?.[fieldKey] ?? ""
-                  )
-                : editedUser[fieldKey] ?? userData?.[fieldKey] ?? ""
-            }
-            onChange={(e) => {
-              let val = e.target.value;
-              if (fieldKey === "phone_number") {
-                val = val.replace(/\D/g, "");
-                if (val.length > 10) return;
-              }
-              handleFieldChange(fieldKey, val);
-            }}
-          />
-          <button className="save-button" onClick={() => saveField(fieldKey)}>
-            ✅
-          </button>
-        </>
-      ) : (
-        <>
-          {fieldKey === "phone_number"
-            ? (userData?.[fieldKey] || "").replace(/(\d{3})(\d{7})/, "$1-$2")
-            : userData?.[fieldKey] || "—"}{" "}
-          <button
-            className="edit-icon-button"
-            onClick={() => toggleEditMode(fieldKey, true)}
-            title="ערוך"
-          >
-            ✏️
-          </button>
-        </>
-      )}
-    </p>
-  );
-
   return (
     <div className="dashboard-container">
       <h1 className="welcome-message">ברוך הבא, {userData.full_name} 👋</h1>
@@ -109,17 +59,28 @@ const DonorDashboard = () => {
           <div className="dashboard-sidebar">
             <div className="profile-info-box">
               <h2>פרטים אישיים:</h2>
-
-              {renderEditableField("שם מלא", "full_name")}
-              {renderEditableField("אימייל", "email")}
-              {renderEditableField("תאריך לידה", "birth_date", "date")}
-              {renderEditableField("טלפון", "phone_number")}
-              {renderEditableField("כתובת", "address")}
+              <p>
+                <strong>שם מלא:</strong> {userData.full_name}
+              </p>
+              <p>
+                <strong>אימייל:</strong> {userData.email}
+              </p>
+              <p>
+                <strong>תאריך לידה:</strong> {userData.birth_date}
+              </p>
+              <p>
+                <strong>טלפון:</strong> {userData.phone_number}
+              </p>
+              <p>
+                <strong>כתובת:</strong> {userData.address}
+              </p>
               <p>
                 <strong>סוג משתמש:</strong> תורם
               </p>
-
               <p>התחברות אחרונה: {formatLastLogin(userData?.last_login)}</p>
+              <button onClick={() => setEditingUserModal(true)}>
+                ✏️ ערוך פרופיל
+              </button>
               {ratingLoading ? (
                 <p>טוען דירוג...</p>
               ) : ratingError ? (
@@ -223,6 +184,34 @@ const DonorDashboard = () => {
 
       {showModal && (
         <DonationAdd onClose={() => setShowModal(false)} userData={userData} />
+      )}
+
+      {editingUserModal && (
+        <UserEditModal
+          user={userData}
+          formValues={{ ...userData, ...editedUser }} // ✅ show live data
+          onChange={(e) => handleFieldChange(e.target.name, e.target.value)}
+          onSave={async () => {
+            try {
+              const fields = Object.keys(editedUser);
+              for (let field of fields) {
+                await axios.put(`/users/${userData.user_id}`, {
+                  [field]: editedUser[field],
+                });
+                setUserData((prev) => ({
+                  ...prev,
+                  [field]: editedUser[field],
+                }));
+              }
+              setEditingUserModal(false);
+            } catch (err) {
+              alert(
+                "שגיאה בשמירה: " + (err.response?.data?.error || err.message)
+              );
+            }
+          }}
+          onCancel={() => setEditingUserModal(false)}
+        />
       )}
     </div>
   );
