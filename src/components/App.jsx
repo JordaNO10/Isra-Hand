@@ -1,21 +1,23 @@
 import React from "react";
 import MyRouter from "./Page layout/MyRouter";
-import AccessibilityButton from "./Page layout/AccessibilityButton";
 import { BrowserRouter } from "react-router-dom";
+import "./App.css";
 
-// ✅ Import Toast support
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
+import { AccessibilityProvider } from "./Page layout/Helpers/AccessibilityContext";
+import AccessibilityButton from "./Page layout/AccessibilityButton";
+
 function App() {
   return (
-    <BrowserRouter>
-      <MyRouter />
-      <AccessibilityButton />
-
-      {/* ✅ Global toast container */}
-      <ToastContainer position="top-center" autoClose={1500} />
-    </BrowserRouter>
+    <AccessibilityProvider>
+      <BrowserRouter>
+        <MyRouter />
+        <AccessibilityButton />
+        <ToastContainer position="top-center" autoClose={1500} />
+      </BrowserRouter>
+    </AccessibilityProvider>
   );
 }
 

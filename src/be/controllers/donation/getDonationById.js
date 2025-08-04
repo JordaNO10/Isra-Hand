@@ -3,15 +3,19 @@ const db = require("../../utils/db");
 const getDonationById = async (req, res) => {
   const { id } = req.params;
   const sql = `
-  SELECT 
-    donations.*, 
-    ratings.user_id AS rating_user_id,
-    donations.requestor_id
-  FROM donations
-  LEFT JOIN ratings ON ratings.donation_id = donations.donation_id
-  WHERE donations.donation_id = ?
-  LIMIT 1;
-`;
+    SELECT 
+      donations.*, 
+      ratings.user_id AS rating_user_id,
+      donations.requestor_id,
+      users.full_name AS donor_name,
+      users.phone_number AS phone,
+      users.address AS address
+    FROM donations
+    LEFT JOIN ratings ON ratings.donation_id = donations.donation_id
+    LEFT JOIN users ON users.user_id = donations.user_id
+    WHERE donations.donation_id = ?
+    LIMIT 1;
+  `;
 
   try {
     const [results] = await db.promise().query(sql, [id]);

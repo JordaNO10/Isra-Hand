@@ -6,7 +6,11 @@ import {
   isUserDonor,
   isUserRequestor,
 } from "./Helpers/useHomeHelper";
+import Banner from "../../assets/Banner.jpeg";
 import { useNavigate } from "react-router-dom";
+import { faBox, faHandshake, faHeart } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import Singlepage from "../Donations/singlePage";
 
 const Home = () => {
   const navigate = useNavigate();
@@ -14,6 +18,19 @@ const Home = () => {
   const [donorCount, setDonorCount] = useState(0);
   const [requestorCount, setRequestorCount] = useState(0);
   const [totalDonations, setTotalDonations] = useState(0);
+
+  const [showModal, setShowModal] = useState(false);
+  const [selectedDonationId, setSelectedDonationId] = useState(null);
+
+  const openSinglepageModal = (donationId) => {
+    setSelectedDonationId(donationId);
+    setShowModal(true);
+  };
+
+  const closeSinglepageModal = () => {
+    setShowModal(false);
+    setSelectedDonationId(null);
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -43,7 +60,7 @@ const Home = () => {
 
       <section className="home-banner">
         <div className="banner-placeholder">
-          {/* Future image will go here */}
+          <img src={Banner} alt="Homepage Banner" className="banner-img" />
         </div>
       </section>
 
@@ -77,47 +94,61 @@ const Home = () => {
         </div>
       </section>
 
+      <div className="home-stats">
+        <div className="stat">
+          <h3>{requestorCount}</h3>
+          <FontAwesomeIcon icon={faHeart} className="stat-icon" />
+          <p>מבקשי תרומות</p>
+        </div>
+        <div className="stat">
+          <h3>{donorCount}</h3>
+          <FontAwesomeIcon icon={faHandshake} className="stat-icon" />
+          <p>תורמים פעילים</p>
+        </div>
+        <div className="stat">
+          <h3>{totalDonations}</h3>
+          <FontAwesomeIcon icon={faBox} className="stat-icon" />
+          <p>מוצרים נתרמו</p>
+        </div>
+      </div>
+
       <section className="latest-donations">
         <h2 className="latest-title">תרומות אחרונות</h2>
         <div className="latest-list">
           {latestDonations.map((donation) => (
-            <div
-              key={donation.donation_id}
-              className="donation-card-home"
-              onClick={() => navigate(`/donations/${donation.donation_id}`)}
-              style={{ cursor: "pointer" }}
-            >
+            <div key={donation.donation_id} className="donation-card-home">
+              <img
+                src={donation.donat_photo}
+                alt="Donation"
+                className="item-image-placeholder"
+              />
               <h3>{donation.donation_name}</h3>
-              <p>
-                תאריך העלאה<br></br> {donation.donation_date_formatted}
-              </p>
-              <p>קטגוריה : {donation.category_name}</p>
-              <p>
-                <img
-                  src={donation.donat_photo}
-                  alt="Donation"
-                  className="item-image-placeholder"
-                />
-              </p>
+              <p>תורם: {donation.donor_name}</p>
+              <p>טלפון: {donation.phone}</p>
+              <p>אזור: {donation.address}</p>
+              <div className="donation-card-button-container">
+                <button
+                  className="donation-card-button"
+                  onClick={() => openSinglepageModal(donation.donation_id)}
+                >
+                  בקש תרומה
+                </button>
+              </div>
             </div>
           ))}
         </div>
       </section>
 
-      <footer className="home-stats">
-        <div className="stat">
-          <h3>{requestorCount}</h3>
-          <p>מבקשי תרומות</p>
+      {showModal && (
+        <div className="modal-overlay" onClick={closeSinglepageModal}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <button className="close-modal" onClick={closeSinglepageModal}>
+              ✖
+            </button>
+            <Singlepage donationId={selectedDonationId} />
+          </div>
         </div>
-        <div className="stat">
-          <h3>{donorCount}</h3>
-          <p>תורמים פעילים</p>
-        </div>
-        <div className="stat">
-          <h3>{totalDonations}</h3>
-          <p>מוצרים נתרמו</p>
-        </div>
-      </footer>
+      )}
     </div>
   );
 };

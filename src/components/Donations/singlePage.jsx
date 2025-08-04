@@ -13,9 +13,8 @@ import { useDonationEditForm } from "./Helpers/useDonationForm";
 import { useSinglePage } from "./Helpers/useSinglePage";
 import { isDonor, isDonationOwner } from "./Helpers/donationAccessControl";
 
-function Singlepage() {
+function Singlepage({ donationId }) {
   const {
-    id,
     donationData,
     requestDonation,
     cancelRequest,
@@ -31,11 +30,12 @@ function Singlepage() {
     handleSave,
     handleDelete,
     setEditedData,
-  } = useSinglePage();
+  } = useSinglePage(donationId);
 
   const [showRatingModal, setShowRatingModal] = useState(false);
   const [selectedDonation, setSelectedDonation] = useState(null);
   const [loadingRequest, setLoadingRequest] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
 
   const { errorMessage, handleChange, handleImageUpload, handleSubmit } =
     useDonationEditForm(editedData, handleSave, setEditedData);
@@ -50,9 +50,9 @@ function Singlepage() {
   const hasRequested = donationData?.requestor_id === Number(userId);
   const hasBeenRated = donationData?.rating_user_id != null;
   const hasReceived = donationData?.accepted === 1;
-  const [showConfirm, setShowConfirm] = useState(false);
+
   const handleRequest = async () => {
-    setLoadingRequest(true); // ✅ Start loading
+    setLoadingRequest(true);
     try {
       await requestDonation(donationData.donation_id);
       setTimeout(() => {
@@ -60,7 +60,7 @@ function Singlepage() {
       }, 500);
     } catch (error) {
       console.error("Error requesting donation:", error);
-      setLoadingRequest(false); // Stop loading on error
+      setLoadingRequest(false);
     }
   };
 
@@ -69,6 +69,7 @@ function Singlepage() {
     setShowConfirm(false);
     window.location.reload();
   };
+
   const handleRate = () => {
     setSelectedDonation(donationData);
     setShowRatingModal(true);
@@ -79,65 +80,83 @@ function Singlepage() {
   if (accessDenied)
     return <div>⛔ Access denied or donation is temporarily locked.</div>;
   if (!donationData) return <div>Donation not found.</div>;
+  //console.log("🟦 donationData:", donationData);
 
   return (
-    <section className="singlepage-container">
-      <div className="singlepage-content">
-        <div className="singlepage-post">
-          {isEditing ? (
-            <>
-              <DonationForm
-                editedData={editedData}
-                onSave={handleSubmit}
-                onChange={handleChange}
-                onImageUpload={handleImageUpload}
-              />
-              {errorMessage && <p className="error-message">{errorMessage}</p>}
-            </>
-          ) : (
-            <>
-              <DonationDetails
-                donation={donationData}
-                onImageClick={openModal}
-              />
+    <div className="modal-content-inner">
+      {isEditing ? (
+        <>
+          <DonationForm
+            editedData={editedData}
+            onSave={handleSubmit}
+            onChange={handleChange}
+            onImageUpload={handleImageUpload}
+          />
+          {errorMessage && <p className="error-message">{errorMessage}</p>}
+        </>
+      ) : (
+        <div className="modal-layout">
+          <div className="modal-info">
+            <p>
+              <strong>שם התרומה:</strong> {donationData.donation_name}
+            </p>
+            <p>
+              <strong>תיאור:</strong> {donationData.description}
+            </p>
+            <p>
+              <strong>תורם:</strong> {donationData.donor_name}
+            </p>
+            <p>
+              <strong>אימייל:</strong> {donationData.email}
+            </p>
+            <p>
+              <strong>טלפון:</strong> {donationData.phone}
+            </p>
+            <p>
+              <strong>כתובת:</strong> {donationData.address}
+            </p>
+            {isLoggedIn && canEdit && (
+              <div className="singlepage-button">
+                <button className="edit-button" onClick={handleEdit}>
+                  ערוך
+                </button>
+                <button className="delete-button" onClick={handleDelete}>
+                  מחק תרומה
+                </button>
+              </div>
+            )}
+            <RequestSection
+              isLoggedIn={isLoggedIn}
+              isRequestor={isRequestor}
+              hasRequested={hasRequested}
+              hasBeenRated={hasBeenRated}
+              hasReceived={hasReceived}
+              onRequest={handleRequest}
+              onCancel={handleCancel}
+              onRate={handleRate}
+              showConfirm={showConfirm}
+              setShowConfirm={setShowConfirm}
+              loadingRequest={loadingRequest}
+            />
+          </div>
 
-              {isLoggedIn && canEdit && (
-                <div className="singlepage-button">
-                  <button className="edit-button" onClick={handleEdit}>
-                    ערוך
-                  </button>
-                  <button className="delete-button" onClick={handleDelete}>
-                    מחק תרומה
-                  </button>
-                </div>
-              )}
-
-              <RequestSection
-                isLoggedIn={isLoggedIn}
-                isRequestor={isRequestor}
-                hasRequested={hasRequested}
-                hasBeenRated={hasBeenRated}
-                hasReceived={hasReceived}
-                onRequest={handleRequest}
-                onCancel={handleCancel}
-                onRate={handleRate}
-                showConfirm={showConfirm}
-                setShowConfirm={setShowConfirm}
-                loadingRequest={loadingRequest}
-              />
-
-              <BackButton userRole={userRole} />
-            </>
-          )}
+          <div className="modal-image-block">
+            <img
+              src={donationData.donat_photo}
+              alt="תרומה"
+              className="modal-image"
+              onClick={openModal}
+            />
+          </div>
         </div>
+      )}
 
-        <DonationImageModal
-          isOpen={isModalOpen}
-          onClose={closeModal}
-          image={donationData.donat_photo}
-        />
-      </div>
-    </section>
+      <DonationImageModal
+        isOpen={isModalOpen}
+        onClose={closeModal}
+        image={donationData.donat_photo}
+      />
+    </div>
   );
 }
 

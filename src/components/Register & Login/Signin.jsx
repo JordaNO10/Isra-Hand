@@ -6,7 +6,6 @@ import "./css/signin.css";
 
 const Signin = () => {
   const navigate = useNavigate();
-
   const {
     formData,
     setFormData,
@@ -22,7 +21,7 @@ const Signin = () => {
   return (
     <div className="signin-container">
       <form className="signin-form standalone" onSubmit={handleSubmit}>
-        <h2>ברוך הבא ל-IsraHand</h2>
+        <h2>IsraHand - ברוך הבא ל</h2>
 
         {errorMessage && <div className="error-message">{errorMessage}</div>}
 

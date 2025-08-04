@@ -1,19 +1,11 @@
-import React from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import React, { useState } from "react";
 import "./css/donations.css";
+import useAvailableDonations from "./Helpers/useAvailableDonations";
 import { useDonationsPage } from "./Helpers/useDonationsPage";
-import useAvailableDonations from "./Helpers/useAvailableDonations"; // 🆕
+import Singlepage from "./singlePage";
 
 const Donations = () => {
-  const {
-    donations,
-    loading,
-    hasMore,
-    loadMore,
-    filters,
-    setFilters,
-    formatDateForDisplay,
-  } = useDonationsPage();
+  const { hasMore, loadMore, loading } = useDonationsPage();
 
   const {
     filteredDonations,
@@ -22,28 +14,30 @@ const Donations = () => {
     setSearchTerm,
     selectedCategory,
     setSelectedCategory,
-  } = useAvailableDonations(); // 🆕
+  } = useAvailableDonations();
 
-  const navigate = useNavigate();
-  const location = useLocation();
+  const [visibleCount, setVisibleCount] = useState(3);
+  const [showModal, setShowModal] = useState(false);
+  const [selectedDonationId, setSelectedDonationId] = useState(null);
 
-  // For original donations list
-  const categories = [...new Set(donations.map((d) => d.category_name))];
-  const subCategories = filters.category
-    ? [
-        ...new Set(
-          donations
-            .filter((d) => d.category_name === filters.category)
-            .map((d) => d.sub_category)
-        ),
-      ]
-    : [];
+  const handleLoadMore = () => {
+    setVisibleCount((prev) => prev + 3);
+  };
+
+  const openSinglepageModal = (donationId) => {
+    setSelectedDonationId(donationId);
+    setShowModal(true);
+  };
+
+  const closeSinglepageModal = () => {
+    setShowModal(false);
+    setSelectedDonationId(null);
+  };
 
   return (
     <section className="donations-section">
       <h2 className="section-title">תרומות זמינות לבקשה</h2>
 
-      {/* 🔍 Filters for Available Donations */}
       <div className="filters">
         <input
           type="text"
@@ -70,15 +64,10 @@ const Donations = () => {
         </select>
       </div>
 
-      {/* 🟦 Available donations section */}
       <div className="donations-grid">
         {filteredDonations.length === 0 && <p>אין תרומות זמינות כרגע.</p>}
-        {filteredDonations.slice(0, 3).map((donation) => (
-          <div
-            key={donation.donation_id}
-            className="donation-card"
-            onClick={() => navigate(`/donations/${donation.donation_id}`)}
-          >
+        {filteredDonations.slice(0, visibleCount).map((donation) => (
+          <div key={donation.donation_id} className="donation-card">
             {donation.donat_photo && (
               <img
                 src={donation.donat_photo}
@@ -87,6 +76,7 @@ const Donations = () => {
               />
             )}
             <h3 className="donation-title">{donation.donation_name}</h3>
+            <p className="donation-description">{donation.description}</p>
             <p>
               <strong>טלפון:</strong> {donation.phone}
             </p>
@@ -94,90 +84,36 @@ const Donations = () => {
               <strong>כתובת:</strong> {donation.address}
             </p>
             <p>
-              <strong>תאריך העלאה : </strong>
+              <strong>תאריך העלאה:</strong>{" "}
               {donation.donation_date
                 ? new Date(donation.donation_date).toLocaleDateString("he-IL")
                 : "לא זמין"}
             </p>
+            <button
+              className="request-button"
+              onClick={() => openSinglepageModal(donation.donation_id)}
+            >
+              בקש תרומה
+            </button>
           </div>
         ))}
       </div>
 
-      <hr style={{ margin: "40px 0" }} />
-
-      {/* 🟨 Original full donations list */}
-      <h2 className="section-title">כל התרומות</h2>
-
-      <div className="filters">
-        <select
-          value={filters.category}
-          onChange={(e) =>
-            setFilters({ category: e.target.value, subCategory: "" })
-          }
-        >
-          <option value="">כל הקטגוריות</option>
-          {categories.map((cat) => (
-            <option key={cat} value={cat}>
-              {cat}
-            </option>
-          ))}
-        </select>
-
-        {filters.category && (
-          <select
-            value={filters.subCategory}
-            onChange={(e) =>
-              setFilters((prev) => ({ ...prev, subCategory: e.target.value }))
-            }
-          >
-            <option value="">כל תתי הקטגוריות</option>
-            {subCategories.map((sub) => (
-              <option key={sub} value={sub}>
-                {sub}
-              </option>
-            ))}
-          </select>
-        )}
-      </div>
-
-      {loading && <p className="loading-message">טוען תרומות...</p>}
-
-      <div className="donations-grid">
-        {donations.length === 0 && !loading && <p>אין תרומות להצגה.</p>}
-        {donations.map((donation) => (
-          <div
-            key={donation.donation_id}
-            className="donation-card"
-            onClick={() => navigate(`/donations/${donation.donation_id}`)}
-          >
-            {donation.donat_photo && (
-              <img
-                src={donation.donat_photo}
-                alt="תרומה"
-                className="donation-card-img"
-              />
-            )}
-            <h3 className="donation-title">{donation.donation_name}</h3>
-            <p>
-              <strong>טלפון:</strong> {donation.phone}
-            </p>
-            <p>
-              <strong>כתובת:</strong> {donation.address}
-            </p>
-            <p>
-              <strong>תאריך העלאה : </strong>
-              {donation.donation_date
-                ? formatDateForDisplay(donation.donation_date)
-                : "לא זמין"}{" "}
-            </p>
-          </div>
-        ))}
-      </div>
-
-      {hasMore && !loading && (
-        <button className="load-more-button" onClick={loadMore}>
+      {visibleCount < filteredDonations.length && (
+        <button className="load-more-button" onClick={handleLoadMore}>
           טען עוד תרומות
         </button>
+      )}
+
+      {showModal && (
+        <div className="modal-overlay" onClick={closeSinglepageModal}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <button className="close-modal" onClick={closeSinglepageModal}>
+              ✖
+            </button>
+            <Singlepage donationId={selectedDonationId} />
+          </div>
+        </div>
       )}
     </section>
   );

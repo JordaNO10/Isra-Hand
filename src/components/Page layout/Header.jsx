@@ -1,7 +1,10 @@
 import { NavLink } from "react-router-dom";
+import { useState, useEffect } from "react";
 import { useHeaderLogic } from "./Helpers/useHeaderLogic";
 import DropdownSignin from "../Register & Login/DropdownSignin";
-import "./css/Header.css"; // ✅ Don't need Cookies import anymore
+import "./css/Header.css";
+import AllWhiteLogo from "../../assets/Logo.Jpeg";
+import { GiHamburgerMenu } from "react-icons/gi";
 
 const Header = ({ onLogout }) => {
   const {
@@ -14,82 +17,150 @@ const Header = ({ onLogout }) => {
     handleLoginSuccess,
     handleLogout,
     setShowSigninDropdown,
-    isAdmin,
     user,
   } = useHeaderLogic(onLogout);
 
-  const getDashboardPath = () => {
-    switch (roleId) {
-      case "1":
-        return "/Admin";
-      case "2":
-        return "/donorpage";
-      case "3":
-        return "/RequestorDashboard";
-      default:
-        return "/";
-    }
-  };
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth > 768) {
+        setIsMobileMenuOpen(false);
+      }
+    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   return (
-    <nav className="header-nav">
-      <div className="header-logo">
-        <NavLink to="/">IsraHand</NavLink>
-      </div>
+    <>
+      <nav className="header-nav">
+        <div className="header-top-row">
+          {/* Hamburger icon for mobile */}
+          <div
+            className="mobile-hamburger"
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          >
+            <GiHamburgerMenu size={24} />
+          </div>
 
-      <div className="header-links">
-        
-
-        {isAuthenticated && roleId ? (
-          isAdmin ? (
-            <NavLink to={getDashboardPath()} className="header-link">
-              דף מנהל
+          {/* Logo */}
+          <div className="header-logo">
+            <NavLink to="/" className="logo-text-link">
+              <img src={AllWhiteLogo} alt="IsraHand Logo" />
             </NavLink>
+          </div>
+
+          {/* Desktop Nav Links */}
+          <div className="header-links desktop-only">
+            <NavLink to="/" className="header-link">
+              דף הבית
+            </NavLink>
+            <NavLink to="/donations" className="header-link">
+              תרומות
+            </NavLink>
+          </div>
+        </div>
+
+        {/* Desktop Auth Buttons */}
+        <div className="header-auth desktop-only">
+          {!isAuthenticated ? (
+            <>
+              <button className="auth-button" onClick={handleLogin}>
+                התחבר
+              </button>
+              <NavLink to="/Signup" className="auth-button secondary">
+                הרשמה
+              </NavLink>
+            </>
           ) : (
-            <NavLink to={getDashboardPath()} className="header-link">
-              הדף האישי שלי
+            <>
+              <NavLink
+                to={
+                  roleId === "1"
+                    ? "/Admin"
+                    : roleId === "2"
+                    ? "/donorpage"
+                    : "/requestorDashboard"
+                }
+                className="hello-message"
+              >
+                הפרופיל שלי
+              </NavLink>
+              <button className="auth-button" onClick={handleLogout}>
+                התנתק
+              </button>
+            </>
+          )}
+        </div>
+
+        {/* Mobile Menu */}
+        {isMobileMenuOpen && (
+          <div className="mobile-menu">
+            <NavLink
+              to="/"
+              className="header-link"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              דף הבית
             </NavLink>
-          )
-        ) : null}
-      </div>
-
-      <div className="header-auth">
-        {isAuthenticated && roleId && (
-          <span className="hello-message">
-            {roleId === "1" && `${user.fullName} שלום👑`}
-            {roleId === "2" && `${user.fullName} שלום 🙌`}
-            {roleId === "3" && `שלום ${user.fullName} 🎯`}
-          </span>
-        )}
-
-        {!isAuthenticated ? (
-          <>
-            <button className="auth-button" onClick={handleLogin}>
-              התחבר
-            </button>
-            <NavLink to="/Signup" className="auth-button secondary">
-              הרשמה
+            <NavLink
+              to="/donations"
+              className="header-link"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              תרומות
             </NavLink>
-          </>
-        ) : (
-          <button className="auth-button" onClick={handleLogout}>
-            התנתק
-          </button>
-        )}
-      </div>
 
+            {!isAuthenticated ? (
+              <>
+                <button className="auth-button" onClick={handleLogin}>
+                  התחבר
+                </button>
+                <NavLink
+                  to="/Signup"
+                  className="auth-button secondary"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  הרשמה
+                </NavLink>
+              </>
+            ) : (
+              <>
+                <NavLink
+                  to={
+                    roleId === "1"
+                      ? "/Admin"
+                      : roleId === "2"
+                      ? "/donorpage"
+                      : "/requestorDashboard"
+                  }
+                  className="hello-message"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  הפרופיל שלי
+                </NavLink>
+                <button className="auth-button" onClick={handleLogout}>
+                  התנתק
+                </button>
+              </>
+            )}
+          </div>
+        )}
+      </nav>
+
+      {/* Dropdown Signin */}
       {showSigninDropdown && (
         <DropdownSignin
           setShowForm={setShowSigninDropdown}
           handleLoginSuccess={handleLoginSuccess}
         />
       )}
-
       {loginMessage && <div className="toast login-toast">{loginMessage}</div>}
       {logoutMessage && (
         <div className="toast logout-toast">{logoutMessage}</div>
       )}
-    </nav>
+    </>
   );
 };
 

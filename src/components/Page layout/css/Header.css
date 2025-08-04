@@ -1,87 +1,125 @@
 .header-nav {
-  position: fixed; /* 🛠️ Make the header stick */
-  top: 0;
-  left: 0;
+  position: fixed;
   right: 0;
-  background-color: #1877f2; /* Facebook blue */
-  color: white;
-  padding: 10px 20px;
+  left: 0;
+  background-color: #0076cd; /* Clean blue background */
   display: flex;
   justify-content: space-between;
   align-items: center;
-  z-index: 9999; /* Make sure it stays on top */
-  height: 70px; /* Good fixed height */
-  box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.15); /* Soft shadow */
-  direction: rtl;
+  padding: 0 10px;
+  z-index: 1000;
+  direction: ltr; /* Make layout natural: left → right */
+}
+.mobile-hamburger {
+  display: none;
+  color: white;
+  cursor: pointer;
+  margin-inline-end: auto; /* ← pushes it to the right in RTL */
 }
 
-/* Make sure content below header isn't hidden */
-body {
-  padding-top: 80px; /* Leave space under the header */
+.mobile-menu {
+  display: none;
+  flex-direction: column;
+  background-color: #0076cd;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-top: 10px;
+  width: 100%;
+  gap: 12px;
 }
-
-/* Rest of your header style remains */
-.header-logo a {
-  font-size: 24px;
-  font-weight: bold;
-  color: white; /* Israeli blue */
-  text-decoration: none;
-  padding: 0.5rem;
-  border-radius: 50%;
-  transition: background-color 0.2s, color 0.2s;
-  display: inline-flex;
+.header-top-row {
+  display: flex;
+  justify-content: space-between;
   align-items: center;
-  justify-content: center;
+  flex-wrap: wrap;
 }
 
-/* remove purple visited effect */
-
-
-/* subtle hover like a leading home button */
-.header-logo a:hover {
-  background-color: rgba(24, 119, 242, 0.1); /* soft blue circle */
-  color: #81b1f3;
-  border: #f0f2f5;
-}
-
-/* optional: smooth focus ring */
-.header-logo a:focus {
-  outline: none;
-  box-shadow: 0 0 0 2px rgba(24, 119, 242, 0.3);
-}
-
-.header-links {
+/* Center the header-links absolutely in the middle */
+.header-links,
+.header-links.desktop-only {
+  position: fixed;
+  left: 50%;
   display: flex;
   gap: 20px;
+  justify-content: center;
+}
+/* LOGO - Left */
+.header-logo {
+  order: 1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.header-logo img {
+  width: 230px;
+  object-fit: contain;
+}
+
+.logo-text-link {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+}
+
+.logo-text {
+  font-size: 1.4rem;
+  font-weight: bold;
+  color: white;
 }
 
 .header-link {
   color: white;
   text-decoration: none;
+  font-size: 1.1rem;
   font-weight: 500;
-  font-size: 18px;
+  position: relative;
 }
 
-.header-link:hover {
-  text-decoration: underline;
+.header-link:hover,
+.header-link.active {
+  border-bottom: 3px solid white;
 }
 
+/* AUTH - Right */
 .header-auth {
+  order: 3;
   display: flex;
-  gap: 10px;
+  align-items: center;
+  gap: 12px;
 }
 
 .auth-button {
   background-color: white;
-  color: #1877f2;
-  border: none;
-  padding: 6px 12px;
-  border-radius: 8px;
+  color: #0078d7;
   font-weight: bold;
+  border: none;
+  border-radius: 20px;
+  padding: 6px 16px;
   cursor: pointer;
-  transition: 0.3s;
+  font-size: 0.95rem;
+  transition: background-color 0.3s ease;
+}
+
+.auth-button.secondary {
+  background-color: #0078d7;
+  color: white;
+  font-size: 0.95rem;
+  border: 2px solid white;
 }
 
 .auth-button:hover {
-  background-color: #f0f2f5;
+  background-color: #e6f0ff;
+}
+
+.auth-button.secondary:hover {
+  background-color: #005bb5;
+  border-color: white;
+}
+
+.hello-message {
+  font-weight: bold;
+  color: white;
+  font-size: 1rem;
+  text-decoration: none;
 }

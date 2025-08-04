@@ -75,16 +75,17 @@ export const useDropdownSigninHelpers = (setShowForm, handleLoginSuccess) => {
         });
 
         setTimeout(() => {
-  const roleId = response.data.roleId;
+          const roleId = response.data.roleId;
 
-  if (roleId == 1) {
-    navigate("/admin");
-  } else {
-    navigate("/");
-  }
+          if (roleId == 1) {
+            navigate("/admin");
+          } else {
+            navigate("/");
+            window.location.reload();
+          }
 
-  handleLoginSuccess(); // optional, depends if you're doing something with it
-}, 1500);
+          handleLoginSuccess(); // optional, depends if you're doing something with it
+        }, 1500);
       }
     } catch (error) {
       const serverMsg =

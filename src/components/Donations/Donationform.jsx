@@ -8,7 +8,6 @@ const DonationForm = ({ editedData, onSave, onChange, onImageUpload }) => {
 
       <label htmlFor="donation_name">שם התרומה:</label>
       <input
-        type="text"
         name="donation_name"
         value={editedData.donation_name}
         onChange={onChange}

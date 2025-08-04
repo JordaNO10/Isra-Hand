@@ -19,7 +19,6 @@ const donationThankYou = (fullName, donationName, donationId) => {
 `;
 };
 
-
 const requestConfirmation = (fullName, donationName) => `
 ,שלום ${fullName}
 
@@ -87,7 +86,7 @@ const notifyDonor = (donorName, donationName, requestorName, donationId) => `
   <p>התרומה שלך "<strong>${donationName}</strong>" התבקשה על ידי המשתמש ${requestorName}.</p>
   <p>אנא התחבר למערכת כדי לאשר או לבדוק את מצב התרומה.</p>
   <p>
-  <a href="${process.env.FRONTEND_BASE_URL}/donations/${donationId}">here</a> לחץ כאן על-מנת לגשת לתרומתך
+  <a href="${process.env.FRONTEND_BASE_URL}/donorpage?focus=${donationId}">here</a> לחץ כאן על-מנת לגשת לתרומתך
  </p>
   <p>תודה,<br>צוות Isra-Hand</p>
 `;

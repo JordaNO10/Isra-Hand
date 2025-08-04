@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, useSearchParams } from "react-router-dom";
 import axios from "axios";
 import { useDashboardDataHelpers } from "./Helpers/useDashboardDataHelpers";
 import { useEditUser } from "./Helpers/userEditUser";
 import { useDonorRating } from "./Helpers/useDonorRating";
 import DonationAdd from "../Donations/Donationadd";
 import UserEditModal from "./UserEditModal";
+import Singlepage from "../Donations/singlePage";
 import "./css/DonorDashboard.css";
 
 const DonorDashboard = () => {
@@ -21,8 +22,12 @@ const DonorDashboard = () => {
 
   const [showModal, setShowModal] = useState(false);
   const [editingUserModal, setEditingUserModal] = useState(false);
+  const [showFocusedModal, setShowFocusedModal] = useState(false);
+  const [selectedDonationId, setSelectedDonationId] = useState(null);
   const navigate = useNavigate();
   const location = useLocation();
+  const [searchParams] = useSearchParams();
+  const focusId = searchParams.get("focus");
   const [requested, setRequested] = useState([]);
 
   useEffect(() => {
@@ -41,6 +46,14 @@ const DonorDashboard = () => {
         console.error("❌ Failed to fetch requested donations", err)
       );
   }, [userData]);
+
+  useEffect(() => {
+    if (focusId) {
+      navigate("/donorpage", { replace: true });
+      setSelectedDonationId(Number(focusId));
+      setShowFocusedModal(true);
+    }
+  }, [focusId]);
 
   if (loading) return <div className="dashboard">טוען נתונים...</div>;
   if (error) return <div className="dashboard error">{error}</div>;
@@ -122,7 +135,9 @@ const DonorDashboard = () => {
                 <div
                   key={donation.donation_id}
                   className="item-card"
-                  onClick={() => navigate(`/donations/${donation.donation_id}`)}
+                  onClick={() =>
+                    navigate(`/donorpage?focus=${donation.donation_id}`)
+                  }
                   style={{ cursor: "pointer" }}
                 >
                   {donation.donat_photo ? (
@@ -189,7 +204,7 @@ const DonorDashboard = () => {
       {editingUserModal && (
         <UserEditModal
           user={userData}
-          formValues={{ ...userData, ...editedUser }} // ✅ show live data
+          formValues={{ ...userData, ...editedUser }}
           onChange={(e) => handleFieldChange(e.target.name, e.target.value)}
           onSave={async () => {
             try {
@@ -212,6 +227,23 @@ const DonorDashboard = () => {
           }}
           onCancel={() => setEditingUserModal(false)}
         />
+      )}
+
+      {showFocusedModal && selectedDonationId && (
+        <div
+          className="modal-overlay"
+          onClick={() => setShowFocusedModal(false)}
+        >
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <button
+              className="close-modal"
+              onClick={() => setShowFocusedModal(false)}
+            >
+              ✖
+            </button>
+            <Singlepage donationId={selectedDonationId} />
+          </div>
+        </div>
       )}
     </div>
   );

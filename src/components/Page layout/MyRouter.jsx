@@ -23,51 +23,51 @@ const MyRouter = ({ onLogout }) => {
 
   return (
     <>
+
+      {/* Wrapper that adds spacing below the fixed header */}
       <Header onLogout={onLogout} />
-      <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/About" element={<About />} />
+      <div className="page-content">
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/About" element={<About />} />
+          <Route
+            path="/Signup"
+            element={role ? <Navigate to="/" /> : <SignupPage />}
+          />
+          <Route
+            path="/Signin"
+            element={role ? <Navigate to="/" /> : <Signin />}
+          />
+          <Route path="/Donations" element={<Donation />} />
+          <Route path="/ForgotPassword" element={<ForgotPassword />} />
+          <Route path="/ResetPassword/:token" element={<ResetPassword />} />
+          <Route path="/verify" element={<VerifyEmail />} />
+          <Route
+            path="/Donationadd"
+            element={
+              <PrivateRoute element={<Donationadd />} roles={["1", "2"]} />
+            }
+          />
+          <Route path="/Donations/:id" element={<Singlepage />} />
+          <Route
+            path="/requestorDashboard"
+            element={
+              <PrivateRoute element={<RequestorDashboard />} roles={"3"} />
+            }
+          />
+          <Route
+            path="/Admin"
+            element={<PrivateRoute element={<AdminPage />} roles={["1"]} />}
+          />
+          <Route
+            path="/donorpage"
+            element={<DonatorDashBoard onLogout={onLogout} />}
+          />
+          <Route path="/Contact" element={<Contact />} />
+          <Route path="*" element={<h1 className="main">Not Found</h1>} />
+        </Routes>
+      </div>
 
-        {/* 🚫 Block access to signup & signin if user is logged in */}
-        <Route
-          path="/Signup"
-          element={role ? <Navigate to="/" /> : <SignupPage />}
-        />
-        <Route
-          path="/Signin"
-          element={role ? <Navigate to="/" /> : <Signin />}
-        />
-
-        <Route path="/Donations" element={<Donation />} />
-        <Route path="/ForgotPassword" element={<ForgotPassword />} />
-        <Route path="/ResetPassword/:token" element={<ResetPassword />} />
-        <Route path="/verify" element={<VerifyEmail />} />
-
-        {/* Protected routes */}
-        <Route
-          path="/Donationadd"
-          element={
-            <PrivateRoute element={<Donationadd />} roles={["1", "2"]} />
-          }
-        />
-        <Route path="/Donations/:id" element={<Singlepage />} />
-        <Route
-          path="/requestorDashboard"
-          element={
-            <PrivateRoute element={<RequestorDashboard />} roles={"3"} />
-          }
-        />
-        <Route
-          path="/Admin"
-          element={<PrivateRoute element={<AdminPage />} roles={["1"]} />}
-        />
-        <Route
-          path="/donorpage"
-          element={<DonatorDashBoard onLogout={onLogout} />}
-        />
-        <Route path="/Contact" element={<Contact />} />
-        <Route path="*" element={<h1 className="main">Not Found</h1>} />
-      </Routes>
       <Footer />
     </>
   );

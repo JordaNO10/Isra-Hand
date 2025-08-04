@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import Cookies from "js-cookie";
-import { useParams, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import {
   getDonationById,
   deleteDonation,
@@ -15,9 +15,9 @@ import {
 } from "./donationAccessControl";
 import axios from "axios";
 
-export const useSinglePage = () => {
+export const useSinglePage = (donationId) => {
   const navigate = useNavigate();
-  const { id } = useParams();
+  const id = donationId;
   const [donationData, setDonationData] = useState(null);
   const [editedData, setEditedData] = useState({});
   const [isEditing, setIsEditing] = useState(false);
@@ -78,7 +78,7 @@ export const useSinglePage = () => {
       console.log("⏳ Saving donation...", updatedData);
 
       const formData = new FormData();
-      formData.append("donationname", updatedData.donation_name);
+      formData.append("donation_name", updatedData.donation_name);
       formData.append("email", updatedData.email);
       formData.append("description", updatedData.description);
       if (updatedData.image instanceof File) {
@@ -91,6 +91,7 @@ export const useSinglePage = () => {
       const refreshed = await getDonationById(id);
       setDonationData(refreshed);
       setIsEditing(false);
+      window.location.reload();
 
       alert("השינויים נשמרו בהצלחה!");
     } catch (err) {
