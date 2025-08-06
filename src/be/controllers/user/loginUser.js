@@ -26,9 +26,7 @@ const loginUser = (req, res) => {
 
       // ✅ Block login if user is not verified
       if (!user.is_verified) {
-        return res
-          .status(401)
-          .json({ error: "Please verify your email before logging in." });
+        return res.status(401).json({ error: "אנא אמת את כתובת האימייל שלך" });
       }
 
       const updateLoginTimeSql =

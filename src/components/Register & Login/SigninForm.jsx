@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { useDropdownSigninHelpers } from "./Helpers/useDropdownSigninHelpers";
 import { useAuthHelpers } from "./Helpers/useAuthHelpers";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import "./css/signin.css";
 
 const SigninForm = ({ setShowForm, handleLoginSuccess }) => {
@@ -19,20 +20,34 @@ const SigninForm = ({ setShowForm, handleLoginSuccess }) => {
   const navigate = useNavigate();
   const [resendSuccess, setResendSuccess] = useState(false);
 
-  const { handleForgotPassword, errorMessage: resetError } =
-    useAuthHelpers(navigate);
+  const { handleForgotPassword } = useAuthHelpers();
 
-  const handleReset = (e) => {
+  const handleReset = async (e) => {
     e.preventDefault();
-    if (!emailForReset) return alert("יש להזין אימייל");
-    handleForgotPassword(emailForReset);
+
+    if (!emailForReset) {
+      toast.error("יש להזין אימייל");
+      return;
+    }
+
+    const { success, message } = await handleForgotPassword(emailForReset);
+
+    if (success) {
+      toast.success("📩 קישור איפוס נשלח למייל שלך");
+      setShowReset(false); // אופציונלי: סגור את שדה האיפוס
+      setEmailForReset("");
+    } else {
+      toast.error(message);
+    }
   };
 
   return (
     <form className="signin-form" onSubmit={handleSubmit}>
       <h2 className="signInForm">התחברות</h2>
+
       {errorMessage && <div className="error-message">{errorMessage}</div>}
-      {errorMessage?.toLowerCase().includes("verify your email") && (
+
+      {errorMessage === "אנא אמת את כתובת האימייל שלך" && (
         <>
           <button
             type="button"
@@ -72,6 +87,7 @@ const SigninForm = ({ setShowForm, handleLoginSuccess }) => {
           )}
         </>
       )}
+
       <input
         type="text"
         name="emailOrUsername"
@@ -91,6 +107,7 @@ const SigninForm = ({ setShowForm, handleLoginSuccess }) => {
       <button type="submit" className="signin-btn">
         התחבר
       </button>
+
       <div className="forgot-password-section">
         {!showReset ? (
           <p
@@ -115,7 +132,6 @@ const SigninForm = ({ setShowForm, handleLoginSuccess }) => {
             <button onClick={handleReset} className="signin-btn" type="button">
               שלח קישור איפוס
             </button>
-            {resetError && <div className="error-message">{resetError}</div>}
           </div>
         )}
       </div>

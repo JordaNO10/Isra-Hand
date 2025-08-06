@@ -1,3 +1,4 @@
+// AdminPage.jsx
 import { useEffect, useState } from "react";
 import {
   fetchAdminData,
@@ -5,13 +6,13 @@ import {
   deleteDonation,
   deleteCategory,
   updateUser,
-  updateDonation,
   updateCategory,
   addNewCategory,
   formatLastLogin,
   deleteSubCategory,
 } from "./Helpers/useAdminDashboardHelpers";
 import UserEditModal from "./UserEditModal"; // Adjust path as needed
+import Singlepage from "../Donations/singlePage";
 import "./css/AdminPage.css";
 
 const AdminPage = () => {
@@ -26,8 +27,8 @@ const AdminPage = () => {
   const [editingSubIndex, setEditingSubIndex] = useState(null);
   const [formValues, setFormValues] = useState({});
   const [editingUser, setEditingUser] = useState(null);
-  const [editingDonation, setEditingDonation] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [selectedDonation, setSelectedDonation] = useState(null);
 
   const refreshAdminData = async () => {
     try {
@@ -58,13 +59,6 @@ const AdminPage = () => {
     refreshAdminData();
   };
 
-  const handleDonationUpdate = async (donationId) => {
-    await updateDonation(donationId, formValues.description);
-    setEditingDonation(null);
-    refreshAdminData();
-    await refreshAdminData();
-  };
-
   const handleCategoryClick = (groupId) => {
     setSelectedGroupId(groupId);
     setFormValues({});
@@ -77,11 +71,10 @@ const AdminPage = () => {
 
   const handleAddCategory = async () => {
     if (!newCategoryName.trim()) return;
-
     try {
-      await addNewCategory(newCategoryName.trim()); // ✅ ensure fully complete
+      await addNewCategory(newCategoryName.trim());
       setNewCategoryName("");
-      await refreshAdminData(); // ✅ force re-fetch
+      await refreshAdminData();
     } catch (err) {
       console.error("Add category failed", err);
       alert("שגיאה בהוספת קטגוריה");
@@ -93,15 +86,16 @@ const AdminPage = () => {
     await refreshAdminData();
   };
 
-  const selectedCategory = categories.find(
-    (cat) => cat.group_id === selectedGroupId
-  );
-
   const roleMap = {
     1: "Admin",
     2: "Donor",
     3: "Requestor",
   };
+
+  const selectedCategory = categories.find(
+    (cat) => cat.group_id === selectedGroupId
+  );
+
   return (
     <div className="admin-page">
       <h1>ניהול המערכת</h1>
@@ -125,7 +119,6 @@ const AdminPage = () => {
                 <td>{user.username}</td>
                 <td>{user.email}</td>
                 <td>{roleMap[user.role_id] || "לא ידוע"}</td>
-                {""}
                 <td>{formatLastLogin(user.last_login)}</td>
                 <td>
                   <button
@@ -168,36 +161,18 @@ const AdminPage = () => {
             {donations.map((donation) => (
               <tr key={donation.donation_id}>
                 <td>{donation.donation_name}</td>
+                <td>{donation.description}</td>
                 <td>
-                  {editingDonation === donation.donation_id ? (
-                    <input name="description" onChange={handleInputChange} />
-                  ) : (
-                    donation.description
-                  )}
-                </td>
-                <td>
-                  {editingDonation === donation.donation_id ? (
-                    <button
-                      onClick={() => handleDonationUpdate(donation.donation_id)}
-                    >
-                      שמור
-                    </button>
-                  ) : (
-                    <>
-                      <button
-                        onClick={() => setEditingDonation(donation.donation_id)}
-                      >
-                        ערוך
-                      </button>
-                      <button
-                        onClick={() =>
-                          deleteDonation(donation.donation_id, setDonations)
-                        }
-                      >
-                        מחק
-                      </button>
-                    </>
-                  )}
+                  <button onClick={() => setSelectedDonation(donation)}>
+                    פתח
+                  </button>
+                  <button
+                    onClick={() =>
+                      deleteDonation(donation.donation_id, setDonations)
+                    }
+                  >
+                    מחק
+                  </button>
                 </td>
               </tr>
             ))}
@@ -208,8 +183,6 @@ const AdminPage = () => {
       {/* Categories */}
       <div className="admin-section">
         <h2>קטגוריות</h2>
-
-        {/* Add Category */}
         <div className="add-category-form">
           <input
             type="text"
@@ -220,7 +193,6 @@ const AdminPage = () => {
           <button onClick={handleAddCategory}>הוסף</button>
         </div>
 
-        {/* Category Grid */}
         <div className="category-management">
           <div className="category-grid">
             {categories.map((cat) => (
@@ -241,11 +213,9 @@ const AdminPage = () => {
             ))}
           </div>
 
-          {/* Subcategory Panel */}
           {selectedCategory && (
             <div className="subcategory-panel">
               <h3>תתי קטגוריות: {selectedCategory.category_name}</h3>
-
               {selectedCategory.subCategories.map((sub, index) => {
                 const isEditing = editingSubIndex === index;
                 return (
@@ -253,9 +223,7 @@ const AdminPage = () => {
                     <input
                       value={
                         isEditing
-                          ? formValues.editedSub !== undefined
-                            ? formValues.editedSub
-                            : sub.sub_category
+                          ? formValues.editedSub ?? sub.sub_category
                           : sub.sub_category
                       }
                       onChange={(e) =>
@@ -268,13 +236,6 @@ const AdminPage = () => {
                     />
                     <button
                       onClick={() => {
-                        console.log("Editing subcategory:", {
-                          subcategory: sub.sub_category,
-                          index,
-                          category_id: sub.category_id,
-                          category_name: selectedCategory.category_name,
-                        });
-
                         if (isEditing) {
                           updateSubCategory(
                             sub.category_id,
@@ -290,7 +251,6 @@ const AdminPage = () => {
                     >
                       {isEditing ? "שמור" : "ערוך"}
                     </button>
-                    {/* Delete subcategory button */}
                     <button
                       className="delete-subcategory"
                       onClick={async () => {
@@ -322,7 +282,7 @@ const AdminPage = () => {
                         newSubCategory
                       );
                       setNewSubCategory("");
-                      await refreshAdminData(); // ✅ Soft reload AFTER data added
+                      await refreshAdminData();
                     } catch (err) {
                       console.error("Failed to add subcategory:", err);
                       alert("שגיאה בהוספת תת-קטגוריה");
@@ -333,7 +293,6 @@ const AdminPage = () => {
                 </button>
               </div>
 
-              {/* Caution: this deletes only the FIRST sub */}
               <button
                 className="delete-category"
                 onClick={() =>
@@ -346,6 +305,26 @@ const AdminPage = () => {
           )}
         </div>
       </div>
+
+      {/* Singlepage Modal */}
+      {selectedDonation && (
+        <div className="modal-backdrop">
+          <div className="modal-content">
+            <button
+              className="close-modal"
+              onClick={() => setSelectedDonation(null)}
+            >
+              ✖
+            </button>
+            <Singlepage
+              donationId={selectedDonation.donation_id}
+              onClose={() => setSelectedDonation(null)}
+              isAdminView={true}
+            />
+          </div>
+        </div>
+      )}
+
       <UserEditModal
         user={userToEdit}
         formValues={formValues}

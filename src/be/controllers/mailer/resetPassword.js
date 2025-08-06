@@ -1,7 +1,6 @@
-// controllers/mailer/resetPassword.js
 const db = require("../../utils/db");
 const bcrypt = require("bcrypt");
-const sendMail = require("../../utils/mailer");
+const { sendMail } = require("../../utils/mailer");
 const { passwordResetSuccess } = require("../../templates/emailTemplates");
 
 const resetPassword = async (req, res) => {
@@ -31,14 +30,24 @@ const resetPassword = async (req, res) => {
         [hashedPassword, user.user_id]
       );
 
-    const successMessage = passwordResetSuccess(user.full_name);
-    await sendMail({
-      to: user.email,
-      subject: "סיסמה אופסה בהצלחה",
-      html: successMessage,
-    });
+    // ✅ נשלח מייל בנפרד – לא נגרום לשגיאה אפילו אם ייכשל
+    try {
+      const successMessage = passwordResetSuccess(user.full_name);
+      await sendMail({
+        to: user.email,
+        subject: "סיסמה אופסה בהצלחה",
+        html: successMessage,
+      });
+    } catch (mailError) {
+      console.error("שליחת מייל איפוס נכשלה:", mailError);
+      // לא מחזירים שגיאה ללקוח כדי לא לעצור את התהליך
+    }
 
-    res.json({ message: "הסיסמה אופסה בהצלחה" });
+    // ✅ נשלחת תשובה תקינה
+    res.status(200).json({
+      message: "הסיסמה אופסה בהצלחה",
+      email: user.email,
+    });
   } catch (err) {
     console.error("Reset password error:", err);
     res.status(500).json({ message: "שגיאה בשרת במהלך איפוס הסיסמה" });

@@ -58,17 +58,13 @@ ${fullName}
 Isra-Hand מערכת
 `;
 const passwordResetRequest = (fullName, resetLink) => `
-${fullName} שלום,
-
-התקבלה בקשה לאיפוס הסיסמה שלך באתר Isra-Hand.
-
-לאיפוס הסיסמה לחץ על הקישור הבא:
-${resetLink}
-
-אם לא ביקשת איפוס – תוכל להתעלם מהודעה זו.
-
-בברכה,  
-צוות Isra-Hand
+  <p>שלום ${fullName},</p>
+  <p>התקבלה בקשה לאיפוס הסיסמה שלך באתר Isra-Hand.</p>
+  <p>
+    <a href="${resetLink}">לחץ כאן לאיפוס הסיסמה</a>
+  </p>
+  <p>אם לא ביקשת איפוס – תוכל להתעלם מהודעה זו.</p>
+  <p>בברכה,<br>צוות Isra-Hand</p>
 `;
 
 const passwordResetSuccess = (fullName) => `

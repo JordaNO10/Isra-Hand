@@ -1,14 +1,15 @@
 /* General Dashboard Layout */
 .dashboard-container {
-  padding: 20px;
+  padding: 15px;
   max-width: 1200px;
   margin: auto;
   direction: rtl;
 }
 
+.personalInfo {
+  font-size: 1.3rem;
+}
 .welcome-message {
-  font-size: 2rem;
-  margin-bottom: 20px;
   color: #1877f2; /* Facebook blue */
 }
 
@@ -26,6 +27,7 @@
 .section-title {
   margin-top: 40px;
   font-size: 1.5rem;
+  padding: 0px;
   color: #1877f2;
 }
 

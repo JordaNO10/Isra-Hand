@@ -2,7 +2,8 @@
 import { useState } from "react";
 import axios from "axios";
 import Cookies from "js-cookie";
-export const useAuthHelpers = (navigate) => {
+
+export const useAuthHelpers = () => {
   const [errorMessage, setErrorMessage] = useState("");
 
   const handleInputChange = (e, formData, setFormData) => {
@@ -10,7 +11,7 @@ export const useAuthHelpers = (navigate) => {
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSignup = async (formData, passwordValid) => {
+  const handleSignup = async (formData, passwordValid, navigate) => {
     if (!passwordValid) {
       setErrorMessage("הסיסמה לא עומדת בדרישות.");
       return;
@@ -46,13 +47,13 @@ export const useAuthHelpers = (navigate) => {
         { email },
         { withCredentials: true }
       );
-      alert(response.data.message || "קישור איפוס נשלח למייל");
       setErrorMessage("");
-      navigate("/Signin");
+      return { success: true, message: response.data?.message || "" };
     } catch (error) {
-      setErrorMessage(
-        error.response?.data?.error || "שגיאה בשליחת קישור איפוס"
-      );
+      const errorText =
+        error.response?.data?.error || "שגיאה בשליחת קישור איפוס";
+      setErrorMessage(errorText);
+      return { success: false, message: errorText };
     }
   };
 

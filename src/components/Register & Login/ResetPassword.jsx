@@ -3,6 +3,8 @@ import React from "react";
 import { useParams } from "react-router-dom";
 import "./css/signin.css";
 import { useResetPassword } from "./Helpers/useResetPassword";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const ResetPassword = () => {
   const { token } = useParams();
@@ -40,9 +42,12 @@ const ResetPassword = () => {
         />
 
         <button type="submit" className="signin-btn" disabled={loading}>
-          {loading ? "שולח..." : "אפס סיסמה"}
+          {loading ? "מאפס..." : "אפס סיסמה"}
         </button>
       </form>
+
+      {/* Toast container for notifications */}
+      <ToastContainer position="top-center" autoClose={3000} />
     </div>
   );
 };

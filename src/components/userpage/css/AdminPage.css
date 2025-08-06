@@ -2,7 +2,50 @@
   padding: 20px;
   background-color: #f0f2f5; /* Facebook-like background */
 }
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
+.modal-content {
+  background-color: #fff;
+  width: 90%;
+  max-width: 900px;
+  max-height: 90vh;
+  overflow-y: auto;
+  border-radius: 12px;
+  padding: 20px;
+  position: relative;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+.close-modal {
+  position: relative;
+  top: 10px;
+  left: 10px;
+  background: #f44336;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  direction: rtl;
+  transition: background-color 0.3s;
+}
+
+.close-modal:hover {
+  background-color: #d32f2f;
+}
 .admin-page h1,
 .admin-page h2 {
   text-align: center;
@@ -138,8 +181,10 @@ button:hover {
   display: flex;
   justify-content: center;
   align-items: center;
+  flex-direction: row-reverse; /* ← הפתרון */
   gap: 10px;
   margin-bottom: 20px;
+  direction: rtl;
 }
 
 .add-category-form input {
@@ -185,6 +230,7 @@ button:hover {
 }
 
 .subcategory-panel {
+  display: grid;
   margin-top: 30px;
   background: #fff;
   padding: 25px;
@@ -202,7 +248,9 @@ button:hover {
   gap: 10px;
   margin-bottom: 12px;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start; /* ← לשמאל (ימין אם ב־rtl) */
+  margin-right: auto; /* בצד שמאל */
+  width: fit-content;
 }
 
 .subcategory-row input,
@@ -258,11 +306,10 @@ button:hover {
 }
 .category-management {
   display: flex;
-  flex-direction: row;
-  gap: 30px;
   align-items: flex-start;
   justify-content: center;
-  flex-wrap: wrap;
+  gap: 30px;
+  flex-wrap: nowrap; /* חשוב! */
 }
 
 .category-search-bar {

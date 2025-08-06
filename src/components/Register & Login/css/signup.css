@@ -90,10 +90,15 @@
 }
 
 .additional-link {
-  font-size: 0.9rem;
-  color: #1877f2;
-  text-decoration: underline;
-  cursor: pointer;
+    padding: 12px;
+    background-color: #768292;
+    color: white;
+    border: none;
+    font-weight: bold;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin-top: 8px;
 }
 
 .additional-link:hover {

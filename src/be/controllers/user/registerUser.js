@@ -58,7 +58,6 @@ const registerUser = (req, res) => {
             const userId = results.insertId;
 
             // ✉️ Send email verification to user
-            // ✉️ Send email verification to user
             const frontendURL =
               process.env.FRONTEND_BASE_URL || "http://localhost:3000";
             const verifyLink = `${frontendURL}/verify?token=${verificationToken}`;

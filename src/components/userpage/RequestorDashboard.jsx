@@ -51,7 +51,7 @@ const RequestorDashboard = () => {
 
       <div className="dashboard-header">
         <div className="profile-info-box">
-          <h2>פרטים אישיים:</h2>
+          <h2 className="personalInfo">פרטים אישיים:</h2>
           <p>
             <strong>שם מלא:</strong> {userData.full_name}
           </p>

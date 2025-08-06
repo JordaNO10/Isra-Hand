@@ -91,8 +91,8 @@ export const useDropdownSigninHelpers = (setShowForm, handleLoginSuccess) => {
       const serverMsg =
         error.response?.data?.error || error.response?.data?.message;
 
-      if (serverMsg === "Email not verified") {
-        setErrorMessage("Email not verified");
+      if (serverMsg === "אנא אמת את כתובת האימייל שלך") {
+        setErrorMessage("אנא אמת את כתובת האימייל שלך");
       } else {
         setErrorMessage(serverMsg || "שגיאה בהתחברות");
       }

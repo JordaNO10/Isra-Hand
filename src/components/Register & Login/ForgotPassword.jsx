@@ -2,7 +2,9 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuthHelpers } from "./Helpers/useAuthHelpers";
-import "./css/signin.css"; // We reuse the signin style here
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import "./css/signin.css";
 
 const ForgotPassword = () => {
   const navigate = useNavigate();
@@ -19,7 +21,12 @@ const ForgotPassword = () => {
       return;
     }
 
-    await handleForgotPassword(email);
+    const success = await handleForgotPassword(email);
+
+    // ✅ אם הצליח – הצג toast
+    if (success) {
+      toast.success("קישור איפוס נשלח למייל שלך!");
+    }
   };
 
   return (
@@ -52,6 +59,9 @@ const ForgotPassword = () => {
           </button>
         </div>
       </form>
+
+      {/* ✅ הצגת ה-toast */}
+      <ToastContainer position="top-center" autoClose={3000} />
     </div>
   );
 };
