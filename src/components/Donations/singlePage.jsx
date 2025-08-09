@@ -1,6 +1,6 @@
 import "./css/singlepage.css";
 import Cookies from "js-cookie";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 import DonationForm from "./Donationform";
 import DonationImageModal from "./donationimage";
@@ -11,7 +11,7 @@ import BackButton from "./BackButton";
 
 import { useDonationEditForm } from "./Helpers/useDonationForm";
 import { useSinglePage } from "./Helpers/useSinglePage";
-import { isDonor, isDonationOwner } from "./Helpers/donationAccessControl";
+import { isAdmin, isDonor, isDonationOwner } from "./Helpers/donationAccessControl";
 
 function Singlepage({ donationId }) {
   const {
@@ -30,12 +30,26 @@ function Singlepage({ donationId }) {
     handleSave,
     handleDelete,
     setEditedData,
+    // manual unlock from the hook
+    releaseLock,
   } = useSinglePage(donationId);
 
   const [showRatingModal, setShowRatingModal] = useState(false);
   const [selectedDonation, setSelectedDonation] = useState(null);
   const [loadingRequest, setLoadingRequest] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
+
+  // Listen for a global close signal from the parent modal ONLY.
+  // Do NOT release on cleanup here — the hook handles unmount/pagehide.
+  useEffect(() => {
+    const onClose = () => releaseLock?.();
+    window.addEventListener("singlepage:close", onClose);
+    return () => {
+      window.removeEventListener("singlepage:close", onClose);
+      // no releaseLock() here — avoids unlocking during normal re-renders
+    };
+    // eslint-able-next-line react-hooks/exhaustive-deps
+  }, []); // run once
 
   const { errorMessage, handleChange, handleImageUpload, handleSubmit } =
     useDonationEditForm(editedData, handleSave, setEditedData);
@@ -44,8 +58,11 @@ function Singlepage({ donationId }) {
   const userId = Cookies.get("userId");
   const isLoggedIn = !!userRole;
   const isChosen = !!donationData?.requestor_id;
+
+  // leaving your original canEdit logic untouched
   const canEdit =
-    isDonor() && isDonationOwner(donationData?.user_id) && !isChosen;
+    isAdmin() && isDonor() && isDonationOwner(donationData?.user_id) && !isChosen;
+
   const isRequestor = userRole === "3";
   const hasRequested = donationData?.requestor_id === Number(userId);
   const hasBeenRated = donationData?.rating_user_id != null;
@@ -57,7 +74,7 @@ function Singlepage({ donationId }) {
       await requestDonation(donationData.donation_id);
       setTimeout(() => {
         window.location.reload();
-      }, 500);
+      }, 800);
     } catch (error) {
       console.error("Error requesting donation:", error);
       setLoadingRequest(false);
@@ -78,8 +95,8 @@ function Singlepage({ donationId }) {
   if (loading) return <div>Loading donation...</div>;
   if (error) return <div>Error: {error}</div>;
   if (accessDenied)
-    return <div>⛔ Access denied or donation is temporarily locked.</div>;
-  if (!donationData) return <div>Donation not found.</div>;
+    return <div>מצטערים , התרומה נצפת על-ידי משתמש אחר כרגע</div>;
+  if (!donationData) return <div>תרומה אינה קיימת במערכת</div>;
   //console.log("🟦 donationData:", donationData);
 
   return (

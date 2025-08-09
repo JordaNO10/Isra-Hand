@@ -17,14 +17,28 @@ import RequestorDashboard from "../userpage/RequestorDashboard";
 import DonatorDashBoard from "../userpage/donorpage";
 import ResetPassword from "../Register & Login/ResetPassword";
 import VerifyEmail from "../Register & Login/VerifyEmail";
+import { useEffect } from "react"; // ⬅️ add this
 
 const MyRouter = ({ onLogout }) => {
   const role = Cookies.get("userRole"); // this will be "1", "2", or "3" if logged in
 
+  // 🔓 Global fallback: if the user closes the tab/page, tell Singlepage to unlock
+  useEffect(() => {
+    const broadcastClose = () => {
+      try {
+        window.dispatchEvent(new Event("singlepage:close"));
+      } catch {}
+    };
+    window.addEventListener("beforeunload", broadcastClose);
+    window.addEventListener("pagehide", broadcastClose);
+    return () => {
+      window.removeEventListener("beforeunload", broadcastClose);
+      window.removeEventListener("pagehide", broadcastClose);
+    };
+  }, []);
+
   return (
     <>
-
-      {/* Wrapper that adds spacing below the fixed header */}
       <Header onLogout={onLogout} />
       <div className="page-content">
         <Routes>
@@ -67,7 +81,6 @@ const MyRouter = ({ onLogout }) => {
           <Route path="*" element={<h1 className="main">Not Found</h1>} />
         </Routes>
       </div>
-
       <Footer />
     </>
   );

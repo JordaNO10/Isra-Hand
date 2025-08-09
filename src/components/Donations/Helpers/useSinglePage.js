@@ -1,23 +1,18 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Cookies from "js-cookie";
-import { useNavigate } from "react-router-dom";
-import {
-  getDonationById,
-  deleteDonation,
-  updateDonation,
-} from "./donationService";
-import {
-  isDonor,
-  isRequestor,
-  isDonationOwner,
-  isDonationLocked,
-  lockDonation,
-} from "./donationAccessControl";
+import { useNavigate, useLocation } from "react-router-dom";
+import { getDonationById, deleteDonation, updateDonation } from "./donationService";
+import { isDonor, isRequestor, isDonationOwner, isAdmin } from "./donationAccessControl";
 import axios from "axios";
+import { toast } from "react-toastify";
+
+axios.defaults.withCredentials = true; // ensure cookies go to API
 
 export const useSinglePage = (donationId) => {
   const navigate = useNavigate();
+  const location = useLocation();
   const id = donationId;
+
   const [donationData, setDonationData] = useState(null);
   const [editedData, setEditedData] = useState({});
   const [isEditing, setIsEditing] = useState(false);
@@ -26,44 +21,102 @@ export const useSinglePage = (donationId) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [accessDenied, setAccessDenied] = useState(false);
 
+  const isAdminUser = isAdmin();
+  const isReqUser = isRequestor();
+  const isDonorUser = isDonor();
   const currentUserId = Cookies.get("userId");
+  const userRole = Cookies.get("userRole");
+  const isGuest = !userRole;
+
+  const hasSecureLockRef = useRef(false);
 
   useEffect(() => {
+    let mounted = true;
+
     const fetchData = async () => {
       try {
-        const donation = await getDonationById(id);
-        setDonationData(donation);
+        let fetchedDonation;
 
-        const isOwner = isDonationOwner(donation.user_id);
-        const isReq = isRequestor();
-        const isGuest = !Cookies.get("userRole");
+        if (!isAdminUser && !isGuest) {
+          const res = await axios.get(`/donations/${id}/secure`);
+          if (!mounted) return;
+          fetchedDonation = res.data;
+          hasSecureLockRef.current = true;
+        } else {
+          const donation = await getDonationById(id);
+          if (!mounted) return;
+          fetchedDonation = donation;
+        }
 
-        const locked = isDonationLocked(id);
-        const isDonorUser = isDonor();
-        const allowedToView = isOwner || isReq || isGuest || isDonorUser;
-
+        const isOwner = isDonationOwner(fetchedDonation?.user_id);
+        const allowedToView = isAdminUser || isOwner || isReqUser || isGuest || isDonorUser;
         if (!allowedToView) {
           setAccessDenied(true);
           return;
         }
 
-        if (!isGuest) {
-          if (locked && !isOwner && !isReq && !isDonorUser) {
-            setAccessDenied(true);
-            return;
-          }
-        }
-
-        lockDonation(id);
+        setDonationData(fetchedDonation);
       } catch (err) {
-        setError("Failed to load donation");
+        const status = err?.response?.status;
+        if (status === 401 || status === 403 || status === 423) setAccessDenied(true);
+        else setError("Failed to load donation");
       } finally {
-        setLoading(false);
+        if (mounted) setLoading(false);
       }
     };
 
     fetchData();
-  }, [id]);
+
+    const unlock = () => {
+      if (!hasSecureLockRef.current) return;
+      const url = `/donations/${id}/unlock`;
+      const payload = JSON.stringify({});
+      try {
+        if (navigator.sendBeacon) {
+          const data = new Blob([payload], { type: "application/json" });
+          if (navigator.sendBeacon(url, data)) {
+            hasSecureLockRef.current = false;
+            return;
+          }
+        }
+      } catch {}
+      fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: payload,
+        credentials: "include",
+        keepalive: true,
+      }).finally(() => {
+        hasSecureLockRef.current = false;
+      });
+    };
+
+    // page/tab events
+    const onBeforeUnload = () => unlock();
+    const onPageHide = () => unlock();
+    const onVisibility = () => {
+      if (document.visibilityState === "hidden") unlock();
+    };
+
+    window.addEventListener("beforeunload", onBeforeUnload);
+    window.addEventListener("pagehide", onPageHide);
+    document.addEventListener("visibilitychange", onVisibility);
+
+    // also unlock when route changes away (component unmount sometimes doesn't fire if you hide via CSS)
+    const unlisten = () => unlock(); // cleanup on location change
+    const stop = () => {}; // placeholder to avoid ESLint noise
+
+    return () => {
+      mounted = false;
+      unlock();
+      window.removeEventListener("beforeunload", onBeforeUnload);
+      window.removeEventListener("pagehide", onPageHide);
+      document.removeEventListener("visibilitychange", onVisibility);
+      stop();
+      unlisten();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id, isAdminUser, isGuest, location.pathname]);
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
@@ -75,19 +128,14 @@ export const useSinglePage = (donationId) => {
 
   const handleSave = async (updatedData) => {
     try {
-      console.log("⏳ Saving donation...", updatedData);
-
       const formData = new FormData();
       formData.append("donation_name", updatedData.donation_name);
       formData.append("email", updatedData.email);
       formData.append("description", updatedData.description);
-      if (updatedData.image instanceof File) {
-        formData.append("image", updatedData.image);
-      }
+      if (updatedData.image instanceof File) formData.append("image", updatedData.image);
 
       await updateDonation(id, formData);
 
-      // 🔁 Soft reload: fetch updated data from backend
       const refreshed = await getDonationById(id);
       setDonationData(refreshed);
       setIsEditing(false);
@@ -115,23 +163,36 @@ export const useSinglePage = (donationId) => {
   };
 
   const requestDonation = async (donationId) => {
-    try {
-      await axios.put(`/donations/${donationId}/request`, {
-        requestor_id: currentUserId,
-      });
-    } catch (err) {
-      alert("שגיאה בבקשת תרומה: " + err.response?.data?.error);
-    }
-  };
+  try {
+    await axios.put(`/donations/${donationId}/request`, {
+      requestor_id: currentUserId,
+    });
+
+    toast.success("הבקשה נשלחה בהצלחה! שלחנו התראה לתורם 🙌");
+
+    setTimeout(() => window.location.reload(), 5500);
+  } catch (err) {
+    const msg = err?.response?.data?.error || "שגיאה בבקשת תרומה";
+    toast.error(`שגיאה בבקשת תרומה: ${msg}`);
+  }
+};
 
   const cancelRequest = async (donationId) => {
     try {
-      await axios.put(`/donations/${donationId}/cancel`, {
-        requestor_id: currentUserId,
-      });
+      await axios.put(`/donations/${donationId}/cancel`, { requestor_id: currentUserId });
+      window.location.reload();
     } catch (err) {
       alert("שגיאה בביטול תרומה: " + err.response?.data?.error);
     }
+  };
+
+  // Manual release — call this when your modal closes
+  const releaseLock = async () => {
+    if (!hasSecureLockRef.current) return;
+    try {
+      await axios.post(`/donations/${id}/unlock`, {});
+    } catch {}
+    hasSecureLockRef.current = false;
   };
 
   return {
@@ -152,5 +213,6 @@ export const useSinglePage = (donationId) => {
     handleDropdownChange,
     requestDonation,
     cancelRequest,
+    releaseLock, 
   };
 };

@@ -7,66 +7,104 @@ const {
 
 const requestDonation = async (req, res) => {
   const donationId = req.params.id;
-  const { requestor_id } = req.body;
+
+  // מעדיפים מזהי משתמש/תפקיד מהסשן; נופלים לגוף הבקשה לשמירת תאימות
+  const s = req.session || {};
+  const sessionUser = s.user || {};
+  const sessionUserId = s.userId || sessionUser.user_id || null;
+  // את אימות התפקיד נעשה מול הדאטהבייס, לא נסמוך על ערכים מהלקוח
+  const requestor_id = sessionUserId || req.body.requestor_id || null;
 
   try {
-    // ✅ Try to update the donation to assign the requestor
+    // ✅ חייבים להיות מחוברים
+    if (!requestor_id) {
+      return res.status(401).json({ error: "נדרש להתחבר למערכת" });
+    }
+
+    // ✅ אימות תפקיד מול בסיס הנתונים (מבקש = 3)
+    const [[roleRow]] = await db
+      .promise()
+      .query("SELECT role_id FROM users WHERE user_id = ?", [requestor_id]);
+
+    if (!roleRow) {
+      return res.status(404).json({ error: "המשתמש לא נמצא" });
+    }
+
+    const roleId = Number(roleRow.role_id);
+    if (roleId !== 3) {
+      return res
+        .status(403)
+        .json({ error: "רק מבקשי תרומה יכולים לבקש תרומות." });
+    }
+
+    // ✅ שליפת התרומה כדי למנוע בקשה עצמית ולהשתמש בפרטים למיילים
+    const [[donationRow]] = await db
+      .promise()
+      .query(
+        `SELECT donation_name, user_id AS donor_id FROM donations WHERE donation_id = ?`,
+        [donationId]
+      );
+
+    if (!donationRow) {
+      return res.status(404).json({ error: "התרומה לא נמצאה" });
+    }
+
+    if (Number(donationRow.donor_id) === Number(requestor_id)) {
+      return res
+        .status(400)
+        .json({ error: "בעל התרומה לא יכול לבקש את התרומה שלו" });
+    }
+
+    // ✅ תפיסה אטומית: מקצים requestor_id רק אם הוא עדיין NULL
     const [updateResult] = await db
       .promise()
       .query(
-        `UPDATE donations SET requestor_id = ? WHERE donation_id = ? AND requestor_id IS NULL`,
+        `UPDATE donations
+         SET requestor_id = ?
+         WHERE donation_id = ?
+           AND requestor_id IS NULL`,
         [requestor_id, donationId]
       );
 
     if (updateResult.affectedRows === 0) {
-      return res.status(409).json({ error: "Donation already requested." });
+      // מישהו כבר תפס / לחיצה חוזרת
+      return res.status(409).json({ error: "התרומה כבר נתבקשה." });
     }
 
-    // ✅ Fetch requestor info
+    // ✅ פרטי המבקש (למייל אישור)
     const [[requestor]] = await db
       .promise()
       .query("SELECT email, full_name FROM users WHERE user_id = ?", [
         requestor_id,
       ]);
 
-    // ✅ Fetch donation info including donor_id
-    const [[donation]] = await db
-      .promise()
-      .query(
-        "SELECT donation_name, user_id FROM donations WHERE donation_id = ?",
-        [donationId]
-      );
-
-    if (!requestor || !donation) {
-      return res
-        .status(404)
-        .json({ error: "Missing requestor or donation info" });
+    if (!requestor) {
+      return res.status(404).json({ error: "לא נמצאו פרטי המבקש" });
     }
 
-    // ✅ Send email to requestor
+    // ✅ מייל למבקש
     const confirmationMsg = requestConfirmation(
       requestor.full_name,
-      donation.donation_name
+      donationRow.donation_name
     );
     await sendMail({
       to: requestor.email,
       subject: "בקשת תרומה התקבלה - Isra-Hand",
       html: confirmationMsg,
     });
-    console.log("📧 Requestor email sent to:", requestor.email);
+    console.log("📧 נשלח מייל למבקש:", requestor.email);
 
-    // ✅ Fetch donor info
+    // ✅ פרטי התורם והודעה לתורם
     const [[donor]] = await db
       .promise()
       .query("SELECT email, full_name FROM users WHERE user_id = ?", [
-        donation.user_id,
+        donationRow.donor_id,
       ]);
 
     if (donor) {
-      // ✅ Send email to donor
       const donorMsg = notifyDonor(
         donor.full_name,
-        donation.donation_name,
+        donationRow.donation_name,
         requestor.full_name,
         donationId
       );
@@ -75,15 +113,15 @@ const requestDonation = async (req, res) => {
         subject: "התרומה שלך התבקשה - Isra-Hand",
         html: donorMsg,
       });
-      console.log("📧 Donor email sent to:", donor.email);
+      console.log("📧 נשלח מייל לתורם:", donor.email);
     } else {
-      console.warn("⚠️ Donor not found for donation:", donationId);
+      console.warn("⚠️ אזהרה: לא נמצא תורם עבור תרומה:", donationId);
     }
 
-    res.json({ message: "Donation requested and notifications sent" });
+    res.json({ message: "הבקשה נשלחה ונשלחו התראות מתאימות" });
   } catch (err) {
-    console.error("❌ Error processing donation request:", err.message);
-    res.status(500).json({ error: "Internal server error" });
+    console.error("❌ שגיאה בעיבוד בקשת תרומה:", err.message);
+    res.status(500).json({ error: "שגיאה פנימית בשרת" });
   }
 };
 

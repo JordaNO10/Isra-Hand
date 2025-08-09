@@ -17,6 +17,13 @@ export const isDonationOwner = (donationUserId) => {
 export const isDonor = () => {
   return Cookies.get("userRole") === "2";
 };
+/**
+ * Checks if the current user has the Admin role
+ * @returns {boolean}
+ */
+export const isAdmin = () => {
+  return Cookies.get("userRole") === "1";
+};
 
 /**
  * Checks if the current user has the requestor role

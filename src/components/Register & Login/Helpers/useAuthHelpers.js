@@ -1,9 +1,10 @@
 // src/Helpers/useAuthHelpers.js
 import { useState } from "react";
 import axios from "axios";
-import Cookies from "js-cookie";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
-export const useAuthHelpers = () => {
+export const useAuthHelpers = (navigate) => {
   const [errorMessage, setErrorMessage] = useState("");
 
   const handleInputChange = (e, formData, setFormData) => {
@@ -11,9 +12,10 @@ export const useAuthHelpers = () => {
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSignup = async (formData, passwordValid, navigate) => {
+  const handleSignup = async (formData, passwordValid) => {
     if (!passwordValid) {
       setErrorMessage("הסיסמה לא עומדת בדרישות.");
+      toast.error("הסיסמה לא עומדת בדרישות.", { autoClose: 8000 });
       return;
     }
 
@@ -32,11 +34,16 @@ export const useAuthHelpers = () => {
 
       if (response.status === 201) {
         setErrorMessage("");
-        alert("הרשמה בוצעה בהצלחה. אנא אמת את כתובת האימייל שלך כדי להתחבר.");
+        toast.success(
+          "הרשמה בוצעה בהצלחה. אנא אמת את כתובת האימייל שלך כדי להתחבר.",
+          { autoClose: 8000 }
+        );
         navigate("/Signin");
       }
     } catch (error) {
-      setErrorMessage(error.response?.data?.message || "שגיאה בהרשמה");
+      const errMsg = error.response?.data?.message || "שגיאה בהרשמה";
+      setErrorMessage(errMsg);
+      toast.error(errMsg, { autoClose: 8000 });
     }
   };
 
@@ -47,13 +54,15 @@ export const useAuthHelpers = () => {
         { email },
         { withCredentials: true }
       );
+      toast.success(response.data.message || "קישור איפוס נשלח למייל", {
+        autoClose: 8000,
+      });
       setErrorMessage("");
-      return { success: true, message: response.data?.message || "" };
+      navigate("/Signin");
     } catch (error) {
-      const errorText =
-        error.response?.data?.error || "שגיאה בשליחת קישור איפוס";
-      setErrorMessage(errorText);
-      return { success: false, message: errorText };
+      const errMsg = error.response?.data?.error || "שגיאה בשליחת קישור איפוס";
+      setErrorMessage(errMsg);
+      toast.error(errMsg, { autoClose: 8000 });
     }
   };
 

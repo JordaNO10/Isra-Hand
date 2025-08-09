@@ -28,6 +28,8 @@ const Home = () => {
   };
 
   const closeSinglepageModal = () => {
+    // 🔓 tell Singlepage to release its lock immediately
+    window.dispatchEvent(new Event("singlepage:close"));
     setShowModal(false);
     setSelectedDonationId(null);
   };

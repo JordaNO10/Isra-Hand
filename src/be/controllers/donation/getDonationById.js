@@ -1,3 +1,4 @@
+// controllers/donations/getDonationById.js
 const db = require("../../utils/db");
 
 const getDonationById = async (req, res) => {
@@ -19,22 +20,16 @@ const getDonationById = async (req, res) => {
 
   try {
     const [results] = await db.promise().query(sql, [id]);
-
-    if (results.length === 0) {
-      return res.status(404).json({ error: "Donation not found" });
-    }
+    if (!results.length) return res.status(404).json({ error: "Donation not found" });
 
     const donation = results[0];
-
     if (donation.donation_date) {
-      donation.donation_date = new Date(donation.donation_date)
-        .toISOString()
-        .split("T")[0];
+      donation.donation_date = new Date(donation.donation_date).toISOString().split("T")[0];
     }
-    res.status(200).json(results[0]);
+    return res.status(200).json(donation);
   } catch (error) {
     console.error("Error fetching donation:", error);
-    res.status(500).json({ error: "Failed to fetch donation" });
+    return res.status(500).json({ error: "Failed to fetch donation" });
   }
 };
 

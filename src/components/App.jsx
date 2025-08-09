@@ -15,7 +15,8 @@ function App() {
       <BrowserRouter>
         <MyRouter />
         <AccessibilityButton />
-        <ToastContainer position="top-center" autoClose={1500} />
+        <ToastContainer position="top-center" autoClose={200} 
+        rtl theme="light"/>
       </BrowserRouter>
     </AccessibilityProvider>
   );

@@ -38,13 +38,13 @@ const Signup = () => {
     }
 
     const fullFormData = {
-      username: formData.username,
-      name: `${formData.firstName} ${formData.lastName}`,
-      email: formData.email,
-      password: formData.password,
-      birthdate: formData.birthday,
-      role: formData.roleId,
-    };
+  username: formData.username,
+  full_name: `${formData.firstName} ${formData.lastName}`,
+  email: formData.email,
+  password: formData.password,
+  birth_date: formData.birthday,
+  role_id: formData.roleId,
+};
     console.log(fullFormData);
 
     await handleSignup(fullFormData, isPasswordValid);
