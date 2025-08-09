@@ -1,27 +1,50 @@
+/**
+ * useCategories
+ * תפקיד: טעינת קטגוריות ותתי־קטגוריות מהשרת למבנה נוח ל־UI.
+ * שינוי: תמיכה בשני פורמטים מהשרת:
+ *   1) פורמט "מנורמל" עם group_id + subCategories[]
+ *   2) פורמט "שטוח" (category_id + category_name + sub_category לשורה)
+ */
+
 import { useState, useEffect } from "react";
 import axios from "axios";
 
-/** טרנספורמציית פורמט קטגוריות מהשרת למבנה הקל לשימוש ב־UI */
-const transformCategories = (raw) =>
-  raw.map((group) => ({
-    category_name: group.category_name,
-    category_id: group.group_id,
-    subCategories: (group.subCategories || [])
-      .map((s) => s.sub_category?.trim())
-      .filter(Boolean),
+// טרנספורמציית פורמט 1: server groups => {category_id, category_name, subCategories[]}
+const fromGrouped = (raw) =>
+  raw.map((g) => ({
+    category_id: g.group_id,
+    category_name: g.category_name,
+    subCategories: (g.subCategories || []).map((s) => String(s?.sub_category || "").trim()).filter(Boolean),
   }));
 
-/**
- * הוק לטעינת קטגוריות ותתי־קטגוריות מהשרת.
- * כולל הודעות שגיאה בעברית ומבנה נתונים נוח לרכיבי בחירה.
- */
+// טרנספורמציית פורמט 2: רשומות שטוחות => קיבוץ לפי category_id
+const fromFlat = (rows) => {
+  const map = new Map();
+  rows.forEach((r) => {
+    const id = r.category_id;
+    if (!id) return;
+    if (!map.has(id)) map.set(id, { category_id: id, category_name: r.category_name, subCategories: [] });
+    const sub = String(r.sub_category || "").trim();
+    if (sub && !map.get(id).subCategories.includes(sub)) map.get(id).subCategories.push(sub);
+  });
+  return Array.from(map.values());
+};
+
+const transformCategories = (raw) => {
+  if (!Array.isArray(raw)) return [];
+  // אם יש group_id נניח שזה פורמט 1
+  if (raw.length && "group_id" in (raw[0] || {})) return fromGrouped(raw);
+  // אחרת נתייחס כפורמט שטוח
+  return fromFlat(raw);
+};
+
 export const useCategories = () => {
   const [categories, setCategories] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [loading, setLoading]   = useState(true);
+  const [error, setError]       = useState(null);
 
   useEffect(() => {
-    let alive = true; // מניעת setState לאחר unmount
+    let alive = true;
     (async () => {
       try {
         const res = await axios.get("/categories", { withCredentials: true });

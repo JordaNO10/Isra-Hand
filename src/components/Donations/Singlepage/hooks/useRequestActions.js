@@ -1,6 +1,6 @@
 /**
  * useRequestActions
- * אחריות: בקשת תרומה וביטול בקשה.
+ * תפקיד: בקשת תרומה/ביטול. שינוי: טיפול מפורש ב-403 "לא ניתן לבקש תרומה שהעלית".
  */
 import axios from "axios";
 import Cookies from "js-cookie";
@@ -17,7 +17,8 @@ export const useRequestActions = () => {
       alert("הבקשה נשלחה, התורם עודכן.");
       setTimeout(() => window.location.reload(), 800);
     } catch (e) {
-      alert("שגיאה בבקשת תרומה");
+      const msg = e?.response?.data?.error || "שגיאה בבקשת תרומה";
+      alert(msg); // אם 403 מהשרת — כאן תופיע ההודעה "לא ניתן לבקש תרומה שהעלית בעצמך"
     }
   };
 

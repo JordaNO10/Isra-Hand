@@ -9,7 +9,7 @@ const DonationHomeCard = ({ item, onOpen }) => (
     <p>טלפון: {item.phone}</p>
     <p>אזור: {item.address}</p>
     <div className="donation-card-button-container">
-      <button className="donation-card-button" onClick={onOpen}>בקש תרומה</button>
+      <button className="donation-card-button" onClick={onOpen}>צפה בתרומה</button>
     </div>
   </div>
 );

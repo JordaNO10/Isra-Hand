@@ -75,7 +75,7 @@ const DonorDashboard = () => {
   useEffect(() => {
     const focusId = params.get("focus");
     if (focusId) {
-      navigate("/donorpage", { replace: true });
+      navigate("/dashboard", { replace: true });
       openSinglepage(Number(focusId));
     }
   }, [params, navigate]);

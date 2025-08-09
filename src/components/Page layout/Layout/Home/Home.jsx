@@ -68,7 +68,7 @@ const Home = () => {
           {!isUserRequestor() && (
             <button
               className="cta-button"
-              onClick={() => !isUserDonor() ? navigate("/signup") : navigate("/donorpage", { state: { setShowModal: true } })}
+              onClick={() => !isUserDonor() ? navigate("/signup") : navigate("/dashboard", { state: { setShowModal: true } })}
             >
               אני רוצה לתרום
             </button>

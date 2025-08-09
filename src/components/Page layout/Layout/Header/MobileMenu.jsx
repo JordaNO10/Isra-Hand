@@ -23,7 +23,7 @@ const MobileMenu = ({
       </>
     ) : (
       <>
-        <NavLink to={roleId === "1" ? "/Admin" : roleId === "2" ? "/donorpage" : "/requestorDashboard"}
+        <NavLink to={roleId === "1" ? "/Admin" : roleId === "2" ? "/dashboard" : "/dashboard"}
                  className="hello-message" onClick={onClose}>
           הפרופיל שלי
         </NavLink>

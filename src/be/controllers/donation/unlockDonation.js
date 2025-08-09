@@ -1,45 +1,26 @@
 const db = require("../../utils/db");
+const { getRoleId, isAdmin, getUserId } = require("../helpers/utils");
 
-const unlockDonation = async (req, res) => {
+/**
+ * שחרור נעילת תרומה
+ * תפקיד: מחיקת נעילת צפייה על תרומה (Idempotent).
+ * שינוי: נרמול role_id ושימוש ב-isAdmin לביטול מגבלות לאדמין.
+ */
+const unlockDonation = (req, res) => {
   const { id } = req.params;
+  const admin = isAdmin(getRoleId(req));
+  const userId = getUserId(req) || 0;
 
-  // Session (preferred)
-  const s = req.session || {};
-  const sessionUser = s.user || {};
-  let userId = s.userId || sessionUser.user_id || null;
-  let roleId = s.role_id || sessionUser.role_id || null;
+  const sql = admin
+    ? `UPDATE donations SET locked_until = NULL, locked_by = NULL WHERE donation_id = ?`
+    : `UPDATE donations SET locked_until = NULL, locked_by = NULL WHERE donation_id = ? AND (locked_by = ? OR ? = 1)`;
 
-  // Fallback: cookies
-  const cookies = req.cookies || {};
-  if (!userId) userId = cookies.userId || cookies.userid || null;
-  if (!roleId) roleId = cookies.userRole || cookies.role_id || null;
+  const params = admin ? [id] : [id, userId, admin ? 1 : 0];
 
-  const isAdmin = Number(roleId) === 1;
-
-  try {
-    if (!userId && !isAdmin) {
-      return res.status(401).json({ error: "Login required" });
-    }
-
-    // Admin can unlock any; users can only unlock their own lock
-    await db
-      .promise()
-      .query(
-        `
-        UPDATE donations
-        SET locked_by = NULL, locked_until = NULL
-        WHERE donation_id = ?
-          AND (locked_by = ? OR ? = 1)
-        `,
-        [id, userId || 0, isAdmin ? 1 : 0]
-      );
-
-    // Idempotent: always 204
+  db.query(sql, params, (err) => {
+    if (err) return res.status(500).json({ error: "Failed to unlock donation" });
     return res.status(204).end();
-  } catch (err) {
-    console.error("Error unlocking donation:", err);
-    return res.status(500).json({ error: "Failed to unlock donation" });
-  }
+  });
 };
 
 module.exports = unlockDonation;

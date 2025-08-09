@@ -9,7 +9,7 @@ const DonationCard = ({ donation, onOpen }) => (
     <p><strong>טלפון:</strong> {donation.phone}</p>
     <p><strong>כתובת:</strong> {donation.address}</p>
     <p><strong>תאריך העלאה:</strong> {donation.donation_date ? new Date(donation.donation_date).toLocaleDateString("he-IL") : "לא זמין"}</p>
-    <button className="request-button" onClick={() => onOpen(donation.donation_id)}>בקש תרומה</button>
+    <button className="request-button" onClick={() => onOpen(donation.donation_id)}>צפה בתרומה</button>
   </div>
 );
 export default DonationCard;

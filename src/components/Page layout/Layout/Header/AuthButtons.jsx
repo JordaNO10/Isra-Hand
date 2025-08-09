@@ -4,7 +4,7 @@
 import { NavLink } from "react-router-dom";
 
 const profilePathByRole = (roleId) =>
-  roleId === "1" ? "/Admin" : roleId === "2" ? "/donorpage" : "/requestorDashboard";
+  roleId === "1" ? "/Admin" : roleId === "2" ? "/dashboard" : "/dashboard";
 
 const AuthButtons = ({
   isAuthenticated,

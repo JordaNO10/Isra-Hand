@@ -1,51 +1,51 @@
+/**
+ * donationService
+ * תפקיד: שכבת שירות ל־API התרומות.
+ * שינוי: addDonation ל-/donations (ולא /donationadd) + withCredentials בכל הקריאות.
+ */
 import axios from "axios";
 
-/** שליפת כל התרומות (לרשימות/אדמין וכו') */
+const cfg = { withCredentials: true };
+
 export const getAllDonations = async () => {
-  const res = await axios.get("/donations");
+  const res = await axios.get("/donations", cfg);
   return res.data;
 };
 
-/** שליפת תרומות זמינות בלבד */
 export const getAvailableDonations = async () => {
-  const res = await axios.get("/donations/available");
+  const res = await axios.get("/donations/available", cfg);
   return res.data;
 };
 
-/**
- * שליפת תרומה בודדת לפי מזהה
- * @param {string|number} id
- */
 export const getDonationById = async (id) => {
-  const res = await axios.get(`/donations/${id}`);
+  const res = await axios.get(`/donations/${id}/secure`, cfg);
   return res.data;
 };
 
-/**
- * הוספת תרומה חדשה (מקבל FormData)
- */
 export const addDonation = async (formDataToSend) => {
-  return axios.post("/donationadd", formDataToSend, {
+  return axios.post("/donations", formDataToSend, {
     headers: { "Content-Type": "multipart/form-data" },
+    withCredentials: true,
   });
 };
 
-/**
- * עדכון תרומה קיימת לפי מזהה (מקבל FormData)
- */
 export const updateDonation = async (id, formData) => {
   return axios.put(`/donations/${id}`, formData, {
     headers: { "Content-Type": "multipart/form-data" },
+    withCredentials: true,
   });
 };
 
-/** מחיקת תרומה לפי מזהה */
 export const deleteDonation = async (id) => {
-  return axios.delete(`/donations/${id}`);
+  return axios.delete(`/donations/${id}`, cfg);
 };
 
-/** שליפת תפקיד המשתמש הנוכחי (דורש התחברות) */
+// עדיף בצד לקוח לקרוא מתוקף העוגיות; מוסיף כאן רק אם נדרש
 export const getUserRole = async () => {
-  const res = await axios.get("/users");
-  return res.data[0]?.role_id ?? null;
+  try {
+    const res = await axios.get("/users/me", cfg); // אם קיים אצלך
+    return res.data?.role_id ?? null;
+  } catch {
+    return null;
+  }
 };

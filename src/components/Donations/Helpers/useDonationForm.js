@@ -1,22 +1,22 @@
+/**
+ * useDonationForm
+ * תפקיד: הוקים לטופס הוספה/עריכת תרומה, עם פונקציות קצרות וברורות.
+ * שינוי: ללא—תואם backend (/donations) וה-helpers הקיימים.
+ */
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { submitDonationForm } from "./donationFormHelpers";
 
-/** יצירת handler לשינוי שדות */
 const createInputChangeHandler = (setFormData) => (e) => {
   const { name, value } = e.target;
   setFormData((prev) => ({ ...prev, [name]: value }));
 };
 
-/** יצירת handler להעלאת תמונה */
 const createImageUploadHandler = (setSelectedFile) => (file) => setSelectedFile(file);
 
-/**
- * הוק לטופס הוספת תרומה (קליל וקצר – לוגיקה “כבדה” הועברה ל-helpers)
- */
 export const useDonationAddForm = () => {
   const navigate = useNavigate();
-  const [formData, setFormData] = useState({
+  const [formData, setFormData]     = useState({
     donation_name: "",
     Phonenumber: "",
     description: "",
@@ -37,14 +37,11 @@ export const useDonationAddForm = () => {
   return { formData, setFormData, handleInputChange, handleImageUpload, handleSubmit };
 };
 
-/**
- * הוק לטופס עריכת תרומה (הוולידציה/שמירה מתבצעות מחוץ להוק הקריאה)
- */
 export const useDonationEditForm = (editedData, onSave, onChange) => {
   const navigate = useNavigate();
   const [temporaryImage, setTemporaryImage] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
+  const [isModalOpen, setIsModalOpen]       = useState(false);
+  const [errorMessage, setErrorMessage]     = useState("");
 
   const handleChange = (e) => onChange({ ...editedData, [e.target.name]: e.target.value });
   const handleImageUpload = (image) => setTemporaryImage(image);

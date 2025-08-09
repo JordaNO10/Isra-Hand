@@ -1,3 +1,7 @@
+/**
+ * נתיבי תרומות
+ * תפקיד: הגדרת נקודות קצה (Routes) ללא שינוי לוגי, רק תיעוד.
+ */
 const express = require("express");
 const router = express.Router();
 
@@ -7,7 +11,6 @@ const upload = require("../config/multer");
 const addDonation = require("../controllers/donation/addDonation");
 const getAllDonations = require("../controllers/donation/getAllDonations");
 const getAvailableDonations = require("../controllers/donation/getAvailableDonations");
-const getDonationById = require("../controllers/donation/getDonationById");
 const updateDonation = require("../controllers/donation/updateDonation");
 const deleteDonation = require("../controllers/donation/deleteDonation");
 
@@ -44,8 +47,7 @@ router.put("/:donationId/accept", markDonationAsAccepted);
 router.get("/:id/secure", getDonationSecure);   // acquires/returns secured view (+ lock)
 router.post("/:id/unlock", unlockDonation);      // releases lock
 
-// Single donation by id (place AFTER more-specific routes)
-router.get("/:id", getDonationById);
+
 
 // All donations
 router.get("/", getAllDonations);

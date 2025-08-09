@@ -16,9 +16,8 @@ import Donation from "../../Donations/DonationsPage/Donations";
 import Donationadd from "../../Donations/DonationAdd/DonationAdd";
 import useUnlockOnUnload from "./useUnlockOnUnload";
 //Pages
-import DonatorDashBoard from "../../userpage/DonorDashboard/DonorDashboard";
-import RequestorDashboard from "../../userpage/RequestorDashboard/RequestorDashboard";
 import AdminPage from "../../userpage/Admin/AdminPage";
+import UnifiedDashboard from "../../userpage/Dashboard/UnifiedDashboard";
 
 //Signup & Signin
 import ForgotPassword from "../../Register & Login/Password/ForgotPassword";
@@ -47,9 +46,8 @@ const MyRouter = ({ onLogout }) => {
           <Route path="/verify" element={<VerifyEmail />} />
           <Route path="/Donationadd" element={<PrivateRoute element={<Donationadd />} roles={["1", "2"]} />} />
           <Route path="/Donations/:id" element={<Singlepage />} />
-          <Route path="/requestorDashboard" element={<PrivateRoute element={<RequestorDashboard />} roles={"3"} />} />
           <Route path="/Admin" element={<PrivateRoute element={<AdminPage />} roles={["1"]} />} />
-          <Route path="/donorpage" element={<DonatorDashBoard onLogout={onLogout} />} />
+          <Route path="/dashboard" element={<UnifiedDashboard  onLogout={onLogout} />} />
           <Route path="/Contact" element={<Contact />} />
           <Route path="*" element={<h1 className="main">Not Found</h1>} />
         </Routes>

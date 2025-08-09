@@ -1,38 +1,36 @@
+/**
+ * donationAccessControl
+ * תפקיד: בדיקות הרשאות/בעלות בצד הלקוח.
+ * שינוי: נרמול תפקיד 3 → 2; חבר (2) נחשב גם תורם וגם מבקש. אדמין (1) כנ"ל.
+ */
 import Cookies from "js-cookie";
 
-/**
- * בדיקה אם המשתמש הנוכחי הוא בעל התרומה
- * @param {number|string} donationUserId
- * @returns {boolean}
- */
+const normalizeRole = (r) => {
+  const s = String(r ?? "");
+  if (s === "3") return "2"; // תאימות לאחור
+  if (s === "1" || s === "2") return s;
+  return "";
+};
+
 export const isDonationOwner = (donationUserId) => {
   const currentUserId = Cookies.get("userId");
   return String(currentUserId) === String(donationUserId);
 };
 
-/**
- * בדיקה אם למשתמש יש תפקיד "תורם"
- * @returns {boolean}
- */
-export const isDonor = () => Cookies.get("userRole") === "2";
+export const isAdmin = () => normalizeRole(Cookies.get("userRole")) === "1";
 
-/**
- * בדיקה אם למשתמש יש תפקיד "אדמין"
- * @returns {boolean}
- */
-export const isAdmin = () => Cookies.get("userRole") === "1";
+// חבר (2) ואדמין (1) → תורם
+export const isDonor = () => {
+  const r = normalizeRole(Cookies.get("userRole"));
+  return r === "2" || r === "1";
+};
 
-/**
- * בדיקה אם למשתמש יש תפקיד "מבקש"
- * @returns {boolean}
- */
-export const isRequestor = () => Cookies.get("userRole") === "3";
+// חבר (2) ואדמין (1) → מבקש
+export const isRequestor = () => {
+  const r = normalizeRole(Cookies.get("userRole"));
+  return r === "2" || r === "1";
+};
 
-/**
- * בדיקה האם תרומה נעולה (נצפתה ב־5 הדקות האחרונות)
- * @param {string} donationId
- * @returns {boolean}
- */
 export const isDonationLocked = (donationId) => {
   const lockKey = `donation_lock_${donationId}`;
   const lockTimestamp = sessionStorage.getItem(lockKey);
@@ -40,10 +38,6 @@ export const isDonationLocked = (donationId) => {
   return Date.now() - Number(lockTimestamp) < 5 * 60 * 1000;
 };
 
-/**
- * נעילת תרומה ב־sessionStorage
- * @param {string} donationId
- */
 export const lockDonation = (donationId) => {
   const lockKey = `donation_lock_${donationId}`;
   sessionStorage.setItem(lockKey, Date.now());

@@ -1,43 +1,40 @@
+/**
+ * donationFormHelpers
+ * תפקיד: בניית FormData, ולידציה בצד לקוח, שליחת POST /donations, וניהול reset.
+ * שינוי לפרויקט: שמות השדות בדיוק כפי שהשרת מצפה להם (donationname, categoryName, subCategoryName),
+ *                 הוספת withCredentials + שיפור הודעות שגיאה.
+ */
 import axios from "axios";
 import Cookies from "js-cookie";
 
-/**
- * שליפת קטגוריות לטופס
- */
+const REQUIRED = ["donation_name", "description", "email", "category_name", "sub_category_name", "Phonenumber"];
+
 export const fetchCategories = async (setCategories) => {
   try {
-    const { data } = await axios.get("/categories");
+    const { data } = await axios.get("/categories", { withCredentials: true });
     setCategories(data);
   } catch (err) {
     console.error("שגיאה בשליפת קטגוריות:", err);
   }
 };
 
-/** ולידציה לשדות חיוניים */
 const isFormValid = (f, file) =>
-  f.donation_name &&
-  f.description &&
-  f.email &&
-  f.category_name &&
-  f.sub_category_name &&
-  f.Phonenumber &&
-  !!file;
+  REQUIRED.every((k) => !!(f?.[k] || "").toString().trim()) && !!file;
 
-/** בניית FormData לשליחה */
 const buildFormData = (f, file) => {
   const fd = new FormData();
-  fd.append("donationname", f.donation_name);
-  fd.append("description", f.description);
-  fd.append("email", f.email);
-  fd.append("Phonenumber", f.Phonenumber);
-  fd.append("categoryName", f.category_name);
-  fd.append("subCategoryName", f.sub_category_name);
-  fd.append("user_id", Cookies.get("userId"));
-  fd.append("image", file);
+  // שמות כפי שמצופים בשרת
+  fd.append("donationname",   f.donation_name);
+  fd.append("description",    f.description);
+  fd.append("email",          f.email);
+  fd.append("Phonenumber",    f.Phonenumber);
+  fd.append("categoryName",   f.category_name);
+  fd.append("subCategoryName",f.sub_category_name);
+  fd.append("user_id",        Cookies.get("userId") || ""); // שרת מסתדר גם עם NULL/ריק
+  if (file) fd.append("image", file);
   return fd;
 };
 
-/** איפוס טופס לאחר שליחה מוצלחת */
 const resetForm = (setFormData, setSelectedFile) => {
   setFormData({
     donation_name: "",
@@ -50,17 +47,10 @@ const resetForm = (setFormData, setSelectedFile) => {
   setSelectedFile(null);
 };
 
-/**
- * שליחת טופס תרומה (כולל העלאת תמונה)
- * — פונקציה קצרה שקוראת לעזרי־פונקציה לעמידה בכלל <20 שורות —
- */
-export const submitDonationForm = async (
-  formData,
-  selectedFile,
-  navigate,
-  setFormData,
-  setSelectedFile
-) => {
+const serverMessage = (err) =>
+  err?.response?.data?.error || err?.response?.data?.message || err?.message || "שגיאה לא ידועה";
+
+export const submitDonationForm = async (formData, selectedFile, navigate, setFormData, setSelectedFile) => {
   if (!isFormValid(formData, selectedFile)) {
     alert("נא להשלים את כל השדות ולהעלות תמונה.");
     return;
@@ -68,25 +58,24 @@ export const submitDonationForm = async (
   try {
     await axios.post("/donations", buildFormData(formData, selectedFile), {
       headers: { "Content-Type": "multipart/form-data" },
+      withCredentials: true,
     });
     alert("התרומה נוספה בהצלחה!");
     resetForm(setFormData, setSelectedFile);
     navigate("/Donations");
   } catch (err) {
     console.error("נכשלה הוספת תרומה:", err);
-    alert("שגיאה בהוספת תרומה. נסה שוב.");
+    console.log(formData)
+    alert("נכשלה הוספת תרומה: " + serverMessage(err));
   }
 };
 
-/**
- * שליפת תרומות (לשימוש בדרופדאון)
- */
 export const fetchDonationsForDropdown = async (setDonations, setError, setLoading) => {
   try {
-    const { data } = await axios.get("/donations");
-    setDonations(data);
+    const { data } = await axios.get("/donations", { withCredentials: true });
+    setDonations(Array.isArray(data) ? data : []);
   } catch (err) {
-    setError(err.response?.data?.error || err.message);
+    setError(serverMessage(err));
   } finally {
     setLoading(false);
   }

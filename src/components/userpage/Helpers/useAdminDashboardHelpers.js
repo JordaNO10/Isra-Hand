@@ -7,6 +7,7 @@ const fetchAdminData = async () => {
     axios.get("/donations"),
     axios.get("/categories"),
   ]);
+console.log("Hello",donationsRes);
 
   return {
     usersData: usersRes.data,
