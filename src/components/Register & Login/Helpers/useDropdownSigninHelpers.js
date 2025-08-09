@@ -1,101 +1,108 @@
 // src/Helpers/useDropdownSigninHelpers.js
+/**
+ * עזרי התחברות (דרופדאון/מסכים):
+ * אחראי על שינוי שדות, שליחת התחברות, ושליחת מייל אימות מחדש.
+ * נשמר אותו API: formData, setFormData, errorMessage, setErrorMessage,
+ * handleInputChange, handleSubmit, resendVerificationEmail
+ */
 import { useState } from "react";
 import axios from "axios";
 import Cookies from "js-cookie";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
-export const useDropdownSigninHelpers = (setShowForm, handleLoginSuccess) => {
-  const [formData, setFormData] = useState({
-    emailOrUsername: "",
-    password: "",
-  });
+// ולידציה בסיסית לטופס
+const validateFormData = (formData, setErrorMessage) => {
+  if (!formData.emailOrUsername || !formData.password) {
+    setErrorMessage("אנא מלא/י את כל השדות");
+    return false;
+  }
+  return true;
+};
 
+// שמירת קוקיות מהתשובה
+const saveCookiesFromLogin = (data) => {
+  Cookies.set("userId", data.userId);
+  Cookies.set("userRole", data.roleId);
+  // תומך בשם מלא בפורמטים שונים מהשרת
+  Cookies.set("fullName", data.fullName || data.full_name || "");
+};
+
+// ניווט לפי תפקיד
+const navigateByRole = (navigate, roleId) => {
+  if (String(roleId) === "1") navigate("/admin");
+  else {
+    navigate("/");
+    window.location.reload();
+  }
+};
+
+// טיפול בהודעות שגיאה מהשרת
+const handleServerError = (error, setErrorMessage) => {
+  const serverMsg = error?.response?.data?.error || error?.response?.data?.message;
+  if (serverMsg === "אנא אמת את כתובת האימייל שלך") {
+    setErrorMessage("אנא אמת את כתובת האימייל שלך");
+  } else {
+    setErrorMessage(serverMsg || "שגיאה בהתחברות");
+  }
+};
+
+export const useDropdownSigninHelpers = (setShowForm, handleLoginSuccess) => {
+  const [formData, setFormData] = useState({ emailOrUsername: "", password: "" });
   const [errorMessage, setErrorMessage] = useState("");
   const navigate = useNavigate();
 
+  /** שינוי שדה קלט */
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  /** שליחת אימייל אימות מחדש */
   const resendVerificationEmail = async () => {
     try {
       const res = await axios.post(
         "/users/resend-verification",
-        { emailOrUsername: formData.emailOrUsername }, // 👈 Changed
+        { emailOrUsername: formData.emailOrUsername },
         { withCredentials: true }
       );
-      console.log("✅ Resend response:", res.data);
       return res.data;
-    } catch (error) {
-      console.error("❌ Failed to resend verification:", error);
-      throw error;
+    } catch (err) {
+      // נזרוק הלאה כדי שהקורא יחליט מה להציג
+      throw err;
     }
   };
 
+  /** שליחת התחברות */
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if (!formData.emailOrUsername || !formData.password) {
-      setErrorMessage("אנא מלא את כל השדות");
-      return;
-    }
+    if (!validateFormData(formData, setErrorMessage)) return;
 
     try {
-      const response = await axios.post(
+      const { data, status } = await axios.post(
         "/users/login",
-        {
-          emailOrUsername: formData.emailOrUsername, // 👈 Changed
-          password: formData.password,
-        },
+        { emailOrUsername: formData.emailOrUsername, password: formData.password },
         { withCredentials: true }
       );
 
-      if (response.status === 200) {
-        Cookies.set("userId", response.data.userId);
-        Cookies.set("userRole", response.data.roleId);
-        Cookies.set("fullName", response.data.fullName);
-
+      if (status === 200) {
+        saveCookiesFromLogin(data);
         setErrorMessage("");
-
-        if (setShowForm) setShowForm(false);
+        setShowForm && setShowForm(false);
 
         toast.success("מתחבר לחשבון...", {
           position: "top-center",
           autoClose: 1500,
-          hideProgressBar: false,
-          closeOnClick: true,
           pauseOnHover: false,
-          draggable: false,
-          progress: undefined,
         });
 
         setTimeout(() => {
-          const roleId = response.data.roleId;
-
-          if (roleId == 1) {
-            navigate("/admin");
-          } else {
-            navigate("/");
-            window.location.reload();
-          }
-
-          handleLoginSuccess(); // optional, depends if you're doing something with it
+          navigateByRole(navigate, data.roleId);
+          handleLoginSuccess && handleLoginSuccess();
         }, 1500);
       }
     } catch (error) {
-      const serverMsg =
-        error.response?.data?.error || error.response?.data?.message;
-
-      if (serverMsg === "אנא אמת את כתובת האימייל שלך") {
-        setErrorMessage("אנא אמת את כתובת האימייל שלך");
-      } else {
-        setErrorMessage(serverMsg || "שגיאה בהתחברות");
-      }
+      handleServerError(error, setErrorMessage);
     }
   };
 

@@ -1,23 +1,19 @@
 import axios from "axios";
 
-/**
- * Fetch all donations (used in lists, admin, etc.)
- */
+/** שליפת כל התרומות (לרשימות/אדמין וכו') */
 export const getAllDonations = async () => {
   const res = await axios.get("/donations");
   return res.data;
 };
 
-/**
- * Fetch all donations (used in lists, admin, etc.)
- */
+/** שליפת תרומות זמינות בלבד */
 export const getAvailableDonations = async () => {
   const res = await axios.get("/donations/available");
   return res.data;
 };
 
 /**
- * Fetch one donation by ID
+ * שליפת תרומה בודדת לפי מזהה
  * @param {string|number} id
  */
 export const getDonationById = async (id) => {
@@ -26,7 +22,7 @@ export const getDonationById = async (id) => {
 };
 
 /**
- * Add a new donation (FormData object)
+ * הוספת תרומה חדשה (מקבל FormData)
  */
 export const addDonation = async (formDataToSend) => {
   return axios.post("/donationadd", formDataToSend, {
@@ -35,7 +31,7 @@ export const addDonation = async (formDataToSend) => {
 };
 
 /**
- * Update an existing donation by ID (FormData object)
+ * עדכון תרומה קיימת לפי מזהה (מקבל FormData)
  */
 export const updateDonation = async (id, formData) => {
   return axios.put(`/donations/${id}`, formData, {
@@ -43,16 +39,12 @@ export const updateDonation = async (id, formData) => {
   });
 };
 
-/**
- * Delete a donation by ID
- */
+/** מחיקת תרומה לפי מזהה */
 export const deleteDonation = async (id) => {
   return axios.delete(`/donations/${id}`);
 };
 
-/**
- * Get the current user's role (expects user to be logged in)
- */
+/** שליפת תפקיד המשתמש הנוכחי (דורש התחברות) */
 export const getUserRole = async () => {
   const res = await axios.get("/users");
   return res.data[0]?.role_id ?? null;

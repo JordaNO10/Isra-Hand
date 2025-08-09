@@ -1,48 +1,69 @@
+/**
+ * הקשר נגישות (Context):
+ * מנהל מצב נגישות גלובלי (הדגשה/ניגודיות/סקייל/גופן), כולל טעינה ושמירה ב-localStorage
+ * והחלת מחלקות/סגנונות על ה-<body> וה-:root.
+ */
+
 import React, { createContext, useContext, useEffect, useState } from "react";
 
-const AccessibilityContext = createContext();
+/** קריאת הגדרות שנשמרו מקומית */
+const getStoredSettings = () => {
+  try {
+    return JSON.parse(localStorage.getItem("accessibility-settings")) || null;
+  } catch {
+    return null;
+  }
+};
+
+/** שמירת ההגדרות המקומיות */
+const saveSettings = (settings) => {
+  localStorage.setItem("accessibility-settings", JSON.stringify(settings));
+};
+
+/** החלת מחלקות/סגנונות על הדום */
+const applyAccessibilityClasses = ({ isAccessible, fontScale, highContrast, dyslexicFont }) => {
+  const body = document.body;
+  body.classList.toggle("accessible-mode", !!isAccessible);
+  body.classList.toggle("high-contrast", !!highContrast);
+  body.classList.toggle("dyslexic-font", !!dyslexicFont);
+  document.documentElement.style.setProperty("--font-scale", String(fontScale || 1));
+};
+
+const AccessibilityContext = createContext(null);
 
 export function AccessibilityProvider({ children }) {
   const [isAccessible, setIsAccessible] = useState(false);
-  const [fontScale, setFontScale] = useState(1); // 1 = normal
+  const [fontScale, setFontScale] = useState(1);         // 1 = רגיל
   const [highContrast, setHighContrast] = useState(false);
   const [dyslexicFont, setDyslexicFont] = useState(false);
 
-  // Load preferences on mount
+  // טעינה ראשונית מהאחסון המקומי
   useEffect(() => {
-    const stored = JSON.parse(localStorage.getItem("accessibility-settings"));
-    if (stored) {
-      setIsAccessible(stored.isAccessible || false);
-      setFontScale(stored.fontScale || 1);
-      setHighContrast(stored.highContrast || false);
-      setDyslexicFont(stored.dyslexicFont || false);
-    }
+    const stored = getStoredSettings();
+    if (!stored) return;
+    setIsAccessible(!!stored.isAccessible);
+    setFontScale(stored.fontScale ?? 1);
+    setHighContrast(!!stored.highContrast);
+    setDyslexicFont(!!stored.dyslexicFont);
   }, []);
 
-  // Save preferences on change
+  // שמירה בכל שינוי
   useEffect(() => {
-    localStorage.setItem(
-      "accessibility-settings",
-      JSON.stringify({ isAccessible, fontScale, highContrast, dyslexicFont })
-    );
+    saveSettings({ isAccessible, fontScale, highContrast, dyslexicFont });
   }, [isAccessible, fontScale, highContrast, dyslexicFont]);
 
-  // Apply accessibility classes
+  // החלת הסגנונות על הדום
   useEffect(() => {
-    const body = document.body;
-    body.classList.toggle("accessible-mode", isAccessible);
-    document.documentElement.style.setProperty("--font-scale", fontScale);
-    body.classList.toggle("high-contrast", highContrast);
-    body.classList.toggle("dyslexic-font", dyslexicFont);
+    applyAccessibilityClasses({ isAccessible, fontScale, highContrast, dyslexicFont });
   }, [isAccessible, fontScale, highContrast, dyslexicFont]);
 
-  // Handlers
-  const toggleAccessibility = () => setIsAccessible((prev) => !prev);
-  const increaseFont = () => setFontScale((prev) => Math.min(prev + 0.1, 2));
-  const decreaseFont = () => setFontScale((prev) => Math.max(prev - 0.1, 0.8));
+  // פעולות (קצרות)
+  const toggleAccessibility = () => setIsAccessible((v) => !v);
+  const increaseFont = () => setFontScale((v) => Math.min(v + 0.1, 2));
+  const decreaseFont = () => setFontScale((v) => Math.max(v - 0.1, 0.8));
   const resetFont = () => setFontScale(1);
-  const toggleHighContrast = () => setHighContrast((prev) => !prev);
-  const toggleDyslexicFont = () => setDyslexicFont((prev) => !prev);
+  const toggleHighContrast = () => setHighContrast((v) => !v);
+  const toggleDyslexicFont = () => setDyslexicFont((v) => !v);
 
   return (
     <AccessibilityContext.Provider
@@ -64,6 +85,7 @@ export function AccessibilityProvider({ children }) {
   );
 }
 
+/** הוק צריכה נוח */
 export function useAccessibility() {
   return useContext(AccessibilityContext);
 }

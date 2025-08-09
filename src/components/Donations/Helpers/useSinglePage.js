@@ -8,6 +8,8 @@ import { toast } from "react-toastify";
 
 axios.defaults.withCredentials = true; // ensure cookies go to API
 
+// Change this to your backend address if different in prod
+
 export const useSinglePage = (donationId) => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -69,7 +71,7 @@ export const useSinglePage = (donationId) => {
 
     const unlock = () => {
       if (!hasSecureLockRef.current) return;
-      const url = `/donations/${id}/unlock`;
+      const url = `${API_BASE}/donations/${id}/unlock`
       const payload = JSON.stringify({});
       try {
         if (navigator.sendBeacon) {
@@ -102,18 +104,13 @@ export const useSinglePage = (donationId) => {
     window.addEventListener("pagehide", onPageHide);
     document.addEventListener("visibilitychange", onVisibility);
 
-    // also unlock when route changes away (component unmount sometimes doesn't fire if you hide via CSS)
-    const unlisten = () => unlock(); // cleanup on location change
-    const stop = () => {}; // placeholder to avoid ESLint noise
-
+    // cleanup
     return () => {
       mounted = false;
       unlock();
       window.removeEventListener("beforeunload", onBeforeUnload);
       window.removeEventListener("pagehide", onPageHide);
       document.removeEventListener("visibilitychange", onVisibility);
-      stop();
-      unlisten();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id, isAdminUser, isGuest, location.pathname]);
@@ -163,23 +160,22 @@ export const useSinglePage = (donationId) => {
   };
 
   const requestDonation = async (donationId) => {
-  try {
-    await axios.put(`/donations/${donationId}/request`, {
-      requestor_id: currentUserId,
-    });
+    try {
+      await axios.put(`${API_BASE}/donations/${donationId}/request`, {
+        requestor_id: currentUserId,
+      });
 
-    toast.success("הבקשה נשלחה בהצלחה! שלחנו התראה לתורם 🙌");
-
-    setTimeout(() => window.location.reload(), 5500);
-  } catch (err) {
-    const msg = err?.response?.data?.error || "שגיאה בבקשת תרומה";
-    toast.error(`שגיאה בבקשת תרומה: ${msg}`);
-  }
-};
+      toast.success("הבקשה נשלחה בהצלחה! שלחנו התראה לתורם 🙌");
+      setTimeout(() => window.location.reload(), 5500);
+    } catch (err) {
+      const msg = err?.response?.data?.error || "שגיאה בבקשת תרומה";
+      toast.error(`שגיאה בבקשת תרומה: ${msg}`);
+    }
+  };
 
   const cancelRequest = async (donationId) => {
     try {
-      await axios.put(`/donations/${donationId}/cancel`, { requestor_id: currentUserId });
+      await axios.put(`$/donations/${donationId}/cancel`, { requestor_id: currentUserId });
       window.location.reload();
     } catch (err) {
       alert("שגיאה בביטול תרומה: " + err.response?.data?.error);
@@ -213,6 +209,6 @@ export const useSinglePage = (donationId) => {
     handleDropdownChange,
     requestDonation,
     cancelRequest,
-    releaseLock, 
+    releaseLock,
   };
 };

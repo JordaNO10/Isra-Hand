@@ -1,74 +1,54 @@
+/**
+ * עזרי דף הבית:
+ * טעינת תרומות אחרונות + ספירת משתמשים לפי תפקיד + בדיקות תפקיד משתמש נוכחי.
+ */
 import axios from "axios";
-import {
-  getAllDonations,
-  getAvailableDonations,
-} from "../../Donations/Helpers/donationService";
+import { getAvailableDonations } from "../../Donations/Helpers/donationService"; // ודאי שהנתיב נכון
 import Cookies from "js-cookie";
 
-const formatDateForDisplay = (isoDateString) => {
-  const date = new Date(isoDateString);
-  const day = date.getDate().toString().padStart(2, "0");
-  const month = (date.getMonth() + 1).toString().padStart(2, "0");
-  const year = date.getFullYear();
-  return `${day}-${month}-${year}`;
+/** פורמט תאריך להצגה (DD-MM-YYYY) */
+const formatDateForDisplay = (iso) => {
+  const d = new Date(iso);
+  return `${String(d.getDate()).padStart(2,"0")}-${String(d.getMonth()+1).padStart(2,"0")}-${d.getFullYear()}`;
 };
 
+/** מיון לפי תאריך תרומה (יורד) */
+const sortByDateDesc = (rows) =>
+  [...rows].sort((a, b) => new Date(b.donation_date) - new Date(a.donation_date));
+
+/** הסרת תרומה אחת שכבר משויכת (אם קיימת) — שמירת UX נקי */
+const stripOneRequested = (rows) => {
+  const idx = rows.findIndex((d) => d.requestor_id !== null);
+  return idx >= 0 ? rows.filter((_, i) => i !== idx) : rows;
+};
+
+/** החזרת 8 האחרונות עם שדה תאריך מפורמט */
+const takeLatest8 = (rows) =>
+  rows.slice(0, 8).map((d) => ({ ...d, donation_date_formatted: formatDateForDisplay(d.donation_date) }));
+
 /**
- * Fetch latest 8 donations, formatted for homepage display
+ * שליפת תרומות לדף הבית:
+ * - לוקח את כל הזמינות
+ * - מסיר אחת “משויכת” אם קיימת
+ * - ממיין לפי תאריך
+ * - מחזיר 8 אחרונות + סך הכל
  */
 export const fetchHomepageDonations = async () => {
-  const allDonations = await getAvailableDonations();
-  console.log(allDonations);
-
-  let updatedDonations = allDonations;
-
-  const target = allDonations.find((d) => d.requestor_id !== null);
-  if (target) {
-    updatedDonations = allDonations.filter((d) => d !== target);
-  }
-
-  // Sort by most recent donation_date
-  const sorted = [...updatedDonations].sort(
-    (a, b) => new Date(b.donation_date) - new Date(a.donation_date)
-  );
-
-  // Format top 8 donation dates
-  const latest = sorted.slice(0, 8).map((donation) => ({
-    ...donation,
-    donation_date_formatted: formatDateForDisplay(donation.donation_date),
-  }));
-
-  return {
-    latest,
-    total: updatedDonations.length,
-  };
+  const all = await getAvailableDonations();
+  const cleaned = stripOneRequested(all);
+  const latest = takeLatest8(sortByDateDesc(cleaned));
+  return { latest, total: cleaned.length };
 };
 
-/**
- * Fetch all users and return counts of donors and requestors
- */
+/** ספירת משתמשים לפי תפקיד (2: Donor, 3: Requestor) */
 export const fetchUserRoleCounts = async () => {
-  const res = await axios.get("/users"); // Use "/api/users" if your backend uses a prefix
-  const users = res.data;
-
-  const donors = users.filter((u) => u.role_id === 2).length;
-  const requestors = users.filter((u) => u.role_id === 3).length;
-
-  return { donors, requestors };
+  const { data: users } = await axios.get("/users", { withCredentials: true });
+  const count = (role) => users.filter((u) => u.role_id === role).length;
+  return { donors: count(2), requestors: count(3) };
 };
 
-/**
- * Checks if the current user is logged in and has the 'Donor' role
- */
-export const isUserDonor = () => {
-  const role = Cookies.get("userRole");
-  return role === "2";
-};
+/** בדיקת תפקיד המשתמש הנוכחי: תורם */
+export const isUserDonor = () => Cookies.get("userRole") === "2";
 
-/**
- * Checks if the current user is logged in and has the 'Requestor' role
- */
-export const isUserRequestor = () => {
-  const role = Cookies.get("userRole");
-  return role === "3";
-};
+/** בדיקת תפקיד המשתמש הנוכחי: מבקש */
+export const isUserRequestor = () => Cookies.get("userRole") === "3";

@@ -1,21 +1,58 @@
-// FILE 1: donationFormHelpers.js (✅ Includes user_id in form submission)
 import axios from "axios";
 import Cookies from "js-cookie";
 
 /**
- * Fetch all categories for the dropdown
+ * שליפת קטגוריות לטופס
  */
 export const fetchCategories = async (setCategories) => {
   try {
-    const response = await axios.get("/categories");
-    setCategories(response.data);
-  } catch (error) {
-    console.error("Failed to fetch categories:", error);
+    const { data } = await axios.get("/categories");
+    setCategories(data);
+  } catch (err) {
+    console.error("שגיאה בשליפת קטגוריות:", err);
   }
 };
 
+/** ולידציה לשדות חיוניים */
+const isFormValid = (f, file) =>
+  f.donation_name &&
+  f.description &&
+  f.email &&
+  f.category_name &&
+  f.sub_category_name &&
+  f.Phonenumber &&
+  !!file;
+
+/** בניית FormData לשליחה */
+const buildFormData = (f, file) => {
+  const fd = new FormData();
+  fd.append("donationname", f.donation_name);
+  fd.append("description", f.description);
+  fd.append("email", f.email);
+  fd.append("Phonenumber", f.Phonenumber);
+  fd.append("categoryName", f.category_name);
+  fd.append("subCategoryName", f.sub_category_name);
+  fd.append("user_id", Cookies.get("userId"));
+  fd.append("image", file);
+  return fd;
+};
+
+/** איפוס טופס לאחר שליחה מוצלחת */
+const resetForm = (setFormData, setSelectedFile) => {
+  setFormData({
+    donation_name: "",
+    description: "",
+    email: "",
+    category_name: "",
+    sub_category_name: "",
+    Phonenumber: "",
+  });
+  setSelectedFile(null);
+};
+
 /**
- * Create and validate donation form submission
+ * שליחת טופס תרומה (כולל העלאת תמונה)
+ * — פונקציה קצרה שקוראת לעזרי־פונקציה לעמידה בכלל <20 שורות —
  */
 export const submitDonationForm = async (
   formData,
@@ -24,65 +61,32 @@ export const submitDonationForm = async (
   setFormData,
   setSelectedFile
 ) => {
-  // Validation check
-  if (
-    !formData.donation_name ||
-    !formData.description ||
-    !formData.email ||
-    !formData.category_name ||
-    !formData.sub_category_name ||
-    !formData.Phonenumber ||
-    !selectedFile
-  ) {
-    alert("Please fill in all fields, including uploading an image.");
+  if (!isFormValid(formData, selectedFile)) {
+    alert("נא להשלים את כל השדות ולהעלות תמונה.");
     return;
   }
-
-  const formDataToSend = new FormData();
-  formDataToSend.append("donationname", formData.donation_name);
-  formDataToSend.append("description", formData.description);
-  formDataToSend.append("email", formData.email);
-  formDataToSend.append("Phonenumber", formData.Phonenumber);
-  formDataToSend.append("categoryName", formData.category_name);
-  formDataToSend.append("subCategoryName", formData.sub_category_name);
-  formDataToSend.append("user_id", Cookies.get("userId"));
-  formDataToSend.append("image", selectedFile);
-
   try {
-    await axios.post("/donations", formDataToSend, {
+    await axios.post("/donations", buildFormData(formData, selectedFile), {
       headers: { "Content-Type": "multipart/form-data" },
     });
-
-    alert("Donation added successfully!");
-    setFormData({
-      donation_name: "",
-      description: "",
-      email: "",
-      category_name: "",
-      sub_category_name: "",
-      Phonenumber: "",
-    });
-    setSelectedFile(null);
+    alert("התרומה נוספה בהצלחה!");
+    resetForm(setFormData, setSelectedFile);
     navigate("/Donations");
-  } catch (error) {
-    console.error("Failed to add donation:", error);
-    alert("Failed to add donation. Please try again.");
+  } catch (err) {
+    console.error("נכשלה הוספת תרומה:", err);
+    alert("שגיאה בהוספת תרומה. נסה שוב.");
   }
 };
 
 /**
- * Fetch all donations (for dropdown use)
+ * שליפת תרומות (לשימוש בדרופדאון)
  */
-export const fetchDonationsForDropdown = async (
-  setDonations,
-  setError,
-  setLoading
-) => {
+export const fetchDonationsForDropdown = async (setDonations, setError, setLoading) => {
   try {
-    const response = await axios.get("/donations");
-    setDonations(response.data);
-  } catch (error) {
-    setError(error.response?.data?.error || error.message);
+    const { data } = await axios.get("/donations");
+    setDonations(data);
+  } catch (err) {
+    setError(err.response?.data?.error || err.message);
   } finally {
     setLoading(false);
   }

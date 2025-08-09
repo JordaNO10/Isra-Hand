@@ -1,9 +1,21 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { fetchCategories, submitDonationForm } from "./donationFormHelpers";
+import { submitDonationForm } from "./donationFormHelpers";
 
-// Hook for Add Donation Page
-export const useDonationAddForm = (navigate) => {
+/** יצירת handler לשינוי שדות */
+const createInputChangeHandler = (setFormData) => (e) => {
+  const { name, value } = e.target;
+  setFormData((prev) => ({ ...prev, [name]: value }));
+};
+
+/** יצירת handler להעלאת תמונה */
+const createImageUploadHandler = (setSelectedFile) => (file) => setSelectedFile(file);
+
+/**
+ * הוק לטופס הוספת תרומה (קליל וקצר – לוגיקה “כבדה” הועברה ל-helpers)
+ */
+export const useDonationAddForm = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     donation_name: "",
     Phonenumber: "",
@@ -12,110 +24,43 @@ export const useDonationAddForm = (navigate) => {
     category_name: "",
     sub_category_name: "",
   });
-
   const [selectedFile, setSelectedFile] = useState(null);
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
-  const handleImageUpload = (imageFile) => {
-    setSelectedFile(imageFile);
-  };
+  const handleInputChange = createInputChangeHandler(setFormData);
+  const handleImageUpload = createImageUploadHandler(setSelectedFile);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    await submitDonationForm(
-      formData,
-      selectedFile,
-      navigate,
-      setFormData,
-      setSelectedFile
-    );
+    await submitDonationForm(formData, selectedFile, navigate, setFormData, setSelectedFile);
   };
 
-  return {
-    formData,
-    setFormData,
-    handleInputChange,
-    handleImageUpload,
-    handleSubmit,
-  };
+  return { formData, setFormData, handleInputChange, handleImageUpload, handleSubmit };
 };
 
-// Hook for Edit Donation Page
+/**
+ * הוק לטופס עריכת תרומה (הוולידציה/שמירה מתבצעות מחוץ להוק הקריאה)
+ */
 export const useDonationEditForm = (editedData, onSave, onChange) => {
   const navigate = useNavigate();
   const [temporaryImage, setTemporaryImage] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    onChange({ ...editedData, [name]: value });
-  };
-
-  const handleImageUpload = (image) => {
-    setTemporaryImage(image);
-  };
+  const handleChange = (e) => onChange({ ...editedData, [e.target.name]: e.target.value });
+  const handleImageUpload = (image) => setTemporaryImage(image);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
-    if (
-      !editedData.donation_name ||
-      !editedData.email ||
-      !editedData.description
-    ) {
-      setErrorMessage("Please fill in all fields.");
+    if (!editedData.donation_name || !editedData.email || !editedData.description) {
+      setErrorMessage("נא למלא את כל השדות.");
       return;
     }
-
-    const updatedData = {
-      ...editedData,
-      image: temporaryImage || editedData.image,
-    };
-
-    onSave(updatedData);
+    onSave({ ...editedData, image: temporaryImage || editedData.image });
     setErrorMessage("");
   };
 
-  const handleBack = () => {
-    navigate("/donations");
-  };
+  const handleBack = () => navigate("/donations");
+  const toggleModal = () => setIsModalOpen((v) => !v);
 
-  const toggleModal = () => {
-    setIsModalOpen((prev) => !prev);
-  };
-
-  return {
-    temporaryImage,
-    isModalOpen,
-    errorMessage,
-    handleChange,
-    handleImageUpload,
-    handleSubmit,
-    handleBack,
-    toggleModal,
-  };
-};
-export const fetchDonationsForDropdown = async (
-  setDonations,
-  setError,
-  setLoading
-) => {
-  try {
-    setLoading(true);
-    const res = await axios.get("/donations/available"); // or your endpoint
-    setDonations(res.data); // must be an array
-  } catch (err) {
-    setError("Failed to fetch donations");
-  } finally {
-    setLoading(false);
-  }
+  return { temporaryImage, isModalOpen, errorMessage, handleChange, handleImageUpload, handleSubmit, handleBack, toggleModal };
 };
