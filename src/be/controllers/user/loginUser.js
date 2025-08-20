@@ -1,16 +1,20 @@
 /**
- * התחברות משתמש
- * תפקיד: אימות פרטי משתמש, חסימת כניסה למשתמש לא מאומת, שמירת מזהה ותפקיד בסשן,
- *         אכיפת "סשן יחיד" (מחיקת כל הסשנים האחרים של המשתמש), והחזרת JSON עקבי.
- * דוגמת הרצה:
- *   curl -X POST http://localhost:5000/users/login -H "Content-Type: application/json" \
- *        -d "{\"emailOrUsername\":\"john@example.com\",\"password\":\"123456\"}"
+ * קובץ זה אחראי על התחברות משתמשים:
+ * - אימות פרטי משתמש מול מסד הנתונים
+ * - חסימת כניסה למשתמש לא מאומת
+ * - שמירת מזהה ותפקיד המשתמש בסשן
+ * - אכיפת סשן יחיד (מחיקת סשנים אחרים)
+ * - החזרת תגובה עקבית ללקוח
  */
+
 const bcrypt = require("bcrypt");
 const { q, send500, normalizeRoleId } = require("../helpers/utils");
 
-// --- עזרי DB קצרים ---
-// שליפת משתמש לפי אימייל/שם משתמש
+/**
+ * שליפת משתמש לפי אימייל או שם משתמש
+ * @param {string} emailOrUsername - אימייל או שם משתמש
+ * @returns {Object|null} משתמש אם נמצא, אחרת null
+ */
 const findUser = async (emailOrUsername) => {
   const [rows] = await q(
     "SELECT * FROM users WHERE email = ? OR username = ?",
@@ -19,20 +23,33 @@ const findUser = async (emailOrUsername) => {
   return rows[0] || null;
 };
 
-// השוואת סיסמה
+/**
+ * השוואת סיסמה מול ההאש השמור
+ * @param {string} plain - סיסמה שהוזנה
+ * @param {Object} user - אובייקט משתמש ממסד הנתונים
+ * @returns {Promise<boolean>} תוצאה אם הסיסמאות תואמות
+ */
 const passwordsMatch = (plain, user) => {
-  const hash = user.password_hash || user.password; // תמיכה בשם עמודה משתנה
+  const hash = user.password_hash || user.password;
   return bcrypt.compare(plain, hash);
 };
 
-// כתיבת פרטים לסשן
+/**
+ * שמירת פרטי משתמש בסשן
+ * @param {Object} req - בקשת HTTP
+ * @param {Object} user - אובייקט משתמש
+ */
 const putInSession = (req, user) => {
-  req.session.userId  = user.user_id;
-  req.session.roleId  = normalizeRoleId(user.role_id);
-  req.session.username= user.username;
+  req.session.userId   = user.user_id;
+  req.session.roleId   = normalizeRoleId(user.role_id);
+  req.session.username = user.username;
 };
 
-// בניית תגובת לקוח
+/**
+ * בניית תגובת JSON עקבית ללקוח לאחר התחברות
+ * @param {Object} user - אובייקט משתמש
+ * @returns {Object} תגובה ללקוח
+ */
 const buildResponse = (user) => ({
   message: "Signin successful!",
   userId: user.user_id,
@@ -41,9 +58,12 @@ const buildResponse = (user) => ({
   fullName: user.full_name,
 });
 
-// ❗ אכיפת סשן יחיד: מחיקת כל הסשנים של המשתמש חוץ מהנוכחי
+/**
+ * אכיפת סשן יחיד – מחיקת סשנים אחרים של אותו משתמש
+ * @param {number} userId - מזהה המשתמש
+ * @param {string} currentSessionId - מזהה הסשן הנוכחי
+ */
 const clearOtherSessions = async (userId, currentSessionId) => {
-  // נסיון ראשון: המידע בטור data נשמר כ-JSON ("userId": <id>)
   try {
     await q(
       "DELETE FROM sessions WHERE session_id <> ? AND JSON_EXTRACT(data,'$.userId') = ?",
@@ -51,7 +71,6 @@ const clearOtherSessions = async (userId, currentSessionId) => {
     );
     return;
   } catch (_) {
-    // חנויות מסוימות שומרות JSON טקסטואלי – נשתמש ב-LIKE כנסיון נפילה
     await q(
       "DELETE FROM sessions WHERE session_id <> ? AND data LIKE ?",
       [currentSessionId, `%"userId":${Number(userId)}%`]
@@ -59,34 +78,39 @@ const clearOtherSessions = async (userId, currentSessionId) => {
   }
 };
 
+/**
+ * שמירת סשן נוכחי
+ * @param {Object} req - בקשת HTTP
+ */
 const saveSession = (req) =>
   new Promise((resolve, reject) => req.session.save((err) => (err ? reject(err) : resolve())));
 
-// --- הבקר הראשי ---
+/**
+ * בקר התחברות ראשי
+ * @param {Object} req - בקשת HTTP (מכילה אימייל/שם משתמש וסיסמה)
+ * @param {Object} res - תגובת HTTP עם סטטוס ותוכן JSON
+ */
 const loginUser = async (req, res) => {
   const { emailOrUsername, password } = req.body;
   try {
     const user = await findUser(emailOrUsername);
-    if (!user) return res.status(401).json({ error: "Invalid email/username or password." });
+    if (!user) return res.status(401).json({ error: "אימייל/שם משתמש או סיסמה לא נכונים." });
 
     if (!user.is_verified) {
-      // חוסמים לא מאומתים – מאפשר ל-Frontend להציע "שלח שוב אימייל אימות"
       return res.status(403).json({ error: "אנא אמת את כתובת האימייל שלך" });
     }
 
     const ok = await passwordsMatch(password, user);
-    if (!ok) return res.status(401).json({ error: "Invalid email/username or password." });
+    if (!ok) return res.status(401).json({ error: "אימייל/שם משתמש או סיסמה לא נכונים." });
 
-    // כתיבה לסשן ושמירה כדי לוודא שיש current session_id
     putInSession(req, user);
     await saveSession(req);
 
-    // מחיקה של כל הסשנים האחרים של אותו משתמש (השארת הנוכחי בלבד)
     await clearOtherSessions(user.user_id, req.sessionID);
 
     return res.status(200).json(buildResponse(user));
   } catch (err) {
-    return send500(res, "Database error", err);
+    return send500(res, "שגיאת מסד נתונים", err);
   }
 };
 

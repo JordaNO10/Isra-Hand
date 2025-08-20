@@ -1,10 +1,14 @@
+/**
+ * Hook עזר להצגת סטטוס דירוג תורם.
+ * כולל שליפת נתוני דירוג מהשרת, ניהול סטייטים של מצב (אין תרומות / אין דירוגים / יש דירוגים).
+ */
 import { useState, useEffect } from "react";
 import axios from "axios";
 import Cookies from "js-cookie";
 
 export const useDonorRating = () => {
-  const [rating, setRating] = useState(null); // actual rating data
-  const [status, setStatus] = useState(""); // "noDonations", "noRatings", "hasRatings"
+  const [rating, setRating] = useState(null);
+  const [status, setStatus] = useState(""); // "noDonations" | "noRatings" | "hasRatings"
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 

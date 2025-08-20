@@ -1,13 +1,16 @@
+/**
+ * פונקציות עזר לניהול משתמשים, תרומות וקטגוריות בעמוד אדמין.
+ * כולל שליפה, מחיקה, עדכון והוספה של קטגוריות/תתי־קטגוריות.
+ */
 import axios from "axios";
 
-// Fetch all data for admin page
+// שליפת כל הנתונים לעמוד אדמין
 const fetchAdminData = async () => {
   const [usersRes, donationsRes, categoriesRes] = await Promise.all([
     axios.get("/users"),
     axios.get("/donations"),
     axios.get("/categories"),
   ]);
-console.log("Hello",donationsRes);
 
   return {
     usersData: usersRes.data,
@@ -16,7 +19,7 @@ console.log("Hello",donationsRes);
   };
 };
 
-// Delete user
+// מחיקת משתמש
 const deleteUser = async (userId, setUsers) => {
   if (window.confirm("האם אתה בטוח שברצונך למחוק משתמש זה?")) {
     try {
@@ -28,7 +31,7 @@ const deleteUser = async (userId, setUsers) => {
   }
 };
 
-// Delete donation
+// מחיקת תרומה
 const deleteDonation = async (donationId, setDonations) => {
   if (window.confirm("האם אתה בטוח שברצונך למחוק תרומה זו?")) {
     try {
@@ -42,7 +45,7 @@ const deleteDonation = async (donationId, setDonations) => {
   }
 };
 
-// Delete category
+// מחיקת קטגוריה
 const deleteCategory = async (categoryName, setCategories) => {
   if (window.confirm("האם אתה בטוח שברצונך למחוק קטגוריה זו?")) {
     try {
@@ -56,13 +59,9 @@ const deleteCategory = async (categoryName, setCategories) => {
   }
 };
 
-// Delete subcategory
+// מחיקת תת־קטגוריה
 const deleteSubCategory = async (categoryId, subCategory) => {
-  if (
-    window.confirm(
-      `האם אתה בטוח שברצונך למחוק את התת-קטגוריה "${subCategory}"?`
-    )
-  ) {
+  if (window.confirm(`האם אתה בטוח שברצונך למחוק את "${subCategory}"?`)) {
     try {
       await axios.delete(
         `/categories/sub/${categoryId}/${encodeURIComponent(subCategory)}`
@@ -74,7 +73,7 @@ const deleteSubCategory = async (categoryId, subCategory) => {
   }
 };
 
-// Update user
+// עדכון משתמש
 const updateUser = async (userId, userData) => {
   try {
     await axios.put(`/users/${userId}`, userData);
@@ -84,7 +83,7 @@ const updateUser = async (userId, userData) => {
   }
 };
 
-// Update donation
+// עדכון תרומה
 const updateDonation = async (donationId, description) => {
   try {
     await axios.put(`/donations/${donationId}`, { description });
@@ -94,7 +93,7 @@ const updateDonation = async (donationId, description) => {
   }
 };
 
-// Update category or subcategory
+// עדכון קטגוריה או תת־קטגוריה
 const updateCategory = async (
   categoryId,
   categoryName,
@@ -113,7 +112,7 @@ const updateCategory = async (
   }
 };
 
-// Add new category
+// הוספת קטגוריה חדשה
 const addNewCategory = async (categoryName, subCategory = null) => {
   try {
     const response = await axios.post("/categories/add", {
@@ -127,7 +126,7 @@ const addNewCategory = async (categoryName, subCategory = null) => {
   }
 };
 
-// Format last login date
+// עיצוב תאריך התחברות אחרונה
 const formatLastLogin = (isoString) => {
   if (!isoString) return "לא התחבר עדיין";
   const date = new Date(isoString);

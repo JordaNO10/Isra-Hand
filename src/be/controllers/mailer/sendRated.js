@@ -1,3 +1,10 @@
+/**
+ * פונקציה זו מטפלת בשליחת מיילים לאחר דירוג תרומה.
+ * נשלחים שני מיילים:
+ * 1. למבקש שדירג – תודה על הדירוג והמשוב.
+ * 2. לתורם – עדכון שהתרומה שלו דורגה.
+ */
+
 const { sendMail } = require("../../utils/mailer");
 const db = require("../../utils/db");
 
@@ -21,7 +28,6 @@ const sendRated = (donation_id, requestor_id) => {
 
     db.query(sql, [donation_id, requestor_id], async (err, results) => {
       if (err) return reject("Database error while fetching rating");
-
       if (!results.length) return reject("Rating not found");
 
       const {
@@ -34,6 +40,7 @@ const sendRated = (donation_id, requestor_id) => {
         donor_email,
       } = results[0];
 
+      // מייל למבקש (שדירג)
       const requestorMessage = `
 שלום ${requestor_name},
 
@@ -48,6 +55,7 @@ const sendRated = (donation_id, requestor_id) => {
 צוות IsraHand
       `;
 
+      // מייל לתורם (שקיבל דירוג)
       const donorMessage = `
 שלום ${donor_name},
 
@@ -59,14 +67,12 @@ const sendRated = (donation_id, requestor_id) => {
       `;
 
       try {
-        // Send to requestor (the one who rated)
         await sendMail({
           to: requestor_email,
           subject: "תודה על הדירוג שלך!",
           text: requestorMessage,
         });
 
-        // Send to donor (whose donation was rated)
         await sendMail({
           to: donor_email,
           subject: "התרומה שלך דורגה!",

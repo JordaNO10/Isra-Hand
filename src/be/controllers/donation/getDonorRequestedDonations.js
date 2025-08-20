@@ -1,3 +1,8 @@
+/**
+ * פונקציה זו מחזירה את כל התרומות של תורם מסוים שנבחרו ע"י מבקשים.
+ * הפלט כולל פרטי תרומה, קטגוריה, ופרטי המבקש (אם קיים).
+ */
+
 const db = require("../../utils/db");
 
 const getDonorRequestedDonations = async (req, res) => {
@@ -24,11 +29,9 @@ const getDonorRequestedDonations = async (req, res) => {
 
   try {
     const [results] = await db.promise().query(sql, [donorId]);
-    console.log(results);
-
     res.status(200).json(results);
   } catch (err) {
-    console.error("❌ SQL Error in getDonorRequestedDonations:", err);
+    console.error("שגיאה בשליפת תרומות של תורם עם מבקשים:", err);
     res.status(500).json({ error: "Database query failed" });
   }
 };

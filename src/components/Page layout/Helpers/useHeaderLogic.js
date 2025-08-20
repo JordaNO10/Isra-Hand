@@ -56,7 +56,8 @@ export const useHeaderLogic = (onLogout) => {
       position: "top-center",
       autoClose: 2200,
       pauseOnHover: false,
-      onClose: () => window.location.reload(), // ← reload after toast closes
+      onClose: () =>
+        {navigate("/"),window.location.reload()}, // ← reload after toast closes
     });
       // מעבר נקי למסך התחברות (בלי רענון שמוחק טוסט)
       // navigate("/Signin", { replace: true });

@@ -1,5 +1,4 @@
 /**
- * useSessionHeartbeat
  * תפקיד: לבדוק "חי" אם יש סשן בשרת; אם לא — לנקות קוקיות, להציג Toast, ולהפנות ל-/Signin.
  * רץ רק אם enabled=true. מאזינים/אינטרוול נרשמים/מנוקים בהתאם.
  */
@@ -20,7 +19,7 @@ const clearClientAuth = () => {
 export const useSessionHeartbeat = ({ interval = 100, enabled = false } = {}) => {
   const navigate = useNavigate();
   const timerRef = useRef(null);
-  const toastedRef = useRef(false); // מונע ריבוי טוסטים באותה התנתקות
+  const toastedRef = useRef(false); 
 
   const ping = useCallback(async () => {
     if (!enabled) return;
@@ -37,7 +36,6 @@ export const useSessionHeartbeat = ({ interval = 100, enabled = false } = {}) =>
       autoClose: autoCloseMs,
       pauseOnHover: true,
       onClose: () => {
-        // אחרי שהטוסט נסגר — מבצעים רענון
         window.location.reload();
       },
     });
@@ -55,14 +53,12 @@ export const useSessionHeartbeat = ({ interval = 100, enabled = false } = {}) =>
     // אינטרוול
     timerRef.current = setInterval(ping, interval);
 
-    // פוקוס/ויזיביליות
     const onFocus = () => ping();
     const onVis = () => { if (document.visibilityState === "visible") ping(); };
 
     window.addEventListener("focus", onFocus);
     document.addEventListener("visibilitychange", onVis);
 
-    // בדיקה מיידית בעת mount
     ping();
 
     return () => {

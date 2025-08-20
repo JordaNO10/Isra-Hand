@@ -1,22 +1,27 @@
-// controllers/mailer/sendNotification.js
+/**
+ * פונקציה זו מטפלת בשליחת מיילי התראה למשתמשים לא פעילים.
+ * תהליך: שליפת משתמשים, בדיקה מי לא נכנס יותר מ־4 ימים,
+ * ושליחת מייל אישי לכל משתמש כזה.
+ */
+
 const db = require("../../utils/db");
 const sendMail = require("../../utils/mailer");
 const dayjs = require("dayjs");
 
 const sendNotification = async (req, res) => {
   try {
-    // Only get relevant fields from users
+    // שליפת משתמשים רלוונטיים בלבד
     const [users] = await db
       .promise()
       .query("SELECT full_name, last_login, email FROM users");
 
-    // Filter users who haven't logged in for more than 4 days
+    // סינון משתמשים שלא התחברו מעל 4 ימים
     const inactiveUsers = users.filter((user) => {
       const lastLogin = dayjs(user.last_login);
       return dayjs().diff(lastLogin, "day") > 4;
     });
 
-    // Send email to each inactive user
+    // שליחת מייל לכל משתמש לא פעיל
     for (const user of inactiveUsers) {
       await sendMail(
         user.email,
@@ -27,7 +32,7 @@ const sendNotification = async (req, res) => {
 
     res.json({ message: `${inactiveUsers.length} emails sent.` });
   } catch (error) {
-    console.error("Error sending notifications:", error);
+    console.error("שגיאה בשליחת התראות:", error);
     res.status(500).json({ error: "Failed to send notifications" });
   }
 };

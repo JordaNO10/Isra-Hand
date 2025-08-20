@@ -1,4 +1,9 @@
-const {sendMail} = require("../../utils/mailer");
+/**
+ * פונקציה זו מטפלת בשליחת מייל אישור לתורם.
+ * ההודעה כוללת את שם התרומה והודעת תודה.
+ */
+
+const { sendMail } = require("../../utils/mailer");
 
 const sendApproval = async (req, res) => {
   const { to, donationName } = req.body;

@@ -41,10 +41,10 @@ function Singlepage({ donationId }) {
   const ownerId = sp.donationData?.user_id;
   const isOwner = isDonationOwner(ownerId);
 
-  // ✅ "מבקש" לפי הלוגיקה החדשה: Member(2) או Admin(1), אבל לא הבעלים
+  //  "מבקש" לפי הלוגיקה החדשה: Member(2) או Admin(1), אבל לא הבעלים
 const isRequestor = !isAdmin() && isRequestorRole() && !isOwner;
 
-  // ✅ המעלה רואה בלבד: אם המשתמש הוא הבעלים ואינו אדמין → cannot edit
+  // המעלה רואה בלבד: אם המשתמש הוא הבעלים ואינו אדמין → cannot edit
   // (שומרים את הנוסחה המקורית ואז מכבים במידת הצורך)
   let canEdit =
     isAdmin() && isDonor() && isDonationOwner(sp.donationData?.user_id) && !isChosen; // נוסחה מקורית

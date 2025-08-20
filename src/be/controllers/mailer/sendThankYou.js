@@ -1,4 +1,9 @@
-const {sendMail} = require("../../utils/mailer");
+/**
+ * פונקציה זו מטפלת בשליחת מייל תודה לתורם.
+ * ההודעה מותאמת אישית לפי שם התורם.
+ */
+
+const { sendMail } = require("../../utils/mailer");
 
 const sendThankYou = async (req, res) => {
   const { to, name } = req.body;

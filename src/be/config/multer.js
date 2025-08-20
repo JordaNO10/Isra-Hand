@@ -1,28 +1,33 @@
+/**
+ * קובץ זה מגדיר את מנגנון העלאת הקבצים באמצעות multer.
+ * תפקיד: לשמור קבצים בתיקיית `uploads` עם שם ייחודי, לבדוק סוג וגודל קובץ.
+ */
+
 const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
 
-// Ensure the uploads directory exists
+// יצירת תיקיית uploads במידה ואינה קיימת
 const uploadDirectory = path.join(__dirname, "..", "uploads");
 if (!fs.existsSync(uploadDirectory)) {
   fs.mkdirSync(uploadDirectory, { recursive: true });
 }
 
-// Multer configuration
+// הגדרות אחסון לקובץ: תיקייה + שם ייחודי
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, uploadDirectory); // Save files to the "uploads" directory
+    cb(null, uploadDirectory);
   },
   filename: (req, file, cb) => {
     const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-    cb(null, uniqueSuffix + path.extname(file.originalname)); // Keep the original file extension
+    cb(null, uniqueSuffix + path.extname(file.originalname));
   },
 });
 
-// Initialize multer with storage configuration and limits
+// אתחול multer עם מגבלת גודל ובדיקת סוגי קבצים
 const upload = multer({
   storage,
-  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
+  limits: { fileSize: 5 * 1024 * 1024 }, // מקסימום 5MB
   fileFilter: (req, file, cb) => {
     const allowedTypes = /jpeg|jpg|png|gif/;
     const isValid =
@@ -30,11 +35,12 @@ const upload = multer({
       allowedTypes.test(path.extname(file.originalname).toLowerCase());
 
     if (isValid) {
-      return cb(null, true); // Accept the file
+      cb(null, true);
+    } else {
+      cb(new Error("שגיאה: סוג קובץ לא תקין!"));
     }
-    cb(new Error("Error: Invalid file type!")); // Reject the file
   },
 });
 
-// Export the multer middleware
-module.exports = upload; // Export the multer instance for use in other files
+// ייצוא middleware לשימוש בקבצים אחרים
+module.exports = upload;

@@ -1,3 +1,8 @@
+/**
+ * פונקציה זו מחזירה את כל התרומות שמשתמש מסוים (מבקש) קיבל בפועל.
+ * הפלט כולל פרטי תרומה, קטגוריה, תורם, ומידע על דירוג אם קיים.
+ */
+
 const db = require("../../utils/db");
 
 const getRequestorAcceptedDonations = async (req, res) => {
@@ -16,7 +21,7 @@ const getRequestorAcceptedDonations = async (req, res) => {
       users.phone_number AS phone,
       users.email AS email,
       users.address AS address,
-     ratings.user_id AS rating_user_id
+      ratings.user_id AS rating_user_id
     FROM donations
     JOIN categories ON categories.category_id = donations.category_id
     LEFT JOIN users ON users.user_id = donations.user_id
@@ -26,11 +31,9 @@ const getRequestorAcceptedDonations = async (req, res) => {
 
   try {
     const [results] = await db.promise().query(sql, [userId]);
-    console.log(results);
-
     res.status(200).json(results);
   } catch (err) {
-    console.error("❌ SQL Error in getRequestorAcceptedDonations:", err);
+    console.error("שגיאת SQL בשליפת תרומות מאושרות למבקש:", err);
     res.status(500).json({ error: "Database query failed" });
   }
 };

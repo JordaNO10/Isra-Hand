@@ -1,21 +1,20 @@
-// src/Helpers/useAuthHelpers.js
 /**
  * מודול עזר להרשמה ואיפוס סיסמה.
- * אחראי על: בניית בקשות לשרת, טיפול בשגיאות, וטוסטים ידידותיים.
- * התאמה לעדכון: אין שליחת role_id ב-signup (השרת מקצה אוטומטית role_id=2).
+ * כולל: בניית בקשות לשרת, טיפול בשגיאות, וטוסטים ידידותיים.
+ * הערה: אין שליחת role_id ב-signup (השרת מקצה אוטומטית role_id=2).
  */
 import { useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-/** הצגת שגיאה מרוכזת כטוסט + עדכון סטייט */
+// הצגת שגיאה כטוסט + עדכון סטייט
 const showError = (msg, setError) => {
   setError(msg);
   toast.error(msg, { autoClose: 8000 });
 };
 
-/** בדיקת חוזק סיסמה (מקבל בוליאן שכבר חושב ברכיב) */
+// בדיקת חוזק סיסמה (מקבל בוליאן שכבר חושב ברכיב)
 const validatePasswordStrength = (passwordValid, setError) => {
   if (!passwordValid) {
     showError("הסיסמה לא עומדת בדרישות.", setError);
@@ -24,7 +23,7 @@ const validatePasswordStrength = (passwordValid, setError) => {
   return true;
 };
 
-/** בניית FormData סטנדרטי לבקשות multipart */
+// בניית FormData סטנדרטי לבקשות multipart
 const buildFormData = (obj) => {
   const fd = new FormData();
   Object.entries(obj).forEach(([k, v]) => fd.append(k, v));
@@ -34,22 +33,13 @@ const buildFormData = (obj) => {
 export const useAuthHelpers = (navigate) => {
   const [errorMessage, setErrorMessage] = useState("");
 
-  /**
-   * שינוי ערכי טופס חיצוני
-   * @param {Event} e
-   * @param {Object} formData  - אובייקט ערכי הטופס הנוכחיים
-   * @param {Function} setFormData - סטייט לטופס
-   */
+  // שינוי ערכי טופס חיצוני
   const handleInputChange = (e, formData, setFormData) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  /**
-   * הרשמה – ללא שליחת role_id (השרת יקבע role_id=2)
-   * @param {Object} signupPayload - { username, full_name, email, password, birth_date }
-   * @param {boolean} passwordValid - האם הסיסמה עומדת בתנאים שהוגדרו
-   */
+  // הרשמה – ללא שליחת role_id (השרת יקבע role_id=2)
   const handleSignup = async (signupPayload, passwordValid) => {
     if (!validatePasswordStrength(passwordValid, setErrorMessage)) return;
 
@@ -61,7 +51,7 @@ export const useAuthHelpers = (navigate) => {
 
       if (res.status === 201) {
         setErrorMessage("");
-        toast.success("הרשמה בוצעה בהצלחה. אנא אמת/י את כתובת האימייל כדי להתחבר.", {
+        toast.success("הרשמה בוצעה בהצלחה. יש לאמת אימייל לפני התחברות.", {
           autoClose: 8000,
         });
         navigate("/Signin");
@@ -72,23 +62,28 @@ export const useAuthHelpers = (navigate) => {
     }
   };
 
-  /**
-   * שליחת קישור איפוס סיסמה
-   * @param {string} email - אימייל היעד
-   */
-  const handleForgotPassword = async (email) => {
+  // שליחת קישור איפוס סיסמה למייל
+  const handleForgotPassword = async (email, { silent = false } = {}) => {
     try {
       const { data } = await axios.post(
         "/users/forgot-password",
         { email },
         { withCredentials: true }
       );
-      toast.success(data?.message || "קישור איפוס נשלח למייל", { autoClose: 8000 });
-      setErrorMessage("");
-      navigate("/Signin");
+
+      const msg = data?.message || "אימייל איפוס נשלח";
+      if (!silent) toast.success(msg, { autoClose: 2500 });
+
+      return { success: true, message: msg };
     } catch (error) {
-      const errMsg = error?.response?.data?.error || "שגיאה בשליחת קישור איפוס";
-      showError(errMsg, setErrorMessage);
+      const errMsg =
+        error?.response?.data?.error ||
+        error?.response?.data?.message ||
+        "שגיאה בשליחת קישור איפוס";
+
+      if (!silent) toast.error(errMsg, { autoClose: 3500 });
+
+      return { success: false, message: errMsg };
     }
   };
 

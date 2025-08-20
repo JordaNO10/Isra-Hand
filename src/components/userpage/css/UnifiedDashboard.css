@@ -1,0 +1,369 @@
+/* =========================================================
+   UnifiedDashboard.css — clean, complete, RTL-friendly
+   Theme variables
+========================================================= */
+:root{
+  --blue:#1877f2;
+  --bg:#f4f7fb;
+  --card:#ffffff;
+  --text:#1f2937;
+  --muted:#6b7280;
+  --border:#e5e7eb;
+  --shadow:0 8px 28px rgba(0,0,0,0.08);
+}
+
+/* Page */
+.dashboard-container{
+  min-height:100vh;
+  background:var(--bg);
+  padding:24px;
+  direction:rtl;
+  color:var(--text);
+}
+
+/* Header */
+.welcome-message{
+  font-size:20px;
+  color:var(--blue);
+  margin:8px 0 18px;
+  text-align:right;
+}
+
+/* Layout */
+.dashboard-body{
+  display:grid;
+  grid-template-columns: 320px 1fr;
+  gap:24px;
+  align-items:start;
+}
+
+.dashboard-sidebar{
+  position:sticky;
+  top:24px;
+}
+
+.dashboard-main{
+  background:transparent;
+}
+
+/* Profile box wrapper (defensive selectors in case component uses different class names) */
+.profile-info-wrapper,
+.profile-info-box,
+.profile-box{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:12px;
+  box-shadow:0 2px 8px rgba(0,0,0,0.08);
+  padding:16px;
+}
+
+/* Tabs */
+.tabs{
+  display:flex;
+  gap:8px;
+  background:#eef4ff;
+  border-radius:12px;
+  padding:6px;
+  width:fit-content;
+  margin:0 auto 18px;
+}
+.tabs .tab{
+  border:none;
+  background:transparent;
+  color:var(--blue);
+  padding:10px 14px;
+  border-radius:10px;
+  font-weight:600;
+  cursor:pointer;
+  transition:background .2s ease, box-shadow .2s ease, transform .1s ease;
+}
+.tabs .tab:hover{
+  background:#e4edff;
+}
+.tabs .tab.active{
+  background:var(--blue);
+  color:#fff;
+  box-shadow:0 4px 12px rgba(24,119,242,0.35);
+  transform:translateY(-1px);
+}
+
+/* Section title */
+.section-title{
+  font-size:22px;
+  color:var(--blue);
+  text-align:center;
+  margin:28px 0 12px;
+}
+
+/* Cards grid (used by MyDonationsGrid / AcceptedGrid / RequestsGrid that render cards) */
+.items-grid{
+  display:grid;
+  flex-wrap:wrap;
+  justify-content:center;
+  gap:16px;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  justify-items: center;
+  direction: rtl;
+  padding:12px;
+}
+.item-card{
+  width:250px;
+  background:var(--card);
+  border:1px solid #dfe3ea;
+  border-radius:14px;
+  padding:14px;
+  line-height:1.45;
+  box-shadow:0 2px 8px rgba(0,0,0,0.05);
+  transition:transform .2s ease, box-shadow .2s ease;
+}
+.item-card:hover{
+  transform:translateY(-4px);
+  box-shadow:0 6px 16px rgba(0,0,0,0.12);
+}
+.item-card h3{
+  font-size:1rem;
+  font-weight:700;
+  margin:6px 0 4px;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.item-card p{
+  margin:2px 0; padding:0;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  color:#374151;
+}
+
+/* Image preview inside cards */
+.item-image-preview,
+.item-image-placeholder{
+  width:100%;
+  height:150px;
+  border-radius:10px;
+  object-fit:cover;
+  background:#f2f4f7;
+  display:block;
+}
+
+/* Buttons */
+.primary{
+  background:var(--blue);
+  color:#fff;
+  border:none;
+  padding:10px 14px;
+  border-radius:10px;
+  cursor:pointer;
+  font-weight:600;
+  transition:filter .15s ease, transform .05s ease;
+}
+.primary:hover{ filter:brightness(1.08); }
+.primary:active{ transform:translateY(1px); }
+
+.ghost{
+  background:transparent;
+  color:var(--blue);
+  border:1px solid var(--blue);
+  padding:9px 14px;
+  border-radius:10px;
+  cursor:pointer;
+  font-weight:600;
+  transition:background .15s ease, color .15s ease;
+}
+.ghost:hover{
+  background:var(--blue);
+  color:#fff;
+}
+
+/* "Show more" CTA below cards */
+.show-more-btn{
+  background:var(--blue);
+  color:#fff;
+  border:none;
+  border-radius:12px;
+  padding:12px 18px;
+  cursor:pointer;
+  font-weight:700;
+  box-shadow:0 4px 12px rgba(24,119,242,0.25);
+  transition:transform .12s ease, box-shadow .2s ease, filter .15s ease;
+}
+.singlepage-button,
+.edit-button {
+  align-items: center;
+  justify-content: center;
+  padding: 12px 18px;
+  height: auto;                  /* kill any flex height */
+  width: max-content;            /* no full-width */
+  max-width: 100%;
+  margin: 12px auto;             /* center in the column */
+  align-self: center;            /* ignore parent stretch */
+  background: var(--blue);
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(24,119,242,0.25);
+  transition: transform .12s ease, box-shadow .2s ease, filter .15s ease;
+}
+
+
+.show-more-btn:hover{ filter:brightness(1.06); }
+.show-more-btn:active{ transform:translateY(1px); }
+
+/* Tables (RequestedBySection / RequestsGrid / AcceptedGrid when rendered as tables) */
+.dashboard-container table{
+  width:100%;
+  border-collapse:collapse;
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:12px;
+  overflow:hidden;
+  box-shadow:0 2px 10px rgba(0,0,0,0.08);
+  min-width:720px; /* keep readable; mobile will scroll */
+}
+.dashboard-container thead th{
+  background:#eef4ff;
+  color:var(--blue);
+  text-align:right;
+  font-weight:600;
+  padding:12px 14px;
+  border-bottom:1px solid var(--border);
+  white-space:nowrap;
+}
+.dashboard-container tbody td{
+  padding:12px 14px;
+  border-bottom:1px solid #eee;
+  vertical-align:middle;
+  font-size:0.95rem;
+}
+.dashboard-container tbody tr:last-child td{ border-bottom:none; }
+
+/* thumbnail cell */
+.thumb,
+.dashboard-container td img{
+  width:56px;
+  height:56px;
+  object-fit:cover;
+  border-radius:8px;
+  display:block;
+}
+
+/* Modal (Singlepage) */
+.modal-overlay{
+  position:fixed; inset:0;
+  background:rgba(0,0,0,0.45);
+  display:flex; align-items:center; justify-content:center;
+  z-index:1000;
+}
+.modal-content{
+  background:var(--card);
+  width:min(100%, 980px);
+  max-height:90vh;
+  overflow:auto;
+  border-radius:16px;
+  box-shadow:var(--shadow);
+  position:relative;
+  padding:0; /* Singlepage has its own layout */
+}
+.close-modal{
+  position:absolute;
+  inset-inline-end:10px;
+  inset-block-start:8px;
+  background:#f3f4f6;
+  border:none;
+  width:36px; height:36px;
+  border-radius:50%;
+  font-size:16px;
+  cursor:pointer;
+}
+
+/* Empty states */
+.no-donations-message{
+  text-align:center;
+  color:var(--muted);
+  margin:18px 0;
+}
+
+/* Errors */
+.dashboard.error{
+  color:#b42318;
+  background:#ffe4e4;
+  border:1px solid #ffbaba;
+  border-radius:10px;
+  padding:10px 12px;
+}
+
+/* ===== Requests card ===== */
+.request-card {
+  width: 280px;
+  max-width: 100%;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 14px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  text-align: right;
+  direction: rtl;
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+.request-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+}
+
+/* Image */
+.request-card .thumb {
+  width: 100%;
+  height: 150px;
+  border-radius: 10px;
+  object-fit: cover;
+  display: block;
+  background: #f2f4f7;
+}
+
+/* Title + text */
+.request-card h4 {
+  margin: 4px 0 0;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.request-card .desc {
+  color: #374151;
+  font-size: .95rem;
+  /* keep cards equal height; clamp to 2 lines */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.request-card .meta {
+  color: var(--muted);
+  font-size: .9rem;
+}
+
+/* Actions row (CardActions component) */
+.request-card .card-actions {
+  margin-top: auto;                /* push actions to the bottom */
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+}
+[dir="rtl"] .request-card .card-actions {
+  justify-content: flex-end;       /* keep buttons near the right edge in RTL */
+}
+
+/* Buttons inside the card actions (uses your global .primary / .ghost styles) */
+.request-card .primary,
+.request-card .ghost {
+  padding: 8px 12px;
+  border-radius: 10px;
+  font-weight: 600;
+  line-height: 1;
+}

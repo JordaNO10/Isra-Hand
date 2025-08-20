@@ -1,4 +1,7 @@
-// src/helpers/dashboards/useDashboardDataHelpers.js
+/**
+ * Hook עזר לשליפת נתוני משתמש ותרומות לדשבורד.
+ * כולל: שליפת נתונים מהשרת, ניהול סטייט, ופורמט לתאריך התחברות אחרונה.
+ */
 import { useState, useEffect } from "react";
 import axios from "axios";
 import Cookies from "js-cookie";
@@ -13,6 +16,7 @@ export const useDashboardDataHelpers = () => {
     fetchAllData();
   }, []);
 
+  // שליפת נתוני משתמש + תרומות
   const fetchAllData = async () => {
     const userId = Cookies.get("userId");
     if (!userId) {
@@ -36,32 +40,31 @@ export const useDashboardDataHelpers = () => {
       setLoading(false);
     }
   };
- const formatLastLogin = (datetimeString) => {
-  if (!datetimeString) return "לא התחבר עדיין";
 
-  // Parse manually as local time
-  const [datePart, timePart] = datetimeString.split(" ");
-  const [year, month, day] = datePart.split("-").map(Number);
-  const [hour, minute, second] = timePart.split(":").map(Number);
+  // פורמט תאריך התחברות אחרונה (לשמור על זמן מקומי)
+  const formatLastLogin = (datetimeString) => {
+    if (!datetimeString) return "לא התחבר עדיין";
 
-  // Construct Date as LOCAL TIME (no UTC shift!)
-  const localDate = new Date(year, month - 1, day, hour, minute, second);
+    const [datePart, timePart] = datetimeString.split(" ");
+    const [year, month, day] = datePart.split("-").map(Number);
+    const [hour, minute, second] = timePart.split(":").map(Number);
 
-  return localDate.toLocaleString("he-IL", {
-    timeZone: "Asia/Jerusalem",
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-};
+    const localDate = new Date(year, month - 1, day, hour, minute, second);
 
+    return localDate.toLocaleString("he-IL", {
+      timeZone: "Asia/Jerusalem",
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
 
   return {
     userData,
     formatLastLogin,
-    setUserData, // ✅ added for useEditUser
+    setUserData,
     donations,
     loading,
     error,

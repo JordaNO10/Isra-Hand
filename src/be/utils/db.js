@@ -1,5 +1,12 @@
+/**
+ * קובץ חיבור למסד הנתונים (MySQL)
+ * תפקיד: יצירת חיבור למסד הנתונים "israhand" באמצעות mysql2,
+ *          ובדיקת הצלחת ההתחברות.
+ */
+
 const mysql = require("mysql2");
 
+// הגדרת פרטי ההתחברות למסד הנתונים
 const db = mysql.createConnection({
   host: "localhost",
   user: "root",
@@ -7,12 +14,14 @@ const db = mysql.createConnection({
   database: "israhand",
 });
 
+// ביצוע ניסיון התחברות למסד הנתונים
 db.connect((error) => {
   if (error) {
-    console.error("Database connection failed:", error.stack);
+    console.error("חיבור למסד הנתונים נכשל:", error.stack);
     return;
   }
-  console.log("Connected to the database.");
+  console.log("החיבור למסד הנתונים הצליח.");
 });
 
+// ייצוא החיבור לשימוש בקבצים אחרים
 module.exports = db;

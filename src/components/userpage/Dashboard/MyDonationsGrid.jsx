@@ -26,7 +26,7 @@ const MyDonationsGrid = ({ items = [], onAdd, onOpen }) => (
     {items.length === 0 ? (
       <EmptyState onAdd={onAdd} />
     ) : (
-      <div className="grid">
+      <div className="items-grid">
         {items.map((it) => <Card key={it.donation_id} item={it} onOpen={onOpen} />)}
       </div>
     )}

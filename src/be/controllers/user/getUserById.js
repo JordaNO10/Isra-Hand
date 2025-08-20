@@ -1,7 +1,17 @@
+/**
+ * קובץ זה אחראי על שליפת פרטי משתמש בודד לפי מזהה (user_id),
+ * כולל שם התפקיד (Role) ופורמט תאריכים בצורה קריאה.
+ */
+
 const db = require("../../utils/db");
 
+/**
+ * פונקציה לשליפת משתמש לפי מזהה
+ * @param {Object} req - בקשת HTTP המכילה user_id בפרמטרים
+ * @param {Object} res - תגובת HTTP שמחזירה את פרטי המשתמש
+ */
 const getUserById = (req, res) => {
-  const { id } = req.params;
+  const { id } = req.params; // שליפת מזהה המשתמש מה-URL
 
   const sql = `
     SELECT users.*, roles.role_name
@@ -9,22 +19,26 @@ const getUserById = (req, res) => {
     JOIN roles ON users.role_id = roles.role_id
     WHERE users.user_id = ?`;
 
+  // ביצוע השאילתה מול מסד הנתונים
   db.query(sql, [id], (error, results) => {
     if (error) {
-      console.error("Database error while fetching user:", error);
-      return res.status(500).json({ error: "Database error" });
+      console.error("שגיאת מסד נתונים בעת שליפת המשתמש:", error);
+      return res.status(500).json({ error: "שגיאת מסד נתונים" });
     }
 
+    // אם לא נמצא משתמש עם ה-ID המבוקש
     if (results.length === 0) {
-      return res.status(404).json({ error: "User not found." });
+      return res.status(404).json({ error: "המשתמש לא נמצא" });
     }
 
     const user = results[0];
 
-    //  fromat the birthdate to be Year-month-day
+    // פורמט תאריך לידה לצורה: YYYY-MM-DD
     if (user.birth_date) {
       user.birth_date = new Date(user.birth_date).toISOString().split("T")[0];
     }
+
+    // פורמט תאריך התחברות אחרונה לצורה: YYYY-MM-DD HH:MM:SS
     if (user.last_login) {
       const date = new Date(user.last_login);
       const yyyy = date.getFullYear();
@@ -37,6 +51,7 @@ const getUserById = (req, res) => {
       user.last_login = `${yyyy}-${MM}-${dd} ${hh}:${mm}:${ss}`;
     }
 
+    // החזרת המשתמש כ-JSON
     res.status(200).json(user);
   });
 };

@@ -1,68 +1,68 @@
 /**
- * נתיבי תרומות
- * תפקיד: הגדרת נקודות קצה (Routes) ללא שינוי לוגי, רק תיעוד.
+ * קובץ זה אחראי על נתיבי תרומות (Donations Routes):
+ * - הגדרת כל נקודות הקצה (Routes) הקשורות לתרומות
+ * - אין שינוי לוגי – רק חיבור בין ה־Routes לבקרים (Controllers)
  */
+
 const express = require("express");
 const router = express.Router();
 
 const upload = require("../config/multer");
 
-// Controllers – Donations
+// בקרי תרומות (Donations Controllers)
 const addDonation = require("../controllers/donation/addDonation");
 const getAllDonations = require("../controllers/donation/getAllDonations");
 const getAvailableDonations = require("../controllers/donation/getAvailableDonations");
 const updateDonation = require("../controllers/donation/updateDonation");
 const deleteDonation = require("../controllers/donation/deleteDonation");
 
-// Request / Accept flows
+// זרימות בקשה/ביטול/קבלה
 const requestDonation = require("../controllers/donation/requestDonation");
 const cancelDonationRequest = require("../controllers/donation/cancelDonationRequest");
 const markDonationAsAccepted = require("../controllers/donation/markDonationAsAccepted");
 
-// Locking (secure/unlock)
+// נעילה (Locking)
 const getDonationSecure = require("../controllers/donation/getDonationSecure");
 const unlockDonation = require("../controllers/donation/unlockDonation");
 
-// Views by role
+// תצוגות לפי תפקיד
 const getRequestorAcceptedDonations = require("../controllers/donation/getRequestorAcceptedDonations");
 const getDonorRequestedDonations = require("../controllers/donation/getDonorRequestedDonations");
 
 /* =========================
- * Routes
+ * נתיבים (Routes)
  * =======================*/
 
-// Requestor-focused
+// Requestor – תרומות שהתקבלו
 router.get("/requestor-accepted/:id", getRequestorAcceptedDonations);
 
-// Public availability
+// Public – תרומות זמינות
 router.get("/available", getAvailableDonations);
 
-// Donor-focused
+// Donor – תרומות שהתבקשו ע"י מבקשים
 router.get("/requested-by-requestors/:id", getDonorRequestedDonations);
 
-// Accept a request (donor action)
+// Donor – קבלת בקשה
 router.put("/:donationId/accept", markDonationAsAccepted);
 
-// Locking: secure & unlock (place BEFORE "/:id")
-router.get("/:id/secure", getDonationSecure);   // acquires/returns secured view (+ lock)
-router.post("/:id/unlock", unlockDonation);      // releases lock
+// Locking: secure/unlock (לפני "/:id")
+router.get("/:id/secure", getDonationSecure);   // נעילת תרומה
+router.post("/:id/unlock", unlockDonation);     // שחרור נעילה
 
-
-
-// All donations
+// All donations – שליפת כל התרומות
 router.get("/", getAllDonations);
 
-// Request/cancel donation (requestor actions)
+// Requestor – בקשה/ביטול תרומה
 router.put("/:id/request", requestDonation);
 router.put("/:id/cancel", cancelDonationRequest);
 
-// Create with image upload
+// יצירת תרומה עם העלאת תמונה
 router.post("/", upload.single("image"), addDonation);
 
-// Update with optional new image
+// עדכון תרומה (עם אופציה לתמונה חדשה)
 router.put("/:id", upload.single("image"), updateDonation);
 
-// Delete
+// מחיקת תרומה
 router.delete("/:id", deleteDonation);
 
 module.exports = router;

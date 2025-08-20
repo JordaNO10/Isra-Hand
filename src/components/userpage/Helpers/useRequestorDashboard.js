@@ -1,3 +1,8 @@
+/**
+ * useRequestorDashboard:
+ * Hook עזר לניהול דשבורד מבקש תרומות.
+ * כולל שליפת נתוני משתמש, תרומות זמינות, בקשות לא מאושרות, תרומות שהתקבלו, ופעולות (בקשה/ביטול/קבלה).
+ */
 import { useState, useEffect } from "react";
 import axios from "axios";
 import Cookies from "js-cookie";
@@ -33,9 +38,8 @@ export const useRequestorDashboard = () => {
         );
         setUnacceptedRequests(unaccepted);
 
-        // Use accepted donations from new endpoint (includes rating)
         setAcceptedDonations(acceptedRes.data);
-      } catch (err) {
+      } catch {
         setError("Failed to load dashboard data.");
       } finally {
         setLoading(false);
@@ -47,6 +51,7 @@ export const useRequestorDashboard = () => {
     }
   }, [currentUserId]);
 
+  // בקשת תרומה
   const requestDonation = async (donationId) => {
     try {
       await axios.put(`/donations/${donationId}/request`, {
@@ -58,6 +63,7 @@ export const useRequestorDashboard = () => {
     }
   };
 
+  // ביטול בקשה
   const cancelRequest = async (donationId) => {
     try {
       await axios.put(`/donations/${donationId}/cancel`, {
@@ -69,17 +75,19 @@ export const useRequestorDashboard = () => {
     }
   };
 
+  // סימון תרומה כמאושרת
   const markAsAccepted = async (donationId) => {
     try {
       await axios.put(`/donations/${donationId}/accept`, {
         requestor_id: currentUserId,
       });
       await refreshData();
-    } catch (err) {
+    } catch {
       alert("Failed to mark donation as accepted.");
     }
   };
 
+  // ריענון נתונים
   const refreshData = async () => {
     try {
       const [availableRes, allRes, acceptedRes] = await Promise.all([
@@ -96,7 +104,7 @@ export const useRequestorDashboard = () => {
       setUnacceptedRequests(unaccepted);
 
       setAcceptedDonations(acceptedRes.data);
-    } catch (err) {
+    } catch {
       setError("Failed to refresh donation data.");
     }
   };

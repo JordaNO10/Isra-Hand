@@ -1,3 +1,9 @@
+/**
+ * קובץ שרת ראשי (server.js)
+ * תפקיד: הגדרת אפליקציית Express, חיבור Middleware (אבטחה, לוגים, סשנים, CORS),
+ *          יצירת תיקיית העלאות, חיבור ראוטים, והפעלת השרת.
+ */
+
 const express = require("express");
 const helmet = require("helmet");
 const morgan = require("morgan");
@@ -8,7 +14,7 @@ const dotenv = require("dotenv");
 const cors = require("cors");
 require("./controllers/schedule/cron");
 
-//  Route imports
+//  ייבוא ראוטים
 const userRoutes = require("./routes/userRoutes");
 const donationRoutes = require("./routes/donationRoutes");
 const categoryRoutes = require("./routes/categoryRoutes");
@@ -16,34 +22,35 @@ const ratingRoutes = require("./routes/ratingsRoutes");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+
+// הגדרת CORS
 app.use(
   cors({
     origin: "http://localhost:3000",
     credentials: true,
   })
 );
-// Ensure the uploads directory exists
+
+// בדיקה ויצירת תיקיית העלאות אם לא קיימת
 const uploadDirectory = path.join(__dirname, "uploads");
 if (!fs.existsSync(uploadDirectory)) {
   fs.mkdirSync(uploadDirectory, { recursive: true });
 }
 
-// Load environment variables
+// טעינת משתני סביבה
 dotenv.config();
 
-//  Security & Logging
+// אבטחה ולוגים
 app.use(helmet());
 app.use(morgan("combined"));
 
-//  JSON parsing
+// פריסת JSON
 app.use(express.json());
 
-//  CORS setup
-
-//  Session middleware
+// סשנים
 sessionMiddleware(app);
 
-//  Serve static uploads
+// קבצים סטטיים (uploads)
 app.use(
   "/uploads",
   (req, res, next) => {
@@ -53,19 +60,19 @@ app.use(
   express.static(path.join(__dirname, "uploads"))
 );
 
-//  Routes
-app.use("/users", userRoutes); // login, register, logout
-app.use("/donations", donationRoutes); // add, get, update, delete donations
-app.use("/categories", categoryRoutes);
-app.use("/ratings", ratingRoutes);
+// נתיבים
+app.use("/users", userRoutes);       // הרשמה, התחברות, יציאה
+app.use("/donations", donationRoutes); // תרומות (הוספה, עדכון, מחיקה)
+app.use("/categories", categoryRoutes); // קטגוריות
+app.use("/ratings", ratingRoutes);     // דירוגים
 
-// Error handler
+// טיפול בשגיאות גלובלי
 app.use((err, req, res, next) => {
   console.error(err.stack);
-  res.status(500).json({ error: "Something went wrong!" });
+  res.status(500).json({ error: "משהו השתבש בשרת." });
 });
 
-//  Start server
+// הפעלת השרת
 app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+  console.log(`✅ השרת רץ בהצלחה על פורט ${PORT}`);
 });

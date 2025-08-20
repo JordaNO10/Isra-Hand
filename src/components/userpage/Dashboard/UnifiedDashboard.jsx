@@ -1,29 +1,21 @@
 /**
- * UnifiedDashboard – דשבורד מאוחד לתורם+מבקש
  * תפקיד המחלקה: לרכז בתוך לשוניות את פעולות התורם (התרומות שלי, בקשות שהתקבלו)
  *                ואת פעולות המבקש (הבקשות שלי, תרומות שקיבלתי + דירוג),
  *                כולל פתיחת Singlepage מכל מקום ומודלים לפי צורך.
- * הערות:
- *  - לא מוחקים קוד קיים; אנחנו רק מרכיבים יחד את הקומפוננטות וההוקים שכבר יש.
- *  - פונקציות קצרות (<20 שורות) + תיעוד בעברית.
- *  - נשמרת תמיכת "פתיחה עם focus=ID" ופתיחת מודל הוספת תרומה דרך state.
  */
 
-import "../css/DonorDashboard.css";      // עיצוב קיים
-import "../css/RequestorDashboard.css"; // עיצוב קיים
+import "../css/UnifiedDashboard.css"
 
 import React, { useEffect, useState, useCallback } from "react";
 import { useNavigate, useLocation, useSearchParams } from "react-router-dom";
 import Cookies from "js-cookie";
 import axios from "axios";
 
-// הוקים ותשתיות קיימות
 import { useDashboardDataHelpers } from "../Helpers/useDashboardDataHelpers";
 import { useDonorRating } from "../Helpers/useDonorRating";
 import { useEditUser } from "../Helpers/userEditUser";
 import { useRequestorDashboard } from "../Helpers/useRequestorDashboard";
 
-// קומפוננטות קיימות
 import ProfileInfoBox from "./ProfileInfoBox";
 import MyDonationsGrid from "./MyDonationsGrid";
 import RequestedBySection from "./RequestedBySection";
@@ -36,14 +28,13 @@ import Singlepage from "../../Donations/Singlepage/singlePage";
 
 // ----- תתי־קומפוננטות קטנות -----
 
-/** לשוניות פשוטות: בחירה בין 'תורם' ל'מבקש' */
 const Tabs = ({ tab, onTab }) => (
   <div className="tabs">
     <button
       className={tab === "donor" ? "tab active" : "tab"}
       onClick={() => onTab("donor")}
     >
-      תרומות שלי
+      התרומות שלי
     </button>
     <button
       className={tab === "requestor" ? "tab active" : "tab"}
@@ -54,7 +45,6 @@ const Tabs = ({ tab, onTab }) => (
   </div>
 );
 
-/** מודאל Singlepage לשימוש אחיד בדף המאוחד */
 const SinglepageModal = ({ open, donationId, onClose }) => {
   if (!open || !donationId) return null;
   return (
@@ -67,24 +57,19 @@ const SinglepageModal = ({ open, donationId, onClose }) => {
   );
 };
 
-// ----- קומפוננטה ראשית -----
 
 const UnifiedDashboard = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [params] = useSearchParams();
 
-  // דאטה כללי למשתמש + תרומות (ללוח תורם)
   const { userData, setUserData, formatLastLogin, donations, loading, error } =
     useDashboardDataHelpers();
 
-  // עריכת פרופיל
   const { editedUser, handleFieldChange } = useEditUser(userData, setUserData);
 
-  // דירוג תורם
   const { rating, loading: ratingLoading, error: ratingError } = useDonorRating();
 
-  // לוח מבקש (הוקים קיימים)
   const {
     unacceptedRequests,
     acceptedDonations,
@@ -112,11 +97,9 @@ const UnifiedDashboard = () => {
     localStorage.setItem("ud_tab", t);
   }, []);
 
-  /** פתיחת/סגירת Singlepage */
   const openSinglepage = (id) => { setSelectedDonationId(id); setShowSinglepage(true); };
   const closeSinglepage = () => { setShowSinglepage(false); setSelectedDonationId(null); };
 
-  /** טריגר ניווט לפתיחת מודל הוספת תרומה (תמיכה אחורה) */
   useEffect(() => {
     if (location.state?.setShowModal) {
       setShowAddDonation(true);
@@ -125,7 +108,6 @@ const UnifiedDashboard = () => {
     }
   }, [location.state, onTab]);
 
-  /** תמיכה לאחור: ?focus=ID יפתח את Singlepage */
   useEffect(() => {
     const focusId = params.get("focus");
     if (focusId) {
@@ -134,7 +116,6 @@ const UnifiedDashboard = () => {
     }
   }, [params, navigate]);
 
-  /** שליפת "בקשות לתרומות שלי" (חלק התורם) */
   useEffect(() => {
     if (!userData?.user_id) return;
     axios
@@ -143,7 +124,6 @@ const UnifiedDashboard = () => {
       .catch((err) => console.error("❌ Failed to fetch requested donations", err));
   }, [userData]);
 
-  /** שמירת פרטי משתמש שעודכנו (שדות שהשתנו בלבד) */
   const saveUserChanges = async () => {
     try {
       const fields = Object.keys(editedUser || {});
@@ -157,7 +137,6 @@ const UnifiedDashboard = () => {
     }
   };
 
-  /** סימון כ"נתקבלה" ופתיחת דירוג (חלק המבקש) */
   const handleAccept = async (donation) => {
     await markAsAccepted(donation.donation_id);
     setRatingDonation(donation);
@@ -186,20 +165,17 @@ const UnifiedDashboard = () => {
           />
         </div>
 
-        {/* לשוניות */}
         <div className="dashboard-main">
           <Tabs tab={tab} onTab={onTab} />
 
           {tab === "donor" ? (
             <>
-              {/* התרומות שלי */}
               <MyDonationsGrid
                 items={myDonations}
                 onAdd={() => setShowAddDonation(true)}
                 onOpen={(id) => openSinglepage(id)}
               />
 
-              {/* בקשות שהתקבלו לתרומות שלי */}
               <RequestedBySection
                 items={requested}
                 onOpen={(id) => openSinglepage(id)}
@@ -207,7 +183,6 @@ const UnifiedDashboard = () => {
             </>
           ) : (
             <>
-              {/* קיצור לדף התרומות הזמינות */}
               <h2 className="section-title">לבקשת תרומה חדשה:</h2>
               <div style={{ textAlign: "center", marginBottom: "2rem" }}>
                 <button className="show-more-btn" onClick={() => navigate("/donations")}>
@@ -215,7 +190,6 @@ const UnifiedDashboard = () => {
                 </button>
               </div>
 
-              {/* הבקשות שלי */}
               <h2 className="section-title">הבקשות שלי:</h2>
               <RequestsGrid
                 items={unacceptedRequests}
@@ -224,7 +198,6 @@ const UnifiedDashboard = () => {
                 onOpen={(id) => openSinglepage(id)}
               />
 
-              {/* תרומות שקיבלתי */}
               <h2 className="section-title">תרומות שקיבלת:</h2>
               <AcceptedGrid
                 items={acceptedDonations}
@@ -236,12 +209,10 @@ const UnifiedDashboard = () => {
         </div>
       </div>
 
-      {/* מודל – הוספת תרומה */}
       {showAddDonation && (
         <DonationAdd onClose={() => setShowAddDonation(false)} userData={userData} />
       )}
 
-      {/* מודל – עריכת משתמש */}
       {editingUserModal && (
         <UserEditModal
           user={userData}
@@ -252,14 +223,12 @@ const UnifiedDashboard = () => {
         />
       )}
 
-      {/* מודל – Singlepage אחיד */}
       <SinglepageModal
         open={showSinglepage}
         donationId={selectedDonationId}
         onClose={closeSinglepage}
       />
 
-      {/* מודל – דירוג (צד מבקש) */}
       {showRatingModal && ratingDonation && (
         <RatingModal
           donationId={ratingDonation.donation_id}

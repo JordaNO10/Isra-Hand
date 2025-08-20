@@ -1,9 +1,11 @@
+/**
+ * פונקציה זו מחשבת את הדירוג הממוצע של משתמש (תורם).
+ * הפלט כולל: מזהה המשתמש, ממוצע דירוגים ומספר הדירוגים הכולל.
+ * אם למשתמש אין דירוגים כלל – מוחזר ממוצע null ומספר דירוגים 0.
+ */
+
 const db = require("../../utils/db");
 
-/**
- * Get average rating for a specific user
- * Route: GET /ratings/user/:userId
- */
 const getUserRating = async (req, res) => {
   const userId = req.params.userId;
 
@@ -22,7 +24,6 @@ const getUserRating = async (req, res) => {
     const [results] = await db.promise().query(sql, [userId]);
 
     if (results.length === 0) {
-      // User has donations but no ratings at all
       return res.status(200).json({
         user_id: userId,
         avg_rating: null,
@@ -32,7 +33,7 @@ const getUserRating = async (req, res) => {
 
     res.status(200).json(results[0]);
   } catch (error) {
-    console.error("Error fetching user rating:", error);
+    console.error("שגיאה בעת שליפת דירוג משתמש:", error);
     res.status(500).json({ error: "Failed to fetch user rating" });
   }
 };

@@ -16,8 +16,7 @@ const ForgotPassword = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!email) { setErrorMessage("נא להכניס אימייל."); return; }
-    const success = await handleForgotPassword(email);
-    if (success) toast.success("קישור איפוס נשלח למייל שלך!");
+    await handleForgotPassword(email);
   };
 
   return (

@@ -11,6 +11,7 @@
 .signin-form.standalone {
   background-color: white;
   padding: 32px;
+  direction: rtl;
   border-radius: 12px;
   box-shadow: 0 4px 20px rgba(0, 119, 255, 0.2);
 }

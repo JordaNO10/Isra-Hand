@@ -1,3 +1,9 @@
+/**
+ * פונקציה זו מטפלת באיפוס סיסמה ע"י טוקן שהתקבל במייל.
+ * שלבים: בדיקה שהטוקן והסיסמה קיימים, בדיקה אם המשתמש קיים,
+ * עדכון סיסמה מוצפנת במסד וניקוי הטוקן, ושליחת מייל הצלחה (לא חוסם).
+ */
+
 const db = require("../../utils/db");
 const bcrypt = require("bcrypt");
 const { sendMail } = require("../../utils/mailer");
@@ -7,11 +13,13 @@ const resetPassword = async (req, res) => {
   const { token } = req.params;
   const { password } = req.body;
 
+  // בדיקה ששדות חובה קיימים
   if (!token || !password) {
     return res.status(400).json({ message: "Token or password missing" });
   }
 
   try {
+    // חיפוש משתמש לפי טוקן
     const [users] = await db
       .promise()
       .query("SELECT * FROM users WHERE reset_token = ?", [token]);
@@ -23,6 +31,7 @@ const resetPassword = async (req, res) => {
     const user = users[0];
     const hashedPassword = await bcrypt.hash(password, 12);
 
+    // עדכון סיסמה ומחיקת הטוקן
     await db
       .promise()
       .query(
@@ -30,7 +39,7 @@ const resetPassword = async (req, res) => {
         [hashedPassword, user.user_id]
       );
 
-    // ✅ נשלח מייל בנפרד – לא נגרום לשגיאה אפילו אם ייכשל
+    // שליחת מייל הצלחה (לא עוצרת את התהליך במקרה של שגיאה)
     try {
       const successMessage = passwordResetSuccess(user.full_name);
       await sendMail({
@@ -40,16 +49,15 @@ const resetPassword = async (req, res) => {
       });
     } catch (mailError) {
       console.error("שליחת מייל איפוס נכשלה:", mailError);
-      // לא מחזירים שגיאה ללקוח כדי לא לעצור את התהליך
     }
 
-    // ✅ נשלחת תשובה תקינה
+    // תשובת הצלחה ללקוח
     res.status(200).json({
       message: "הסיסמה אופסה בהצלחה",
       email: user.email,
     });
   } catch (err) {
-    console.error("Reset password error:", err);
+    console.error("שגיאה באיפוס סיסמה:", err);
     res.status(500).json({ message: "שגיאה בשרת במהלך איפוס הסיסמה" });
   }
 };

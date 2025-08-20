@@ -1,31 +1,35 @@
 /**
- * יצירת תרומה
- * תפקיד: קליטת נתוני טופס (multipart), ולידציה קלה, מיפוי קטגוריה, שמירת תרומה,
- *         ושליחת מייל תודה (לא חוסם). כולל תאימות לשמות שדות ישנים.
- * שינוי: מנרמל user_id ל-NULL אם אינו מספרי כדי למנוע FK 1452.
+ * פונקציה זו מטפלת ביצירת תרומה חדשה.
+ * תהליך: קבלת נתונים, בדיקות בסיסיות, מיפוי קטגוריה, שמירה במסד הנתונים,
+ * ושליחת מייל תודה (באופן אסינכרוני).
  */
+
 const db = require("../../utils/db");
 const { buildImageUrl } = require("../../utils/helpers") || {};
 const { sendMail } = require("../../utils/mailer");
 const { donationThankYou } = require("../../templates/emailTemplates");
 const { getRoleId, canDonate, getUserId } = require("../helpers/utils");
 
+// פונקציות עזר
 const safe = (v) => (typeof v === "string" ? v.trim() : v);
 const field = (body, a, b) => safe(body?.[a] ?? body?.[b] ?? "");
-
 const numOrNull = (v) => {
   const n = parseInt(v, 10);
   return Number.isFinite(n) ? n : null;
 };
 
+// הפקת URL של תמונה
 const getImageUrl = (req, filename) => {
   if (!filename) return null;
-  try { if (typeof buildImageUrl === "function") return buildImageUrl(req, filename); } catch (_) {}
+  try { 
+    if (typeof buildImageUrl === "function") return buildImageUrl(req, filename); 
+  } catch (_) {}
   const proto = (req.headers["x-forwarded-proto"] || req.protocol || "http");
   const host = req.headers.host || "localhost:5000";
   return `${proto}://${host}/uploads/${filename}`;
 };
 
+// איתור מזהה קטגוריה לפי שם ותת־קטגוריה
 const findCategoryId = (categoryName, subCategoryName, cb) => {
   const sql = `SELECT category_id FROM categories
                WHERE category_name = ? AND sub_category = ?
@@ -35,6 +39,7 @@ const findCategoryId = (categoryName, subCategoryName, cb) => {
   );
 };
 
+// הוספת תרומה למסד הנתונים
 const insertDonation = (params, cb) => {
   const sql = `INSERT INTO donations
     (category_id, description, donation_name, donat_photo, quantity, user_id, email)
@@ -42,6 +47,7 @@ const insertDonation = (params, cb) => {
   db.query(sql, params, cb);
 };
 
+// הפונקציה הראשית להוספת תרומה
 const addDonation = (req, res) => {
   const roleId = getRoleId(req);
   if (!canDonate(roleId)) return res.status(403).json({ error: "אין הרשאה לתרום" });
@@ -53,31 +59,34 @@ const addDonation = (req, res) => {
   const email        = field(req.body, "email");
   const full_name    = field(req.body, "full_name");
 
-  // user_id: קודם body, אם לא – session; ובסוף נרמול למספר או NULL
+  // קביעת מזהה המשתמש
   const user_id_body = field(req.body, "userId");
   const user_id_sess = getUserId(req);
   const user_id_raw  = user_id_body || user_id_sess || null;
-  const user_id      = numOrNull(user_id_raw); // **הנקודה הקריטית** — לא נכניס 0/"" בטעות
+  const user_id      = numOrNull(user_id_raw);
 
   if (!donationname) return res.status(400).json({ error: "נדרש שם תרומה" });
 
   const filename = req.file && req.file.filename;
   const imageUrl = getImageUrl(req, filename);
 
+  // איתור קטגוריה ושמירת התרומה
   findCategoryId(categoryName, subCategory, (catErr, category_id) => {
     if (catErr) {
-      console.error("❌ category lookup:", catErr?.message || catErr);
+      console.error("שגיאה בעת בדיקת קטגוריה:", catErr);
       return res.status(500).json({ error: "Database error (category lookup)" });
     }
+
     const params = [category_id, description || null, donationname, imageUrl, user_id, email || null];
     insertDonation(params, async (insErr, result) => {
       if (insErr) {
-        // החזרת פרטי שגיאה יעזרו באיתור (בפיתוח)
-        console.error("❌ insert donation:", insErr?.code, insErr?.sqlMessage || insErr);
+        console.error("שגיאה בעת שמירת תרומה:", insErr);
         return res.status(500).json({ error: "Database error (insert donation)", code: insErr?.code });
       }
 
       const donationId = result.insertId;
+
+      // שליחת מייל תודה (אסינכרוני)
       (async () => {
         try {
           if (email) {
@@ -87,7 +96,7 @@ const addDonation = (req, res) => {
               html: donationThankYou(full_name || "", donationname, donationId),
             });
           }
-        } catch (e) { console.warn("⚠️ email:", e?.message || e); }
+        } catch (e) { console.warn("שגיאה בשליחת מייל תודה:", e?.message || e); }
       })();
 
       return res.status(201).json({ message: "Donation added successfully", donationId });

@@ -1,15 +1,22 @@
+/**
+ * Cron Job: שליחת מייל למשתמשים לא פעילים
+ * תהליך: רץ פעם ביום (08:00), מאתר משתמשים שלא התחברו מעל 4 ימים,
+ * ושולח להם מייל תזכורת אישי.
+ */
+
 const cron = require("node-cron");
 const db = require("../../utils/dbPromise");
-const {sendMail} = require("../../utils/mailer");
+const { sendMail } = require("../../utils/mailer");
 
-// Test the cron is loading
+// בדיקה שה־cron נטען
 console.log("[Cron] Inactive notifier loaded");
 
-// Schedule: 11:53 AM daily
+// ריצה יומית בשעה 08:00
 cron.schedule("00 08 * * *", async () => {
   console.log("[Cron] Running inactive notifier job");
 
   try {
+    // שליפת משתמשים לא פעילים (מעל 4 ימים)
     const [users] = await db.query(`
       SELECT user_id, full_name, email 
       FROM users 
@@ -19,19 +26,19 @@ cron.schedule("00 08 * * *", async () => {
 
     console.log(`[Cron] Found ${users.length} inactive users`);
 
+    // שליחת מייל לכל משתמש לא פעיל
     for (const user of users) {
       await sendMail({
-        to: user.email, // this MUST be a string like "a@b.com"
+        to: user.email,
         subject: "התגעגענו אליך ב־IsraHand!",
         html: `
     <div dir="rtl" style="text-align:right;">
-      <p>שלום , </p>
-      <p>${user.full_name}/p>
+      <p>שלום ${user.full_name},</p>
       <p>שמנו לב שלא נכנסת לאתר כבר מספר ימים.</p>
-      <p>מחכים לך באתר IsraHand – יש תרומות חדשות, ובקשות שמחכות לעזרתך!</p>
+      <p>מחכים לך באתר IsraHand – יש תרומות חדשות ובקשות שמחכות לעזרתך!</p>
       <p>נשמח לראותך שוב בקרוב 😊</p>
     </div>
-  `,
+        `,
       });
     }
 

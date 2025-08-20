@@ -1,3 +1,9 @@
+/**
+ * פונקציה זו מטפלת במחיקת תרומה.
+ * השלבים: בדיקת קיום התרומה, וידוא שלא נבחרה ע"י מבקש,
+ * מחיקת התרומה מהמסד, ומחיקת תמונה מקומית אם קיימת.
+ */
+
 const db = require("../../utils/db");
 const fs = require("fs");
 const path = require("path");
@@ -6,7 +12,7 @@ const deleteDonation = async (req, res) => {
   const { id } = req.params;
 
   try {
-    // Get image path and check if donation is already chosen
+    // שליפת פרטי התרומה
     const [results] = await db
       .promise()
       .query(
@@ -20,19 +26,17 @@ const deleteDonation = async (req, res) => {
 
     const { donat_photo: imageUrl, requestor_id } = results[0];
 
-    // Prevent deleting if chosen
+    // לא מאפשרים מחיקה אם התרומה כבר נבחרה
     if (requestor_id) {
       return res.status(403).json({
         error: "Cannot delete a donation that has been chosen by a requestor.",
       });
     }
 
-    // Delete the donation
-    await db
-      .promise()
-      .query("DELETE FROM donations WHERE donation_id = ?", [id]);
+    // מחיקת התרומה מהמסד
+    await db.promise().query("DELETE FROM donations WHERE donation_id = ?", [id]);
 
-    // Delete associated image if exists
+    // מחיקת תמונה פיזית אם קיימת
     if (imageUrl) {
       const imagePath = path.join(
         __dirname,
@@ -42,16 +46,16 @@ const deleteDonation = async (req, res) => {
 
       fs.unlink(imagePath, (err) => {
         if (err) {
-          console.error("Error deleting image:", err);
+          console.error("שגיאה במחיקת תמונה:", err);
         } else {
-          console.log("Image deleted successfully:", imagePath);
+          console.log("✅ תמונה נמחקה בהצלחה:", imagePath);
         }
       });
     }
 
     res.json({ message: "Donation deleted successfully." });
   } catch (error) {
-    console.error("Error deleting donation:", error);
+    console.error("שגיאה במחיקת תרומה:", error);
     res.status(500).json({ error: "Failed to delete donation." });
   }
 };

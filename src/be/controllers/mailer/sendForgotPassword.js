@@ -1,6 +1,11 @@
-// controllers/mailer/sendForgotPassword.js
+/**
+ * פונקציה זו מטפלת בשליחת מייל איפוס סיסמה.
+ * תהליך: בדיקת קיום המשתמש, יצירת טוקן חדש,
+ * שמירתו במסד ושליחת לינק ייחודי לאיפוס לכתובת המייל.
+ */
+
 const db = require("../../utils/db");
-const {sendMail} = require("../../utils/mailer");
+const { sendMail } = require("../../utils/mailer");
 const crypto = require("crypto");
 const { passwordResetRequest } = require("../../templates/emailTemplates");
 
@@ -8,6 +13,7 @@ const sendForgotPassword = async (req, res) => {
   const { email } = req.body;
   console.log("📩 Forgot password request body:", req.body);
 
+  // בדיקה אם הוזן מייל
   if (!email) {
     return res
       .status(400)
@@ -15,6 +21,7 @@ const sendForgotPassword = async (req, res) => {
   }
 
   try {
+    // בדיקת קיום המשתמש במסד
     const [users] = await db
       .promise()
       .query("SELECT * FROM users WHERE email = ?", [email]);
@@ -26,7 +33,7 @@ const sendForgotPassword = async (req, res) => {
     const user = users[0];
     const token = crypto.randomBytes(32).toString("hex");
 
-    // ✅ Store token in DB
+    // שמירת טוקן במסד
     await db
       .promise()
       .query("UPDATE users SET reset_token = ? WHERE user_id = ?", [
@@ -35,9 +42,9 @@ const sendForgotPassword = async (req, res) => {
       ]);
 
     const resetLink = `${process.env.FRONTEND_BASE_URL}/resetpassword/${token}`;
-
     const message = passwordResetRequest(user.full_name, resetLink);
 
+    // שליחת מייל איפוס
     await sendMail({
       to: email,
       subject: "איפוס סיסמה - IsraHand",

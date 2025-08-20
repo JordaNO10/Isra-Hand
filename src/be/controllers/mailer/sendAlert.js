@@ -1,4 +1,9 @@
-const {sendMail} = require("../../utils/mailer");
+/**
+ * פונקציה זו מטפלת בשליחת מייל התראה למשתמש.
+ * מקבלת כתובת יעד ותוכן ההתראה מה־body, ושולחת באמצעות sendMail.
+ */
+
+const { sendMail } = require("../../utils/mailer");
 
 const sendAlert = async (req, res) => {
   const { to, alertMessage } = req.body;
