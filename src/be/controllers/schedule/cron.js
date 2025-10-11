@@ -6,6 +6,7 @@
 
 const cron = require("node-cron");
 const db = require("../../utils/dbPromise");
+const { exec } = require("child_process");
 const { sendMail } = require("../../utils/mailer");
 
 // בדיקה שה־cron נטען
@@ -47,3 +48,24 @@ cron.schedule("00 08 * * *", async () => {
     console.error("[Cron] Error running job:", error);
   }
 });
+// ריצה יומית בשעה 22:00 (גיבוי SQL)
+cron.schedule(
+  "0 22 * * *",
+  () => {
+    console.log("[Cron] Starting SQL backup at 20:38...");
+
+    exec(`"${__dirname}/../../utils/BACKUP SQL.bat"`, (error, stdout, stderr) => {
+      if (error) {
+        console.error(`[Cron] Backup failed: ${error.message}`);
+        return;
+      }
+      if (stderr) {
+        console.error(`[Cron] Backup stderr: ${stderr}`);
+      }
+      console.log(`[Cron] Backup completed: ${stdout}`);
+    });
+  },
+  {
+    timezone: "Asia/Jerusalem",
+  }
+);

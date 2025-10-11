@@ -11,23 +11,38 @@ const MobileMenu = ({
   onClose,
 }) => (
   <div className="mobile-menu" role="dialog" aria-modal="true">
-    <NavLink to="/" className="header-link" onClick={onClose}>דף הבית</NavLink>
-    <NavLink to="/donations" className="header-link" onClick={onClose}>תרומות</NavLink>
+    <NavLink to="/" className="header-link" onClick={onClose}>
+      דף הבית
+    </NavLink>
+    <NavLink to="/donations" className="header-link" onClick={onClose}>
+      תרומות
+    </NavLink>
 
     {!isAuthenticated ? (
       <>
-        <button className="auth-button" onClick={handleLogin}>התחבר</button>
-        <NavLink to="/Signup" className="auth-button secondary" onClick={onClose}>
+        <button className="auth-button" onClick={handleLogin}>
+          התחבר
+        </button>
+        <NavLink
+          to="/Signup"
+          className="auth-button secondary"
+          onClick={onClose}
+        >
           הרשמה
         </NavLink>
       </>
     ) : (
       <>
-        <NavLink to={roleId === "1" ? "/Admin" : roleId === "2" ? "/dashboard" : "/dashboard"}
-                 className="hello-message" onClick={onClose}>
-          הפרופיל שלי
+        <NavLink
+          to={roleId === "1" ? "/Admin" : "/dashboard"}
+          className="hello-message"
+          onClick={onClose}
+        >
+          {roleId === "1" ? "דף מנהל" : "הפרופיל שלי"}
         </NavLink>
-        <button className="auth-button" onClick={handleLogout}>התנתק</button>
+        <button className="auth-button" onClick={handleLogout}>
+          התנתק
+        </button>
       </>
     )}
   </div>

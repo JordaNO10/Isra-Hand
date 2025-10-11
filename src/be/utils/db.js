@@ -20,7 +20,7 @@ db.connect((error) => {
     console.error("חיבור למסד הנתונים נכשל:", error.stack);
     return;
   }
-  console.log("החיבור למסד הנתונים הצליח.");
+  console.log("Connected to Database");
 });
 
 // ייצוא החיבור לשימוש בקבצים אחרים

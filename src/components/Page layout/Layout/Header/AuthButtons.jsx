@@ -14,13 +14,21 @@ const AuthButtons = ({
 }) => {
   return !isAuthenticated ? (
     <>
-      <button className="auth-button" onClick={handleLogin}>התחבר</button>
-      <NavLink to="/Signup" className="auth-button secondary">הרשמה</NavLink>
+      <button className="auth-button" onClick={handleLogin}>
+        התחבר
+      </button>
+      <NavLink to="/Signup" className="auth-button secondary">
+        הרשמה
+      </NavLink>
     </>
   ) : (
     <>
-      <NavLink to={profilePathByRole(roleId)} className="hello-message">הפרופיל שלי</NavLink>
-      <button className="auth-button" onClick={handleLogout}>התנתק</button>
+      <NavLink to={profilePathByRole(roleId)} className="hello-message">
+        {roleId === "1" ? "דף מנהל" : "הפרופיל שלי"}
+      </NavLink>
+      <button className="auth-button" onClick={handleLogout}>
+        התנתק
+      </button>
     </>
   );
 };

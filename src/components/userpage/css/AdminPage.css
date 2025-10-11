@@ -423,3 +423,187 @@ button:hover {
 .edit-btn:hover {
   background-color: #e2e2e2;
 }
+
+/* Header row with search on the right (RTL) */
+.admin-page .admin-section-header {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.admin-page .admin-section-header h2 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+  color: #1877f2;
+}
+
+/* Matches the JSX "admin-search" class you added */
+.admin-page .admin-search {
+  min-width: 280px;
+  max-width: 460px;
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #d0d7de;
+  border-radius: 10px;
+  outline: none;
+  justify-content: center;
+  background: #fff;
+  font-size: 14px;
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+  direction: rtl;
+}
+.admin-page .admin-search::placeholder {
+  color: #8a99ab;
+}
+.admin-page .admin-search:focus {
+  border-color: #1877f2;
+  box-shadow: 0 0 0 4px rgba(24, 119, 242, 0.15);
+}
+
+/* Improve tables (keep your structure, just nicer visuals) */
+.admin-page .admin-section table {
+  border-collapse: separate; /* keep rounded corners */
+  border-spacing: 0;
+  min-width: 720px; /* readable columns */
+  overflow: hidden;
+}
+
+.admin-page .admin-section thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: #f6f9ff; /* light blue header */
+  color: #145db2;
+  font-weight: 700;
+  font-size: 14px;
+  border-bottom: 1px solid #e3ecfb;
+  padding: 12px 14px;
+  text-align: center;
+}
+
+.admin-page .admin-section tbody td {
+  font-size: 14px;
+  padding: 12px 14px;
+  border-bottom: 1px solid #eef2f7; /* softer divider */
+}
+
+.admin-page .admin-section tbody tr:nth-child(even) td {
+  background: #fbfdff;
+}
+
+.admin-page .admin-section tbody tr:hover td {
+  background: #eff6ff;
+  transition: background 0.15s ease;
+}
+
+/* Round first/last header cells */
+.admin-page .admin-section thead th:first-child {
+  border-top-right-radius: 10px;
+}
+.admin-page .admin-section thead th:last-child {
+  border-top-left-radius: 10px;
+}
+
+/* Action buttons inside table cells – keep your colors, add spacing & subtle effects */
+.admin-page .admin-section td button {
+  margin-inline-start: 6px; /* space between buttons (RTL-aware in modern browsers) */
+  box-shadow: 0 0 0 rgba(0, 0, 0, 0);
+  transition: transform 0.06s ease, box-shadow 0.2s ease;
+}
+.admin-page .admin-section td button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(2, 6, 23, 0.06);
+}
+
+/* Modal polish – keep your structure, fix close button positioning */
+.modal-content {
+  padding-top: 46px; /* make room for the floating close button */
+}
+
+.close-modal {
+  position: absolute; /* was relative; now floats over content */
+  top: 12px;
+  /* Logical props for RTL/LTR; fallback to left if logical not supported */
+  inset-inline-start: 12px;
+  left: 12px;
+  right: auto;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  line-height: 32px;
+  text-align: center;
+  font-size: 18px;
+  font-weight: 800;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
+}
+
+/* Category management layout – keep your flex but make it breathe on small screens */
+.category-management {
+  gap: 18px;
+  align-items: stretch;
+}
+
+/* Make category grid cards feel clickable */
+.category-tile {
+  transition: transform 0.12s ease, box-shadow 0.2s ease,
+    background-color 0.2s ease;
+}
+.category-tile:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(17, 24, 39, 0.08);
+}
+
+/* Subcategory panel inputs alignment fix on narrow screens */
+.subcategory-row,
+.add-subcategory-row {
+  width: 100%;
+}
+.subcategory-row input,
+.add-subcategory-row input {
+  min-width: 0; /* prevent overflow in flex */
+}
+
+/* Centered global search bars (if you use them elsewhere) */
+.admin-search-bar .search-input {
+  width: min(640px, 92%);
+  border-color: #d0d7de;
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+.admin-search-bar .search-input:focus {
+  border-color: #1877f2;
+  box-shadow: 0 0 0 4px rgba(24, 119, 242, 0.15);
+}
+
+/* Responsiveness */
+@media (max-width: 1024px) {
+  .admin-page .admin-section-header {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .admin-page .admin-search {
+    min-width: 0;
+    flex: 1;
+  }
+  .category-grid {
+    grid-template-columns: repeat(3, 1fr);
+    max-width: 100%;
+  }
+}
+@media (max-width: 640px) {
+  .category-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .admin-page .admin-section table {
+    min-width: 640px; /* enable horizontal scroll inside section */
+  }
+}
+
+/* Optional: subtle “loading” state style if you toggle .is-loading on the container */
+.admin-page .is-loading {
+  opacity: 0.6;
+  pointer-events: none;
+}

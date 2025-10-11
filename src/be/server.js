@@ -74,5 +74,5 @@ app.use((err, req, res, next) => {
 
 // הפעלת השרת
 app.listen(PORT, () => {
-  console.log(`✅ השרת רץ בהצלחה על פורט ${PORT}`);
+  console.log(`✅ Server is running on port ${PORT}`);
 });
